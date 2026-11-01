@@ -1,0 +1,21 @@
+{
+  "add_prefix_space": false,
+  "algorithm": "byte_level_bpe",
+  "automatic_special_tokens": false,
+  "batch_size": 64,
+  "bpe_dropout": null,
+  "initial_alphabet": "full_byte_level",
+  "min_frequency": 2,
+  "normalization": null,
+  "parallelism": false,
+  "schema_version": 1,
+  "special_tokens": [
+    "<pad>",
+    "<bos>",
+    "<eos>",
+    "<unk>"
+  ],
+  "tokenizers_version": "0.22.1",
+  "use_regex": true,
+  "vocab_size": 16384
+}

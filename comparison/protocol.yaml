@@ -1,0 +1,166 @@
+schema_version: 1
+name: context_not_grammar
+stage: prepared_awaiting_timing_pilot
+
+inputs:
+  vocab_size: 16384
+  tokenizer_sha256: 53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70
+  fitting_split: train
+  test_use: final_reporting_only
+  blimp_use: final_evaluation_only
+
+windows:
+  targets: 512
+  stride: 512
+  article_boundaries: never_cross
+  eos: exactly_one_per_article
+  bos: restart_each_window
+  padding_id: 0
+  loss: summed_natural_log_cross_entropy_divided_by_valid_target_count
+  reset_transformer_positions: each_window
+  reset_lstm_hidden_and_cell: each_window
+  evaluation_order: article_then_target_start
+  training_order: numpy_PCG64_SeedSequence_seed_epoch_permutation
+  drop_last: false
+
+matching:
+  embedding_widths: {s: 256, m: 384, l: 640}
+  tie_input_output_embeddings: true
+  non_embedding_relative_tolerance: 0.05
+  tolerance_denominator: transformer_non_embedding_parameters
+  include_lstm_output_adapter: true
+  count_tied_parameters_once: true
+
+training:
+  objective: next_token_prediction_from_scratch
+  seeds: [13, 37, 73]
+  tuning_seed: 101
+  effective_batch_windows: 64
+  partial_epoch_batch: step_with_actual_valid_targets_same_for_both_architectures
+  precision: float32
+  optimizer:
+    name: AdamW
+    betas: [0.9, 0.95]
+    eps: 0.00000001
+    weight_decay: 0.1
+    weight_decay_exclude: [biases, normalization_parameters]
+  scheduler:
+    name: cosine_by_consumed_prediction_tokens
+    warmup_fraction: 0.01
+    minimum_lr_ratio: 0.1
+  gradient_clip_global_norm: 1.0
+  initialization:
+    matrix_weights: normal_mean_0_std_0.02
+    normalization_scale: 1.0
+    biases: zero
+    lstm_forget_gate: input_bias_one_recurrent_bias_zero
+    padding_embedding: zero_at_initialization_trainable_through_tied_head
+  dropout:
+    transformer: [token_plus_position_embeddings, attention_probabilities, attention_output_residual, feedforward_output_residual]
+    lstm: [token_embeddings, between_recurrent_layers, output_adapter]
+    recurrent_hidden_to_hidden_dropout: false
+  reproducibility:
+    seed: [python, numpy, torch_cpu, torch_cuda]
+    cudnn_benchmark: false
+    deterministic_algorithms: true
+    resume: save_rng_optimizer_scheduler_epoch_and_window_cursor
+
+budget:
+  target_prediction_tokens: 250000000
+  exact_prediction_tokens: null
+  tuning_prediction_tokens: null
+  microbatch_windows: null
+  gradient_accumulation_steps: null
+  counted: nonpadding_targets_including_eos_excluding_bos
+  final_batch: mask_surplus_valid_targets_in_batch_major_order
+  accumulated_loss: sum_microbatch_nll_divided_by_total_valid_targets_in_optimizer_step
+  pilot_required_before_production: true
+  pilot_evidence: throughput_and_memory_for_both_architectures_at_s_m_l
+
+selection:
+  split: validation
+  metric: total_nll_divided_by_total_prediction_tokens
+  validation_every_prediction_tokens: 1000000
+  cadence: validate_at_first_optimizer_step_reaching_each_threshold_plus_final_step
+  checkpoint: lowest_validation_nll
+  tie_break: earliest_consumed_token_count
+  evaluate_at_start: true
+  report_views: [best_validation, final_budget]
+  matched_quality_validation_ppl_relative_tolerance: 0.01
+
+tuning:
+  size: s
+  learning_rates: [0.0001, 0.0003, 0.001, 0.003]
+  dropouts: [0.0, 0.1]
+  trials_per_architecture: 8
+  selection: lowest_validation_nll_then_grid_order
+  transfer_to_m_l_and_deep_lstm: reuse_architecture_specific_s_winner_without_extra_tuning
+  failed_trials: retain_and_report
+  grid_extension: symmetric_and_recorded_before_production
+
+evaluation:
+  perplexity: exp_total_nll_over_total_nonpadding_targets
+  context:
+    windows: all_full_test_windows_in_frozen_order
+    early_positions_one_based: [1, 32]
+    late_positions_one_based: [385, 512]
+    gain: early_mean_nll_minus_late_mean_nll
+    history_limits: [4, 32, 128, full]
+    restricted_history: reinitialize_positions_and_states_for_each_identical_target_history
+    short_windows: include_in_ppl_exclude_from_position_curve_report_exclusions
+  copy:
+    lengths: [25, 50, 100, 200]
+    primary_length: 100
+    examples_per_length_per_source: 1000
+    seed: 2718
+    sources: [test_natural_text, uniform_nonspecial_token_ids]
+    natural_sampling: uniform_valid_content_start_with_replacement_never_cross_article_or_eos
+    random_ids: uniform_integers_4_through_16383
+    metric: first_span_mean_nll_minus_repeated_span_mean_nll
+    eos_scored: false
+    controls: [independent_nonrepeat_span, exclude_first_four_positions_of_each_span]
+    persist: span_ids_token_ids_and_sampling_seed_before_scoring
+  blimp:
+    primary_score: summed_subword_log_probability
+    start_with_bos: true
+    include_eos: true
+    ties: incorrect_including_identical_candidates
+    overlength: score_all_targets_in_independent_512_target_windows_and_report_count
+    report: [overall, twelve_groups, sixty_seven_paradigms]
+    sensitivities: [equal_bpe_length_pairs, length_normalized_log_probability]
+    truncate_or_drop: false
+  kenlm:
+    order: 5
+    symbols: shared_bpe_token_ids
+    log_base_conversion: multiply_base10_log_probability_by_ln10
+    oov: require_full_coverage_or_predeclare_normalized_missing_token_treatment
+
+hypotheses:
+  alpha: 0.05
+  architecture_effect: transformer_minus_lstm_paired_within_seed
+  independent_units: training_seeds
+  descriptive_confidence: 0.95
+  h1:
+    endpoints: [context_gain, natural_copy_100]
+    sizes: [s, m, l]
+    alternative: transformer_minus_lstm_greater_than_zero
+    test: paired_one_sided_t_test_across_seeds
+    multiplicity: holm_over_six_endpoint_size_comparisons
+  h2:
+    endpoint: overall_blimp_accuracy
+    equivalence_margin_percentage_points: 2.0
+    test: paired_tost_across_seeds
+    multiplicity: holm_over_three_size_specific_equivalence_p_values
+    unadjusted_tost_confidence: 0.90
+  h3:
+    endpoints: [context_gain, natural_copy_100]
+    contrast: l_minus_s_change_in_architecture_effect
+    alternative: greater_than_zero
+    test: paired_one_sided_t_test_across_seeds
+    multiplicity: holm_over_two_endpoint_contrasts
+    m_role: intermediate_pattern
+  evaluation_bootstrap:
+    replicates: 10000
+    seed: 31415
+    units: articles_for_wikitext_pairs_for_blimp
+    interpretation: evaluation_set_uncertainty_conditional_on_trained_models

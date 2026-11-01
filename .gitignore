@@ -1,0 +1,9 @@
+.venv/
+.tools/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+/data/
+.DS_Store
+/comparison/protocol*.lock.json

@@ -1,0 +1,71 @@
+{
+  "blimp_accessed": false,
+  "checked_at": "2026-10-28T06:05:34.293289+00:00",
+  "data_manifest_sha256": "d91f403632b05a5c7cf62e6b946da508d19c332accecdec0b9f37cbc52b54f3f",
+  "every_article_round_trip": true,
+  "fitting_split": "train",
+  "manifest_sha256": "f459d7400821e764f645c736f82840a19f4d854cb5ad22eda7e6329a711541b1",
+  "probes": 13,
+  "reserved_ids_in_content": 0,
+  "special_token_ids": {
+    "<bos>": 1,
+    "<eos>": 2,
+    "<pad>": 0,
+    "<unk>": 3
+  },
+  "splits": [
+    {
+      "article_tokens_p0": 77.0,
+      "article_tokens_p100": 31858.0,
+      "article_tokens_p25": 1946.75,
+      "article_tokens_p50": 3202.0,
+      "article_tokens_p75": 5518.25,
+      "article_tokens_p95": 11286.249999999985,
+      "article_tokens_p99": 16440.610000000008,
+      "articles": 28472,
+      "bpe_tokens": 121994038,
+      "bytes": 539295549,
+      "bytes_per_token": 4.420671352808242,
+      "split": "train",
+      "tokens_per_word": 1.2027925159104937,
+      "whitespace_words": 101425671
+    },
+    {
+      "article_tokens_p0": 885.0,
+      "article_tokens_p100": 21496.0,
+      "article_tokens_p25": 1957.25,
+      "article_tokens_p50": 3248.5,
+      "article_tokens_p75": 5218.25,
+      "article_tokens_p95": 8957.649999999989,
+      "article_tokens_p99": 16600.17999999997,
+      "articles": 60,
+      "bpe_tokens": 255039,
+      "bytes": 1144248,
+      "bytes_per_token": 4.4865608789244,
+      "split": "validation",
+      "tokens_per_word": 1.1924062350972013,
+      "whitespace_words": 213886
+    },
+    {
+      "article_tokens_p0": 548.0,
+      "article_tokens_p100": 16962.0,
+      "article_tokens_p25": 1803.5,
+      "article_tokens_p50": 3176.5,
+      "article_tokens_p75": 7164.75,
+      "article_tokens_p95": 12541.249999999998,
+      "article_tokens_p99": 14728.259999999987,
+      "articles": 60,
+      "bpe_tokens": 291650,
+      "bytes": 1287656,
+      "bytes_per_token": 4.415072861306361,
+      "split": "test",
+      "tokens_per_word": 1.2091073790167115,
+      "whitespace_words": 241211
+    }
+  ],
+  "statistics_policy": "All WikiText splits, after freezing; no special IDs counted, whitespace-defined words.",
+  "statistics_sha256": "ca5279681693936e1f39bba7d80ec5a96b11db0477d260f86ba38e226dbb9da7",
+  "status": "PASS",
+  "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+  "vocab_size": 16384
+}
