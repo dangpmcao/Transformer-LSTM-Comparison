@@ -129,6 +129,41 @@ sampling, secondary analyses, and bootstrap settings. Short windows contribute
 to overall perplexity but are excluded from the full-window position curve.
 No test performance may select hyperparameters or checkpoints.
 
+## Score a trained model on BLiMP
+
+[`blimp_scorer.py`](blimp_scorer.py) implements the grammar evaluation. It needs
+the BLiMP files from `python -m dataset.download` and `python -m dataset.prepare`,
+but not the WikiText token arrays. A pair is correct only when the grammatical
+sentence receives a strictly higher summed log probability (Warstadt et al., 2020).
+Run it only after validation has selected the checkpoint.
+
+```python
+from comparison.blimp_scorer import evaluate_blimp, neural_window_scorer
+
+model.eval()
+score_windows = neural_window_scorer(
+    lambda batch: model(batch["input_ids"]), device="cuda", batch_size=64,
+)
+summary = evaluate_blimp(
+    score_windows, "results/blimp/transformer_s_seed13", model_label="transformer_s_seed13",
+)
+print(summary["primary"]["overall"]["accuracy"])
+```
+
+The adapter passes the same batch fields as the dataset loader, padded to the
+longest window in the batch instead of always 512. The function must return logits
+`[batch, time, vocab]`; for an LSTM, it must also create fresh zero states on each
+call. Other models, such as KenLM, can replace the adapter with a function that
+receives target-ID windows and returns one summed natural-log probability per
+window. Each window implicitly starts from BOS, which is never scored.
+
+The output folder is new and is never overwritten:
+
+| File | Contents |
+|---|---|
+| `summary.json` | Accuracy overall and for 12 groups and 67 paradigms, both sensitivity analyses, tie and overlength counts, and input hashes |
+| `pairs.jsonl` | One record per pair: both scores, both target counts, and each decision; use these for bootstrap and model-disagreement analyses |
+
 ## Why full training is not ready yet
 
 The existing snapshot has **`production_ready: false`**. The plan requires a
