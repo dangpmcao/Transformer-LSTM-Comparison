@@ -13,6 +13,7 @@ models and their training/evaluation are the next steps.
 | Download data, understand saved files, or load batches | [Dataset guide](dataset/README.md) |
 | Train, load, or inspect the text tokenizer | [Tokenizer guide](tokenizer/README.md) |
 | Understand experiment settings and the timing-trial requirement | [Experiment guide](comparison/README.md) |
+| Build and train the Transformer on a GPU | [Transformer guide](transformer/README.md) |
 | Look up names, abbreviations, and units | [Naming guide](NAMING.md) |
 
 All commands below run from the repository root, the folder containing this file.

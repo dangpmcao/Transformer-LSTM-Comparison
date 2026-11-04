@@ -7,5 +7,7 @@ __pycache__/
 /data/
 .DS_Store
 /comparison/protocol*.lock.json
+/transformer/runs/
+/transformer/.test_tmp/
 
 desktop.ini
