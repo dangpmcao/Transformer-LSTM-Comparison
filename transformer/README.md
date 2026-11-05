@@ -8,6 +8,22 @@ model width. Matrix weights start with normal(0, 0.02), normalization scales at
 one, and biases at zero. Padding starts at zero but remains trainable through the
 tied output head. The model accepts the shared `input_ids`, `attention_mask`, and
 `position_ids` fields and returns logits `[batch, time, 16384]`.
+Every window starts at position zero. The attention mask must describe a
+nonempty, right-padded prefix; causal attention prevents future tokens from
+affecting valid predictions. Padding targets are excluded by the shared loss
+mask.
+
+| Size | Blocks | Width | Heads | Token embedding | Other parameters | Total parameters |
+|---|---:|---:|---:|---:|---:|---:|
+| S | 4 | 256 | 4 | 4,194,304 | 3,290,624 | 7,484,928 |
+| M | 6 | 384 | 6 | 6,291,456 | 10,844,160 | 17,135,616 |
+| L | 8 | 640 | 10 | 10,485,760 | 39,717,120 | 50,202,880 |
+
+These are exact counts for the 16,384-token vocabulary and 512 learned
+positions. The proposal's 7.3M/16.9M/49.8M figures are approximate. The output
+head shares the token-embedding weights, so it adds no separate parameters.
+"Other parameters" includes learned positions and is the count used for the
+protocol's 5% LSTM matching check.
 
 ## Run an exploratory timing/training trial on one GPU
 
@@ -34,6 +50,9 @@ The project `requirements.txt` pins a CPU PyTorch wheel, so run `setup_gpu.sh`
 instead of the data-preparation environment script on the server. The setup
 script defaults to PyTorch 2.7.1 CUDA 12.6; set `PYTORCH_CUDA_INDEX` to the
 appropriate official wheel index for the server driver if needed.
+The local CPU environment uses PyTorch 2.7.1+cpu. Each run records its PyTorch
+and CUDA versions and checks them on resume. A new run directory is needed after
+changing either version.
 
 The run folder contains `run.json`, `metrics.jsonl`, `summary.json`, best and
 final model weights, and `latest.pt` with optimizer, random-generator, epoch,
@@ -49,3 +68,5 @@ a production-ready snapshot. Then use `--mode production --snapshot-file ...`
 with a production seed and the architecture's selected S tuning settings. The
 trainer reads the exact token budget and microbatch size from that snapshot and
 rejects a preparation-only snapshot. Test data is not used during training.
+The proposal's 250M tokens is a target until the six-model timing pilot fixes
+the exact budget; do not treat an exploratory run as a production result.

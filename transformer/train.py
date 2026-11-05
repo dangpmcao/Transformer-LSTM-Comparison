@@ -169,6 +169,7 @@ def run(args: argparse.Namespace) -> dict:
         raise ValueError("Saved windows do not use the frozen protocol tokenizer")
     identity = {
         "mode": args.mode, "size": args.size, "model": config.to_dict(),
+        "torch_version": torch.__version__, "cuda_version": torch.version.cuda,
         "seed": args.seed, "budget_tokens": budget, "microbatch_windows": microbatch,
         "effective_batch_windows": effective_batch, "learning_rate": args.learning_rate,
         "protocol_sha256": sha256_file(DEFAULT_PROTOCOL), "snapshot_sha256": snapshot_hash,

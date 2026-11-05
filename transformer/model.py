@@ -133,19 +133,21 @@ class TransformerLM(nn.Module):
                 raise ValueError("attention_mask must be a nonempty right-padded prefix per row")
             # With right padding, a valid query's causal keys are all valid. Padding
             # queries are discarded by the shared loss mask.
+        expected_positions = torch.arange(time, device=input_ids.device).expand(batch, -1)
         if position_ids is None:
-            position_ids = torch.arange(time, device=input_ids.device).expand(batch, -1)
+            position_ids = expected_positions
         if (position_ids.shape != input_ids.shape or position_ids.dtype != torch.long
                 or position_ids.device != input_ids.device
-                or bool((position_ids < 0).any())
-                or bool((position_ids >= self.config.max_positions).any())):
-            raise ValueError("Invalid position_ids")
+                or not torch.equal(position_ids, expected_positions)):
+            raise ValueError("position_ids must restart at zero in every window")
         x = self.embedding_dropout(self.token_embedding(input_ids) + self.position_embedding(position_ids))
         for block in self.blocks:
             x = block(x)
         return self.output_head(self.final_norm(x))
 
     def parameter_counts(self) -> dict[str, int]:
+        # The tied output head is the same Parameter, so count it only once.
+        # Learned positions belong to the non-token-embedding matching budget.
         embedding = self.token_embedding.weight.numel()
         total = sum(parameter.numel() for parameter in self.parameters())
         return {"token_embedding": embedding, "non_embedding": total - embedding, "total": total}

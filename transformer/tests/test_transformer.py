@@ -59,10 +59,27 @@ def test_right_padding_is_required():
 
 def test_protocol_sizes_and_schedule():
     expected = {"s": (4, 256, 4), "m": (6, 384, 6), "l": (8, 640, 10)}
+    expected_counts = {
+        "s": (4_194_304, 3_290_624, 7_484_928),
+        "m": (6_291_456, 10_844_160, 17_135_616),
+        "l": (10_485_760, 39_717_120, 50_202_880),
+    }
     for size, shape in expected.items():
         config = TransformerConfig.for_size(size)
         assert (config.layers, config.width, config.heads) == shape
+        counts = TransformerLM(config).parameter_counts()
+        assert tuple(counts.values()) == expected_counts[size]
     peak = 0.001
     assert learning_rate(10, 1000, peak, 0.01, 0.1) == pytest.approx(peak)
     assert learning_rate(1000, 1000, peak, 0.01, 0.1) == pytest.approx(peak * 0.1)
     assert math.isfinite(learning_rate(500, 1000, peak, 0.01, 0.1))
+
+
+def test_positions_restart_for_each_window():
+    model = tiny_model().eval()
+    inputs = torch.tensor([[1, 5, 6], [1, 7, 8]])
+    positions = torch.arange(3).expand(2, -1)
+    with torch.no_grad():
+        torch.testing.assert_close(model(inputs), model(inputs, position_ids=positions))
+    with pytest.raises(ValueError, match="restart at zero"):
+        model(inputs, position_ids=positions + 1)
