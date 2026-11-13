@@ -84,3 +84,33 @@ def test_split_metrics_restart_each_window_and_exclude_short_windows():
     late = np.mean([1 + 1 / p for p in range(385, 513)])
     assert context["context_gain"] == pytest.approx(early - late)
     assert summary["position_mean_nll"][0] == pytest.approx(2.0)
+
+
+def test_windows_start_from_null_context_not_article_start(tmp_path):
+    """Real KenLM: every training line starts with 7, so <s> would wrongly favour 7 mid-article."""
+    kenlm = pytest.importorskip("kenlm")
+    from ngram.lm import DEFAULT_KENLM_BIN, KenLMScorer
+    import random
+    import subprocess
+
+    lmplz = DEFAULT_KENLM_BIN / "lmplz"
+    if not lmplz.is_file():
+        pytest.skip("KenLM binaries not built")
+    rng = random.Random(0)
+    corpus = tmp_path / "train.txt"
+    corpus.write_text("".join("7 " + " ".join(str(rng.randint(8, 40)) for _ in range(rng.randint(3, 20))) + "\n"
+                              for _ in range(2000)))
+    arpa = tmp_path / "model.arpa"
+    subprocess.run([str(lmplz), "-o", "5", "-S", "100M", "-T", str(tmp_path), "--discount_fallback",
+                    "--text", str(corpus), "--arpa", str(arpa)], check=True, capture_output=True)
+    scorer = KenLMScorer(arpa)
+    targets = [7, 12, 30, 2]
+    mine, oov = scorer.target_log_probs(targets)
+
+    null, sentence, out = kenlm.State(), kenlm.State(), kenlm.State()
+    scorer.model.NullContextWrite(null)
+    scorer.model.BeginSentenceWrite(sentence)
+    assert oov == 0
+    assert mine[0] == pytest.approx(scorer.model.BaseScore(null, "7", out) * LN10)
+    assert mine[0] < scorer.model.BaseScore(sentence, "7", out) * LN10  # <s> would make 7 near-certain.
+    assert np.isfinite(mine).all() and mine[-1] < 0  # Final EOS scored as </s>.

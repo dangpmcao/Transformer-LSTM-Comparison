@@ -3,7 +3,7 @@
 Window metrics follow comparison/protocol.yaml (evaluation.perplexity and .context):
 perplexity over all non-padding targets; the position curve and context gain use full
 windows only (short windows are counted and reported as exclusions). Each window is
-scored from a fresh <s>, so the 5-gram can use at most four previous targets.
+scored from a null context, so the 5-gram can use at most four previous targets.
 
     python -m ngram.evaluate --split validation            # sanity check
     python -m ngram.evaluate --split test --blimp          # final reporting only
@@ -87,7 +87,7 @@ def evaluate_windows(target_log_probs: TargetLogProbs, output: Path, *, split: s
             "token_manifest_sha256": sha256_file(Path(token_root) / "manifest.json"),
             "window_manifest_sha256": sha256_file(Path(window_root) / "manifest.json"),
             "model_manifest_sha256": sha256_file(model_manifest) if model_manifest else None,
-            "history": "fresh_<s>_each_window_at_most_4_previous_targets",
+            "history": "null_context_each_window_at_most_4_previous_targets",
             "windows_file": file_record(staging / "windows.npz", staging), **summary,
         }
         write_json(staging / "summary.json", result)

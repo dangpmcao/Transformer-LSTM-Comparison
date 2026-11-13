@@ -1,9 +1,13 @@
 """Map shared token IDs to KenLM words and score target windows in natural-log units.
 
-KenLM sees each token ID as a decimal word ("523"). Its sentence markers stand in for
-the tokenizer's controls: <s> is BOS (start of every window) and </s> is EOS (end of
-an article or BLiMP sentence). Every window is scored from a fresh <s> state, exactly
-as the neural models restart at every window, so no history crosses a window boundary.
+KenLM sees each token ID as a decimal word ("523"). Training uses one line per article,
+so KenLM's </s> is the article EOS and its <s> means "start of an article".
+
+Every window is scored from KenLM's *null context* (no history at all), so the first
+target gets the unigram probability and no history crosses a window boundary, as the
+neural models restart at every window. Starting from <s> instead would be wrong: most
+windows begin mid-article, while <s> was only ever followed by an article heading
+(validation position-1 NLL 17.99 nats mid-article; see ngram/README.md, finding 1).
 """
 
 from __future__ import annotations
@@ -57,9 +61,9 @@ class KenLMScorer:
             raise ValueError(f"Expected a {ORDER}-gram model, got order {self.model.order}")
 
     def target_log_probs(self, targets: Sequence[int]) -> tuple[np.ndarray, int]:
-        """Natural-log P(target | up to 4 previous targets), starting from <s> (BOS)."""
+        """Natural-log P(target | up to 4 previous targets in this window), from a null context."""
         state, next_state = self._kenlm.State(), self._kenlm.State()
-        self.model.BeginSentenceWrite(state)
+        self.model.NullContextWrite(state)
         values = np.empty(len(targets), dtype=np.float64)
         oov = 0
         for position, token in enumerate(targets):
