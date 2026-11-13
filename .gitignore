@@ -4,6 +4,7 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 *.egg-info/
+*.pt
 /data/
 .DS_Store
 /comparison/protocol*.lock.json

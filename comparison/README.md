@@ -5,8 +5,11 @@ compared. The rules are written in [`protocol.yaml`](protocol.yaml).
 *Protocol* means the agreed experiment settings; a *snapshot* is a saved copy
 of those settings together with the exact input/code checksums.
 
-The data and shared input code are ready. The models, timing trial, and full
-training are later steps. Run commands from the repository root, using the
+The data and shared input code are ready. Transformer S/M/L exploratory training
+is complete at 250M prediction tokens per model, seed 101; see the
+[completed training results](../transformer/README.md#completed-training).
+The joint Transformer/LSTM timing pilot and production run matrix remain pending.
+Run commands from the repository root, using the
 [Python environment](../README.md#set-up-python).
 
 ## Save or verify a settings snapshot
@@ -164,7 +167,7 @@ The output folder is new and is never overwritten:
 | `summary.json` | Accuracy overall and for 12 groups and 67 paradigms, both sensitivity analyses, tie and overlength counts, and input hashes |
 | `pairs.jsonl` | One record per pair: both scores, both target counts, and each decision; use these for bootstrap and model-disagreement analyses |
 
-## Why full training is not ready yet
+## Why production training is not ready yet
 
 The existing snapshot has **`production_ready: false`**. The plan requires a
 short measured *timing trial* (also called a pilot) before fixing the exact

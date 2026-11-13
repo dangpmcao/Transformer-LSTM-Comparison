@@ -3,8 +3,11 @@
 **Context, Not Grammar?** compares Transformers, LSTMs, and a 5-gram language
 model: how much does context help them predict text and recognize English grammar?
 
-The datasets, trained tokenizer, and shared model inputs are ready. Neural
-models and their training/evaluation are the next steps.
+The datasets, trained tokenizer, and shared model inputs are ready. Transformer
+S/M/L training is complete for the exploratory runs: 250M prediction tokens per
+model, seed 101, completed on 2026-11-11. See the
+[training results](transformer/README.md#completed-training) for metrics and artifacts.
+The production run matrix and final evaluation remain pending.
 
 ## Start here
 
@@ -32,8 +35,8 @@ python -m pip check
 The script installs [requirements.txt](requirements.txt), including Tokenizers
 0.22.1 and CPU-only PyTorch. It expects `python3.12` on your PATH; otherwise use
 `STAGE1_PYTHON=/path/to/python3.12 bash dataset/setup_environment.sh`.
-Activate `.venv/` in every new terminal. Future GPU training needs a separately
-validated CUDA environment.
+Activate `.venv/` in every new terminal. GPU training uses the separately
+validated [CUDA environment](transformer/README.md#run-an-exploratory-timingtraining-trial-on-one-gpu).
 
 ## Understand the data
 
@@ -104,11 +107,14 @@ See the dataset guide for a concrete input/target example and custom paths.
 
 The saved tokenizer check reports exact text recovery for all 28,592 articles.
 The model-input check passes for batch sizes 1 and 2. These are data-correctness
-results; model accuracy has not been measured.
+results; completed Transformer validation results are reported in the
+[Transformer guide](transformer/README.md#completed-training).
 
 The settings snapshot currently has `production_ready: false`. A measured timing
-trial must establish exact training-token budgets and batch accumulation before
-full model training. The [experiment guide](comparison/README.md) explains this.
+trial covering both Transformer and LSTM must establish exact training-token
+budgets and batch accumulation before production training. The completed
+exploratory runs used 250M tokens each. The
+[experiment guide](comparison/README.md) explains the production requirements.
 
 ## Recheck existing work and share it
 

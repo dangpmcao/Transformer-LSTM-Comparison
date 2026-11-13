@@ -108,6 +108,96 @@ evaluation:
     history_limits: [4, 32, 128, full]
     restricted_history: reinitialize_positions_and_states_for_each_identical_target_history
     short_windows: include_in_ppl_exclude_from_position_curve_report_exclusions
+    # TA #1: change the history, not the target-token population. The original
+    # early/late context_gain remains the proposal's H1/H3 endpoint; it alone
+    # cannot establish that longer context caused the late-position improvement.
+    same_target:
+      status: defined_scorer_pending
+      role: supporting_context_intervention_not_a_replacement_for_h1_h3_endpoints
+      models: [transformer, lstm]
+      deep_lstm_control: apply_identical_rules_at_size_m
+      sizes: [s, m, l]
+      seeds: training.seeds
+      checkpoint_views: selection.report_views
+      primary_checkpoint_view: best_validation
+      checkpoint_selection: validation_only_no_selection_by_ablation_results
+      split: test
+      # Use all 128 late targets in every full window, including EOS when it
+      # falls here. Every target has at least 384 preceding content tokens.
+      targets:
+        windows: evaluation.context.windows
+        positions_one_based: [385, 512]
+        sampling: exhaustive_no_subsampling
+        identity: [split, article_index, window_target_start_zero_based, target_position_one_based]
+        pairing: identical_target_ids_and_order_across_conditions_models_sizes_seeds_and_views
+        short_windows: exclude_and_report_window_and_target_counts
+        bos_and_padding_scored: false
+        eos_scored: true
+      # For window targets x_1,...,x_512 and target x_t, history excludes x_t.
+      # "full" means the prefix inside this window, NOT the whole article.
+      histories:
+        limits: evaluation.context.history_limits
+        unit: preceding_bpe_token_ids_excluding_bos_and_target
+        full_input: "[BOS, x_1, ..., x_(t-1)]"
+        truncated_input: "[BOS, x_(t-k), ..., x_(t-1)] for finite limit k"
+        finite_limit_handling: retain_exactly_k_nearest_preceding_tokens_in_original_order
+        boundaries: never_cross_window_or_article_never_include_target_or_future_tokens
+        bos: prepend_exactly_one_in_every_condition_not_counted_toward_k
+      scoring:
+        mode: eval_and_inference_mode_dropout_disabled_no_parameter_updates
+        prediction: negative_natural_log_probability_of_x_t_from_final_valid_input_logit_only
+        prefix_losses: excluded
+        transformer_positions: contiguous_from_zero_for_each_bos_prefixed_input
+        lstm_state: fresh_zero_hidden_and_cell_then_replay_only_supplied_input
+        state_reuse: forbidden_across_targets_or_conditions_except_equivalent_full_causal_forward
+        batching: right_padding_masked_score_only_final_valid_input_position
+        nonfinite_or_missing_scores: fail_run_never_drop_targets_or_change_denominators
+      # Truncation also changes absolute positions and the LSTM warm-up length.
+      # This paired sensitivity keeps full length/positions and the nearest 128
+      # tokens fixed, changing only the order of the more distant BPE tokens.
+      distant_shuffle:
+        role: secondary_length_and_position_preserving_sensitivity
+        local_history_tokens: 128
+        input: "[BOS, permute(x_1, ..., x_(t-129)), x_(t-128), ..., x_(t-1)]"
+        permutation: uniform_over_distant_token_indices_without_replacement
+        fixed: [bos, local_suffix_order, target_id, input_length, transformer_position_ids]
+        seed: 1618
+        rng: numpy_PCG64_SeedSequence
+        seed_components: [seed, article_index, window_target_start_zero_based, target_position_one_based]
+        draws_per_target: 1
+        pairing: reuse_identical_permutation_across_models_sizes_training_seeds_and_views
+        unchanged_permutations: retain_and_report_count_including_duplicate_token_sequences
+      metrics:
+        unit: nats_per_target
+        condition_nll: sum_target_nll_divided_by_identical_target_count
+        truncation_gain: "mean_over_same_targets(nll_k - nll_full) for k in [4, 32, 128]"
+        primary_truncation_limit: 128
+        secondary_truncation_limits: [4, 32]
+        shuffle_gain: "mean_over_same_targets(nll_distant_shuffle_128 - nll_full)"
+        architecture_contrast: transformer_gain_minus_lstm_gain_paired_within_size_seed_and_view
+        sign: positive_gain_means_intact_full_history_improves_prediction
+        aggregation: token_weighted_within_each_run_then_equal_weight_across_training_seeds
+      uncertainty:
+        training: report_every_seed_and_mean_sd_and_95_percent_t_interval_across_paired_seed_contrasts
+        evaluation: paired_article_cluster_bootstrap_using_hypotheses.evaluation_bootstrap
+        bootstrap_pairing: same_resampled_articles_for_all_conditions_and_models_keep_all_targets_together
+        interpretation: evaluation_intervals_conditional_on_checkpoints_separate_from_training_seed_intervals
+        inference: descriptive_no_new_confirmatory_p_values_or_changes_to_holm_families
+      reporting:
+        persist_before_scoring: [ordered_target_id_manifest, target_token_ids, shuffle_rng_spec_and_seed]
+        persist_scores: per_target_nll_for_every_condition_with_model_size_seed_and_checkpoint_view
+        provenance: [protocol_sha256, tokenizer_sha256, token_manifest_sha256, window_manifest_sha256, checkpoint_sha256, scorer_code_sha256, numpy_version]
+        coverage: [included_articles, included_windows, included_targets, excluded_short_windows, excluded_short_window_targets]
+        interpretation: context_sensitivity_on_this_target_subset_not_proof_of_sentence_grammar_or_exclusive_cause_of_ppl_gap
+        shuffle_caveat: bpe_token_shuffle_also_disrupts_distant_word_forms_and_is_a_sensitivity_not_a_pure_semantic_intervention
+      # Future KenLM adapter: a 5-gram must have identical scores at k>=4 and
+      # under distant shuffle, up to numerical tolerance, on this SAME manifest.
+      five_gram_extension:
+        status: deferred
+        target_manifest: reuse_neural_same_target_manifest
+        expected_gains: zero_for_all_declared_history_limits_and_distant_shuffle_128
+        invariance_check: per_target_not_only_aggregate
+        absolute_tolerance_nats: 0.000001
   copy:
     lengths: [25, 50, 100, 200]
     primary_length: 100
