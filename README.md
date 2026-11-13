@@ -17,7 +17,7 @@ The production run matrix and final evaluation remain pending.
 | Train, load, or inspect the text tokenizer | [Tokenizer guide](tokenizer/README.md) |
 | Understand experiment settings and the timing-trial requirement | [Experiment guide](comparison/README.md) |
 | Build and train the Transformer on a GPU | [Transformer guide](transformer/README.md) |
-| Look up names, abbreviations, and units | [Naming guide](NAMING.md) |
+| Read the research question and planned experiments | [Project proposal](proposal.pdf) |
 
 All commands below run from the repository root, the folder containing this file.
 
@@ -59,9 +59,8 @@ parent/
     └── processed/                # Articles, token IDs, and window indexes
 ```
 
-On this machine, the external data folder is
-`/mnt/disk1/backup_user/dang.cpm/NLP/dataset`. A new checkout uses its own sibling
-`dataset/` folder automatically; your friend does not need this absolute path.
+Each checkout uses its sibling `dataset/` folder automatically. To use another
+location, follow the [custom data-path instructions](dataset/README.md#use-another-data-location).
 
 ## Prepare a new checkout
 

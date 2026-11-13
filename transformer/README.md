@@ -74,37 +74,13 @@ epoch-end and budget-end steps can be smaller).
   supply LSTM measurements or independently identify each run's physical GPU;
   `run.json` records PyTorch/CUDA versions but no GPU model or UUID.
 
-### Data hashes for cross-machine verification
+### Shared data verification
 
-SHA-256 values computed directly from the local array files on 2026-11-13.
-Paths below are relative to the external data root's `processed/` folder.
-
-| Array | SHA-256 |
-|---|---|
-| `tokens/train.tokens.npy` | `9d66498cbeef4ba911cf7d7eb19c92d9c0bf0082586ddc78b514269820bb55fc` |
-| `tokens/train.offsets.npy` | `6fbbfac0f7cd7d076c1a741ce6316c5d2af6db92287875ca0b93036b1f3a439f` |
-| `tokens/validation.tokens.npy` | `88e3325d715ad66e1c6a0d89d0d03afaa672e63a7b44b639d8f4f216107cdd8c` |
-| `tokens/validation.offsets.npy` | `49aa563e2f6b77def8a1bf4f466b45742ee88b60042b269da1bbf2226611258c` |
-| `tokens/test.tokens.npy` | `0d56c6c2ba6c941e1769db8c65de464f2e4292e4000a182078548c3835ce79c4` |
-| `tokens/test.offsets.npy` | `0e62df5bc83fe212302110ac7ca4e426ff9e2e5ecf8383ece514f92646fdc522` |
-| `tokens/windows/train.windows.npy` | `c0e2b47aec16da2e07b5eeef53df96e6c0368afcc9043d70fd93a47a020387ce` |
-| `tokens/windows/validation.windows.npy` | `40bb8f513930a5a15b8b02d36bebb6784930caea0a235f592aa923c6b49bd857` |
-| `tokens/windows/test.windows.npy` | `876c3a43086bbf0ebfd74ea25049322566d384bc65e26ba45beecf69dbe553de` |
-
-Recompute on this machine (CPU only):
-
-```bash
-cd /mnt/disk1/backup_user/dang.cpm/NLP/dataset/processed
-sha256sum tokens/*.npy tokens/windows/*.npy
-```
-
-Cross-machine verification **confirmed on 2026-11-13**: all nine array-file
-SHA-256 values and byte sizes match
-[`dataset/expected_outputs.lock.json`](../dataset/expected_outputs.lock.json)
-from main commit `fc1f5cc5f6818a3ef139182d15627ab582cc4a33`. The tokenizer
-SHA-256 also matches. The local reference file now has `status: confirmed`;
-its reference hashes are unchanged. Manifest-file hashes also include metadata
-such as timestamps; compare the array-file hashes for this check.
+The nine token/offset/window arrays and tokenizer match
+[`dataset/expected_outputs.lock.json`](../dataset/expected_outputs.lock.json),
+confirmed on 2026-11-13. See the
+[dataset verification instructions](../dataset/README.md#verify-data-across-machines)
+to compare another copy.
 
 ## Run an exploratory timing/training trial on one GPU
 
@@ -147,32 +123,9 @@ window-cursor, and token-budget state. Restart the same command with `--resume`
 after interruption. The trainer refuses to overwrite a nonempty run folder
 unless resuming, and rejects changed data, model code, or run settings.
 
-## Submit the 250M-token exploratory runs with Slurm
-
-On this shared server, let Slurm allocate GPUs. From the repository root:
-
-```bash
-mkdir -p transformer/runs/slurm
-env -u CUDA_VISIBLE_DEVICES -u GPU_DEVICE_ORDINAL sbatch transformer/train_slurm.sbatch
-```
-
-The array maps tasks 0/1/2 to S/L/M and allows at most two tasks at once, each
-requesting one RTX 3090, four CPU cores, 12 GB host memory, and 24 hours on
-`vishc-server-1`, where the existing checkout and data live. Physical GPU IDs
-come from Slurm. These remain exploratory runs with seed 101 and 250M total
-prediction tokens per size. Existing `latest.pt` files resume the same run;
-otherwise the trainer starts a new run and refuses a nonempty run folder.
-The launcher locks each run to prevent duplicate Slurm writers and saves a
-resume checkpoint every 25 updates. Model, data, seed, optimizer, learning rate,
-dropout, microbatch, and total token budget match the original manual launch.
-Resuming appends to the existing metrics, so entries after the last saved
-checkpoint can appear again when that work is replayed.
-
-Monitor with `squeue -u "$USER"` and the per-task `.out`/`.err` files under
-`transformer/runs/slurm/`. Do not also run the old manual launch loop.
-The batch jobs continue after SSH, VS Code, or tmux closes. They opt into Slurm
-requeue after a node failure and resume from `latest.pt` when restarted. This
-does not automatically retry training errors or extend the 24-hour time limit.
+On a managed GPU cluster, run the training command inside a scheduler allocation
+and preserve its `CUDA_VISIBLE_DEVICES` mapping. Use a separate run directory
+for each experiment, with only one process writing to it.
 
 ## Production runs
 

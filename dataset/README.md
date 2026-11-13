@@ -133,10 +133,6 @@ Here `<split>` means `train`, `validation`, or `test`.
 └── ATTRIBUTION.json                     # Credits and recorded license information
 ```
 
-Existing `environment.json`, `kenlm_build.json`, and `checks/` contain records
-from earlier environment/KenLM checks. They are not tokenized training data;
-current preparation does not require the historical KenLM build to be present.
-
 ### Article records and IDs
 
 Each line in `<split>.jsonl` is one JSON object:
@@ -248,9 +244,24 @@ reported when interpreting final evaluation. BLiMP group mapping does not alter
 the original pairs. Source credits and the conflicting WikiText license statements
 are preserved in `ATTRIBUTION.json`.
 
-See the [naming guide](../NAMING.md) for the older equivalent commands and the
-meaning of common abbreviations. Both interfaces use the same implementations;
-existing saved data and settings snapshots remain compatible.
+The public commands wrap the existing implementations listed below; saved data
+formats and settings-snapshot fields are unchanged.
+
+## Verify data across machines
+
+[`expected_outputs.lock.json`](expected_outputs.lock.json) records the byte size
+and SHA-256 of all nine token, offset, and window arrays, plus the tokenizer
+SHA-256. Array paths are relative to the external data folder's `processed/`
+directory. From that directory, run:
+
+```bash
+sha256sum tokens/*.npy tokens/windows/*.npy
+```
+
+Compare every value with the reference file. From the repository root, also run
+`sha256sum tokenizer/artifacts/tokenizer.json` to check the tokenizer. The current
+reference has `status: confirmed`. Manifest files include creation timestamps,
+so their hashes can differ across otherwise identical preparations.
 
 ## Code in this folder
 
@@ -258,6 +269,7 @@ existing saved data and settings snapshots remain compatible.
 |---|---|
 | `setup_environment.sh` | Create the local Python environment and install pinned packages |
 | `sources.lock.json` | Fixed download URLs, revisions, sizes, and checksums |
+| `expected_outputs.lock.json` | Reference array sizes/hashes and tokenizer hash for cross-machine verification |
 | `download.py` | Download and verify original dataset files |
 | `prepare.py` | Reconstruct articles and write duplicate/grouping reports |
 | `validate.py` | Independently verify the original and prepared text |

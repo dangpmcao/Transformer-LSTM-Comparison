@@ -31,8 +31,8 @@ python -m comparison.experiment_settings --check
 ```
 
 The snapshot is generated and ignored by Git. Archive it with the future runs
-that use it. The [naming guide](../NAMING.md) maps the readable public commands
-and names to their earlier equivalents; both interfaces use the same code.
+that use it. Changes to the protocol require a new snapshot; retain earlier
+snapshots with the runs they describe.
 
 ## Rules shared by both models
 

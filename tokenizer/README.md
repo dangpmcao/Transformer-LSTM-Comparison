@@ -5,8 +5,7 @@ back into the original text. All project models will use this same converter.
 The trained tokenizer is saved in [`artifacts/`](artifacts/).
 
 Run commands from the repository root after completing the
-[Python setup](../README.md#set-up-python). The
-[naming guide](../NAMING.md) explains abbreviations used in saved files.
+[Python setup](../README.md#set-up-python).
 
 ## What was trained
 
