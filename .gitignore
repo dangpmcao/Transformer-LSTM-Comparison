@@ -9,3 +9,4 @@ __pycache__/
 /comparison/protocol*.lock.json
 
 desktop.ini
+.claude/worktrees

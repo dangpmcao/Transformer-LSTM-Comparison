@@ -248,6 +248,24 @@ reported when interpreting final evaluation. BLiMP group mapping does not alter
 the original pairs. Source credits and the conflicting WikiText license statements
 are preserved in `ATTRIBUTION.json`.
 
+### Compare with the reference hashes
+
+[expected_outputs.lock.json](expected_outputs.lock.json) lists the SHA-256 and
+byte size of every generated token, offset, and window array (paths relative to
+`<data root>/processed`). If your hashes match, your token IDs, article
+boundaries, and 512-target windows are byte-identical to the reference. Its
+`status` says whether a second machine has confirmed them yet. Compare the
+array hashes, not `manifest.json` hashes: manifests contain creation times.
+
+```bash
+cd ../dataset/processed   # or your custom data root
+sha256sum tokens/*.npy tokens/windows/*.npy
+```
+
+A mismatch in `tokens.npy` points to tokenization (check the tokenizer hash and
+`tokenizers`/`numpy` versions); a match there but not in `windows.npy` points to
+window construction.
+
 See the [naming guide](../NAMING.md) for the older equivalent commands and the
 meaning of common abbreviations. Both interfaces use the same implementations;
 existing saved data and settings snapshots remain compatible.

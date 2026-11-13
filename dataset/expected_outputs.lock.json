@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "status": "reported_by_one_machine_awaiting_independent_confirmation",
+  "generated_on": "2026-11-13",
+  "paths_relative_to": "<data root>/processed",
+  "commands": [
+    "python -m dataset.download",
+    "python -m dataset.prepare",
+    "python -m dataset.validate",
+    "python -m dataset.encode_articles",
+    "python -m dataset.build_windows"
+  ],
+  "environment": {
+    "python": "3.12",
+    "numpy": "1.26.4",
+    "tokenizers": "0.22.1"
+  },
+  "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+  "splits": {
+    "train": {
+      "articles": 28472,
+      "prediction_tokens": 122022510,
+      "windows": 252574,
+      "files": {
+        "tokens/train.tokens.npy": {
+          "bytes": 244045148,
+          "sha256": "9d66498cbeef4ba911cf7d7eb19c92d9c0bf0082586ddc78b514269820bb55fc"
+        },
+        "tokens/train.offsets.npy": {
+          "bytes": 227912,
+          "sha256": "6fbbfac0f7cd7d076c1a741ce6316c5d2af6db92287875ca0b93036b1f3a439f"
+        },
+        "tokens/windows/train.windows.npy": {
+          "bytes": 6061904,
+          "sha256": "c0e2b47aec16da2e07b5eeef53df96e6c0368afcc9043d70fd93a47a020387ce"
+        }
+      }
+    },
+    "validation": {
+      "articles": 60,
+      "prediction_tokens": 255099,
+      "windows": 529,
+      "files": {
+        "tokens/validation.tokens.npy": {
+          "bytes": 510326,
+          "sha256": "88e3325d715ad66e1c6a0d89d0d03afaa672e63a7b44b639d8f4f216107cdd8c"
+        },
+        "tokens/validation.offsets.npy": {
+          "bytes": 616,
+          "sha256": "49aa563e2f6b77def8a1bf4f466b45742ee88b60042b269da1bbf2226611258c"
+        },
+        "tokens/windows/validation.windows.npy": {
+          "bytes": 12824,
+          "sha256": "40bb8f513930a5a15b8b02d36bebb6784930caea0a235f592aa923c6b49bd857"
+        }
+      }
+    },
+    "test": {
+      "articles": 60,
+      "prediction_tokens": 291710,
+      "windows": 602,
+      "files": {
+        "tokens/test.tokens.npy": {
+          "bytes": 583548,
+          "sha256": "0d56c6c2ba6c941e1769db8c65de464f2e4292e4000a182078548c3835ce79c4"
+        },
+        "tokens/test.offsets.npy": {
+          "bytes": 616,
+          "sha256": "0e62df5bc83fe212302110ac7ca4e426ff9e2e5ecf8383ece514f92646fdc522"
+        },
+        "tokens/windows/test.windows.npy": {
+          "bytes": 14576,
+          "sha256": "876c3a43086bbf0ebfd74ea25049322566d384bc65e26ba45beecf69dbe553de"
+        }
+      }
+    }
+  }
+}
