@@ -1,6 +1,7 @@
 """LSTM: executable parameter matching, tying, fresh state per window, init, and shared training."""
 
 from argparse import Namespace
+from pathlib import Path
 
 import pytest
 import torch
@@ -98,3 +99,16 @@ def test_shared_trainer_runs_lstm_and_records_architecture(workspace_tmp, monkey
     assert saved["identity"]["architecture"] == "lstm" and saved["identity"]["model"]["hidden"] == 12
     with pytest.raises(ValueError):
         train.build_model_config("transformer", "m_deep", 0.1)
+
+
+def test_queue_plans_follow_protocol_grid_and_priority_order():
+    from lstm.queue import plan
+
+    tuning = plan("tuning", Namespace(tuning_tokens=50_000_000))
+    assert len(tuning) == 8 and len({job.run_dir for job in tuning}) == 8
+    assert all("--budget-tokens" in job.args and "50000000" in job.args for job in tuning)
+    production = plan("production", Namespace(sizes=["s", "m", "m_deep", "l"], learning_rate=0.001,
+                                              dropout=0.1, snapshot_file=Path("lock.json")))
+    assert [job.name for job in production][:4] == ["prod s seed 13", "prod s seed 37", "prod s seed 73",
+                                                    "prod m seed 13"]
+    assert production[-1].name == "prod l seed 73"
