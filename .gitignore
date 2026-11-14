@@ -18,3 +18,5 @@ __pycache__/
 .DS_Store
 desktop.ini
 .claude/worktrees
+/lstm/runs/
+/lstm/.test_tmp/
