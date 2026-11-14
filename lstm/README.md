@@ -73,7 +73,7 @@ finished runs skipped, interrupted runs resumed.
 
 ```bash
 python -m lstm.queue pilot                                   # timing pilot S/M/L (2M tokens each)
-python -m lstm.queue tuning --tuning-tokens 50000000         # 8-trial grid at S (budget agreed with Transformer)
+python -m lstm.queue tuning --tuning-tokens 50000000         # 8-trial grid at S, microbatch 16 (agreed with Transformer side)
 python -m lstm.queue production --learning-rate <lr> --dropout <p>   # seeds 13/37/73; S, M, M deep, L
 python -m lstm.queue tuning --tuning-tokens 50000000 --dry-run       # show plan and idle GPUs only
 ```

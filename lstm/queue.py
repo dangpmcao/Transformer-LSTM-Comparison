@@ -45,11 +45,13 @@ def plan(command: str, options: argparse.Namespace) -> list[Job]:
     protocol = load_protocol()
     tuning = protocol["tuning"]
     common = ["--architecture", "lstm"]
+    # Exploratory runs (pilot/tuning) take the agreed shared microbatch; production reads it from the lock.
+    microbatch = ["--microbatch-windows", str(options.microbatch_windows)] if command != "production" else []
     jobs = []
     if command == "pilot":
         for size in options.sizes:
-            run_dir = RUN_ROOT / "pilot" / size
-            jobs.append(Job(f"pilot {size}", run_dir, [*common, "--mode", "exploratory", "--size", size,
+            run_dir = RUN_ROOT / f"pilot_mb{options.microbatch_windows}" / size
+            jobs.append(Job(f"pilot {size}", run_dir, [*common, *microbatch, "--mode", "exploratory", "--size", size,
                             "--budget-tokens", str(options.budget_tokens), "--learning-rate", "0.001",
                             "--dropout", "0.1", "--seed", str(protocol["training"]["tuning_seed"])]))
     elif command == "tuning":
@@ -57,7 +59,8 @@ def plan(command: str, options: argparse.Namespace) -> list[Job]:
         for lr, dropout in itertools.product(tuning["learning_rates"], tuning["dropouts"]):
             run_dir = RUN_ROOT / "tuning" / f"{size}_lr{lr:g}_d{dropout:g}"
             jobs.append(Job(f"tune lr={lr:g} d={dropout:g}", run_dir, [
-                *common, "--mode", "exploratory", "--size", size, "--budget-tokens", str(options.tuning_tokens),
+                *common, *microbatch, "--mode", "exploratory", "--size", size,
+                "--budget-tokens", str(options.tuning_tokens),
                 "--learning-rate", str(lr), "--dropout", str(dropout),
                 "--seed", str(protocol["training"]["tuning_seed"])]))
     elif command == "production":
@@ -139,6 +142,8 @@ def main() -> None:
     parser.add_argument("--budget-tokens", type=int, default=2_000_000, help="pilot only")
     parser.add_argument("--tuning-tokens", type=int, help="tuning only: tokens per trial (same as the Transformer)")
     parser.add_argument("--sizes", nargs="+", default=None, help="pilot: s m l; production: s m m_deep l")
+    parser.add_argument("--microbatch-windows", type=int, default=16,
+                        help="pilot/tuning: shared microbatch agreed for both architectures (16 x 4 = 64)")
     parser.add_argument("--learning-rate", type=float, help="production only: tuning winner")
     parser.add_argument("--dropout", type=float, help="production only: tuning winner")
     parser.add_argument("--snapshot-file", type=Path, default=PROJECT_ROOT / "comparison/protocol.production.lock.json")
