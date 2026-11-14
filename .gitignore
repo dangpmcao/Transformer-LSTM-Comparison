@@ -1,12 +1,20 @@
+# Local Python environment and caches
 .venv/
 .tools/
 __pycache__/
 .pytest_cache/
 *.py[cod]
 *.egg-info/
-/data/
-.DS_Store
-/comparison/protocol*.lock.json
 
+# Local data, experiment outputs, and settings snapshots
+*.pt
+/data/
+/results/
+/comparison/protocol*.lock.json
+/transformer/runs/
+/transformer/.test_tmp/
+
+# Operating-system files
+.DS_Store
 desktop.ini
 .claude/worktrees
