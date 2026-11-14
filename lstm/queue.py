@@ -85,13 +85,18 @@ def idle_gpus(max_util: int, max_memory_mib: int, samples: int = 3) -> set[int]:
     return idle or set()
 
 
+def log_path(job: Job) -> Path:
+    return job.run_dir.with_name(job.run_dir.name + ".log")
+
+
 def launch(job: Job, gpu: int, options: argparse.Namespace) -> None:
-    job.run_dir.mkdir(parents=True, exist_ok=True)
+    # The trainer refuses a non-empty new run folder, so the log lives next to it.
+    job.run_dir.parent.mkdir(parents=True, exist_ok=True)
     resume = ["--resume"] if (job.run_dir / "latest.pt").is_file() else []
     command = ["nice", "-n", "19", "ionice", "-c3", sys.executable, "-m", "transformer.train",
                *job.args, "--run-dir", str(job.run_dir), "--token-dir", str(options.token_dir), *resume]
     environment = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "OMP_NUM_THREADS": "4"}
-    log = (job.run_dir / "stdout.log").open("a", encoding="utf-8")
+    log = log_path(job).open("a", encoding="utf-8")
     log.write(f"\n=== {time.strftime('%Y-%m-%d %H:%M:%S')} GPU {gpu}: {' '.join(command)}\n")
     log.flush()
     job.gpu = gpu
@@ -113,7 +118,7 @@ def run_queue(jobs: list[Job], options: argparse.Namespace) -> int:
                 running.remove(job)
                 failures += code != 0
                 print(f"[{time.strftime('%H:%M:%S')}] {'finished' if code == 0 else f'FAILED ({code})'} "
-                      f"{job.name} (GPU {job.gpu}); log: {job.run_dir / 'stdout.log'}", flush=True)
+                      f"{job.name} (GPU {job.gpu}); log: {log_path(job)}", flush=True)
         if pending and len(running) < options.max_gpus:
             busy = {job.gpu for job in running}
             free = sorted(idle_gpus(options.max_util, options.max_memory_mib) - busy)
