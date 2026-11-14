@@ -114,3 +114,48 @@ def test_windows_start_from_null_context_not_article_start(tmp_path):
     assert mine[0] == pytest.approx(scorer.model.BaseScore(null, "7", out) * LN10)
     assert mine[0] < scorer.model.BaseScore(sentence, "7", out) * LN10  # <s> would make 7 near-certain.
     assert np.isfinite(mine).all() and mine[-1] < 0  # Final EOS scored as </s>.
+
+
+def test_same_target_invariance_passes_for_order_5_and_fails_for_long_context():
+    from comparison.same_target import load_rules
+    from ngram.same_target import invariance, score_manifest
+
+    rules = load_rules()
+    rng = np.random.default_rng(0)
+    tokens = np.concatenate([rng.integers(4, 200, 512), [EOS]]).astype("<u2")
+    offsets = np.array([0, 513], dtype="<u8")
+    targets = np.array([[0, 0, p, tokens[p - 1]] for p in (385, 400, 512)], dtype="<i8")
+
+    def five_gram(history, target):  # Depends only on the last four history tokens.
+        return -float(sum(history[-4:]) % 7 + target % 3) / 10
+
+    def long_context(history, target):  # Depends on the whole history: must break invariance.
+        return -float(len(history) + sum(history[:50])) / 1e4
+
+    ok = invariance(score_manifest(five_gram, targets, tokens, offsets, rules), 1e-6)
+    assert ok["status"] == "PASS" and max(ok["max_abs_deviation"].values()) == 0
+    bad = invariance(score_manifest(long_context, targets, tokens, offsets, rules), 1e-6)
+    assert bad["status"] == "FAIL"
+
+
+def test_next_log_prob_matches_window_scoring(tmp_path):
+    """Real KenLM: scoring a target from its history equals the in-window score."""
+    kenlm = pytest.importorskip("kenlm")
+    from ngram.lm import DEFAULT_KENLM_BIN, KenLMScorer
+    import random
+    import subprocess
+
+    lmplz = DEFAULT_KENLM_BIN / "lmplz"
+    if not lmplz.is_file():
+        pytest.skip("KenLM binaries not built")
+    rng = random.Random(1)
+    corpus = tmp_path / "train.txt"
+    corpus.write_text("".join(" ".join(str(rng.randint(4, 30)) for _ in range(40)) + "\n" for _ in range(500)))
+    arpa = tmp_path / "model.arpa"
+    subprocess.run([str(lmplz), "-o", "5", "-S", "100M", "-T", str(tmp_path), "--discount_fallback",
+                    "--text", str(corpus), "--arpa", str(arpa)], check=True, capture_output=True)
+    scorer = KenLMScorer(arpa)
+    window = [rng.randint(4, 30) for _ in range(20)]
+    in_window, _ = scorer.target_log_probs(window)
+    for t in range(1, 20):
+        assert scorer.next_log_prob(window[:t], window[t]) == pytest.approx(in_window[t], abs=1e-9)
