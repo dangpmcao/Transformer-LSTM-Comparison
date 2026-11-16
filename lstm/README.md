@@ -118,6 +118,29 @@ dropout 0 (6.097) to **lr 3e-3, dropout 0.1 (5.079)**, so the initialization bug
 would have changed the tuning decision, not only the loss. The winner is the
 largest learning rate in the protocol grid.
 
+### Grid extension (agreed with the Transformer side)
+
+Because the winner sat at the grid edge, the shared grid was extended
+symmetrically (protocol rule `grid_extension: symmetric_and_recorded_before_production`)
+to six learning rates: 12 trials per architecture. Only the 4 new trials ran; the
+other 8 settings are unchanged. Validation NLL at 50M tokens:
+
+| lr \ dropout | 0 | 0.1 |
+|---|---:|---:|
+| 1e-4 | 7.159 | 7.108 |
+| 3e-4 | 6.324 | 6.331 |
+| 1e-3 | 5.717 | 5.656 |
+| 3e-3 | 5.113 | 5.079 |
+| 1e-2 | 4.543 | 4.556 |
+| 3e-2 | 4.899 | **4.530** |
+
+- The extension improves the best NLL by 0.55 nats (5.079 → 4.530).
+- Dropout 0 is bracketed: loss rises from lr 1e-2 to 3e-2.
+- **Selected (protocol rule, lowest validation NLL): lr 3e-2, dropout 0.1**, reused
+  without retuning for M, M deep and L. Its margin over lr 1e-2 / dropout 0
+  (4.543) is only 0.013 nats with one seed. lr 3e-2 is high for the larger sizes;
+  any diverged production run is kept and reported (`failed_trials: retain_and_report`).
+
 ## Run
 
 On the shared server, use the queue: at most 2 GPUs, only idle ones (≤5%
