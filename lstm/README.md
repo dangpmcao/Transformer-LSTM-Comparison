@@ -20,7 +20,7 @@ token IDs → Embedding(16384, d) → dropout → LSTM (2 layers, hidden h, drop
 | Not `nn.LSTM(proj_size=…)` | Rejected | LSTMP projects the hidden state *inside* the recurrence; that is no longer a classic LSTM |
 | Not AWD-LSTM style (last layer h = d) | Rejected alternative | Merity et al. (2018), the model analysed by Khandelwal et al. (2018), avoids the adapter by giving the last layer h = d, but that changes the proposal's architecture |
 | State | Fresh zero hidden and cell state every window | Matches the Transformer's per-window history (`protocol.yaml`: reset each window) |
-| Initialization | N(0, 0.02) matrices, zero biases, forget-gate input bias 1, PAD row 0 | `protocol.yaml` `training.initialization` |
+| Initialization | N(0, 0.02) matrices, zero biases, forget-gate input bias 1, PAD row 0; **token embedding U(−0.1, 0.1)** | `protocol.yaml` `training.initialization`, with the LSTM embedding exception `lstm_token_embedding` ([why](#finding-normal0-002-embeddings-stall-the-lstm-at-unigram-loss)). U(±0.1) is the usual embedding init of recurrent LMs (AWD-LSTM code of Merity et al. 2018; PyTorch `word_language_model`) |
 | Dropout | Embeddings, between LSTM layers, adapter output; no recurrent dropout | `protocol.yaml` `training.dropout.lstm` |
 
 ## Sizes and exact parameter counts
@@ -64,6 +64,43 @@ Estimated GPU time at 250M tokens per run (microbatch 16, excluding validation):
 S 26 min, M 34 min, M deep 39 min, L 1 h 31 min. The 8-trial tuning grid at
 50M tokens per trial: ~41 min. Full LSTM plan (tuning + 3 seeds × 4 sizes):
 **~10–11 GPU-hours**, versus roughly 70 GPU-hours at microbatch 2.
+
+## Finding: normal(0, 0.02) embeddings stall the LSTM at unigram loss
+
+The first tuning grid (2026-11-14; size S, seed 101, 50M tokens per trial,
+microbatch 16 × 4) used the shared initialization N(0, 0.02) for every matrix,
+embedding included. Validation NLL at 50M tokens:
+
+| lr \ dropout | 0 | 0.1 |
+|---|---:|---:|
+| 1e-4 | 7.343 | 7.343 |
+| 3e-4 | 6.497 | 6.475 |
+| 1e-3 | 6.097 | 6.105 |
+| 3e-3 | 6.176 | 6.377 |
+
+**These results are superseded.** Every trial sat at NLL ≈ 7.39 for about the
+first 10M tokens: the loss of a unigram model, i.e. the LSTM was not using the
+context. lr 1e-4 never left that plateau. The grid therefore ranked how fast each
+learning rate *escaped the plateau*, not which one trains best.
+
+Cause: the Transformer applies LayerNorm to its input, so the embedding scale does
+not matter there. The LSTM feeds the embedding straight into its gates; with
+entries of size ~0.02, times recurrent weights of size ~0.02, the context signal
+is almost zero. Diagnosis (lr 1e-3, dropout 0, 10M tokens, one change at a time;
+validation NLL):
+
+| Initialization | 2M | 4M | 6M | 8M | 10M |
+|---|---:|---:|---:|---:|---:|
+| Protocol, N(0, 0.02) everywhere | 7.430 | 7.413 | 7.399 | 7.393 | 7.388 |
+| Recurrent weights U(±1/√h) (PyTorch default) only | 7.428 | 7.414 | 7.399 | 7.393 | 7.388 |
+| Recurrent U(±1/√h) + embedding U(±0.1) | 7.403 | 7.241 | 6.958 | 6.819 | 6.762 |
+| **Embedding U(±0.1) only** (adopted) | 7.400 | 7.265 | 7.002 | 6.856 | 6.794 |
+
+The embedding scale alone causes the stall. The fix changes only the LSTM token
+embedding (and therefore its tied output head); all other LSTM parameters and the
+whole Transformer keep the shared initialization. The tuning grid is rerun with
+the fixed initialization; the first grid is kept on the server as
+`lstm/runs/tuning_superseded_normal_init/`.
 
 ## Run
 

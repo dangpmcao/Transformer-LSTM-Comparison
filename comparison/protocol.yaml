@@ -55,6 +55,9 @@ training:
     biases: zero
     lstm_forget_gate: input_bias_one_recurrent_bias_zero
     padding_embedding: zero_at_initialization_trainable_through_tied_head
+    # Architecture-specific exception (2026-11-16): with no normalization after the LSTM input,
+    # normal(0, 0.02) embeddings left every LSTM tuning trial stuck at unigram loss; see lstm/README.md.
+    lstm_token_embedding: uniform_minus_0.1_to_0.1
   dropout:
     transformer: [token_plus_position_embeddings, attention_probabilities, attention_output_residual, feedforward_output_residual]
     lstm: [token_embeddings, between_recurrent_layers, output_adapter]

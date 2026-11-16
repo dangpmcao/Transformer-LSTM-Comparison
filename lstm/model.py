@@ -30,6 +30,10 @@ MODEL_SIZES = {
 }
 # Each size's embedding width comes from this protocol size (matching.embedding_widths).
 PROTOCOL_SIZE = {"s": "s", "m": "m", "l": "l", "m_deep": "m"}
+# protocol.yaml training.initialization.lstm_token_embedding: U(-0.1, 0.1) instead of N(0, 0.02).
+# The Transformer normalizes its input (LayerNorm), the LSTM does not: with N(0, 0.02) embeddings the
+# gate inputs are so small that training sits at unigram loss for ~10M tokens (see lstm/README.md).
+EMBEDDING_INIT_RANGE = 0.1
 
 
 @dataclass(frozen=True)
@@ -76,13 +80,15 @@ class LSTMLM(nn.Module):
         self._initialize()
 
     def _initialize(self) -> None:
-        """Protocol: matrices N(0, 0.02), biases 0, forget gate input bias 1, PAD row 0."""
+        """Protocol: matrices N(0, 0.02), biases 0, forget gate input bias 1, PAD row 0;
+        LSTM exception: token embedding (tied head) U(-0.1, 0.1)."""
         with torch.no_grad():
             for name, parameter in self.named_parameters():
                 if parameter.ndim >= 2:
                     nn.init.normal_(parameter, mean=0.0, std=0.02)
                 else:
                     nn.init.zeros_(parameter)
+            nn.init.uniform_(self.token_embedding.weight, -EMBEDDING_INIT_RANGE, EMBEDDING_INIT_RANGE)
             hidden = self.config.hidden
             for layer in range(self.config.layers):
                 # PyTorch gate order is (input, forget, cell, output).

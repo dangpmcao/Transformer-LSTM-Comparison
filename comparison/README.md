@@ -1,14 +1,17 @@
 # Experiment settings and shared training rules
 
-This folder defines how the future Transformer and LSTM experiments will be
-compared. The rules are written in [`protocol.yaml`](protocol.yaml).
+This folder defines how the Transformer and LSTM experiments are compared. The
+rules are written in [`protocol.yaml`](protocol.yaml).
 *Protocol* means the agreed experiment settings; a *snapshot* is a saved copy
 of those settings together with the exact input/code checksums.
 
 The data and shared input code are ready. Transformer S/M/L exploratory training
 is complete at 250M prediction tokens per model, seed 101; see the
 [completed training results](../transformer/README.md#completed-training).
-The joint Transformer/LSTM timing pilot and production run matrix remain pending.
+The LSTM is implemented in [`lstm/`](../lstm/README.md) and trains with the same
+trainer (`python -m transformer.train --architecture lstm`). Pending: the joint
+Transformer/LSTM timing pilot at the agreed microbatch, the production snapshot,
+and the production run matrix.
 Run commands from the repository root, using the
 [Python environment](../README.md#set-up-python).
 
@@ -45,12 +48,14 @@ snapshots with the runs they describe.
 | Training order | Same run seed, epoch, and batch size for both architectures |
 | Run seeds | 13, 37, 73; separate tuning seed 101 |
 | Effective batch | 64 windows per optimizer update; identical partial-batch handling |
+| Microbatch | 16 windows × 4 gradient-accumulation steps for both architectures (agreed 2026-11-14; frozen by the production snapshot) |
 | Numerical precision | float32 |
 | Optimizer | AdamW; betas (0.9, 0.95), epsilon 1e-8, weight decay 0.1 except biases/norm parameters |
 | Learning-rate schedule | Cosine decay based on consumed prediction tokens; 1% warmup; minimum LR is 10% of peak |
 | Gradient clipping | Global norm 1.0 after loss normalization |
-| Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1 |
-| Hyperparameter search | Four learning rates × two dropout values: eight trials per architecture at size S |
+| Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1. Exception: LSTM token embedding uniform(−0.1, 0.1), because the LSTM has no input normalization ([LSTM finding](../lstm/README.md#finding-normal0-002-embeddings-stall-the-lstm-at-unigram-loss)) |
+| Hyperparameter search | Four learning rates × two dropout values: eight trials per architecture at size S, 50M prediction tokens per trial |
+| Training budget | 250M exact prediction tokens per production run |
 | Larger sizes | Reuse each architecture's selected S settings without extra tuning |
 | Checkpoint selection | Lowest validation mean prediction loss; earlier checkpoint wins ties |
 | Validation timing | Every 1M prediction targets, at the first optimizer step reaching each threshold, plus start/end |
@@ -58,8 +63,9 @@ snapshots with the runs they describe.
 
 These are prospective experiment choices, not measured optimal settings.
 Dropout locations and random-seed/resume requirements are also recorded in the
-YAML. Stage 4 must implement the models and verify causal attention, state
-resets, numerical behavior, and parameter counts.
+YAML. Both models are implemented; their tests verify causal attention
+(`transformer/tests`), fresh LSTM states per window, initialization and parameter
+counts against the Transformer (`lstm/tests`).
 
 ## Load the same examples for either model
 
@@ -80,7 +86,7 @@ batch = next(iter(training_batches))
 assert batch["input_ids"].shape == (2, 512)
 
 hidden_state, cell_state = create_lstm_zero_state(
-    batch["input_ids"], layers=2, hidden_width=460, dtype=torch.float32,
+    batch["input_ids"], layers=2, hidden_width=472, dtype=torch.float32,
 )
 ```
 
@@ -172,7 +178,11 @@ The output folder is new and is never overwritten:
 The existing snapshot has **`production_ready: false`**. The plan requires a
 short measured *timing trial* (also called a pilot) before fixing the exact
 training budget, tuning-trial budget, microbatch size, and gradient-accumulation
-count. **250M prediction targets is currently a target, not a finalized budget.**
+count. The values are agreed: **250M exact prediction tokens, 50M tuning tokens,
+microbatch 16, accumulation 4**. They become binding only in the production
+snapshot, which still needs timing measurements of **both** architectures at S/M/L
+with microbatch 16 (LSTM: measured, see the [LSTM timing pilot](../lstm/README.md#timing-pilot-2026-11-14);
+Transformer: earlier measurements used microbatch 2).
 
 This readiness check intentionally fails until those measurements exist:
 

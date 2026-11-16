@@ -48,8 +48,14 @@ def test_initialization_follows_protocol():
     for layer in range(model.config.layers):
         bias_ih, bias_hh = getattr(model.lstm, f"bias_ih_l{layer}"), getattr(model.lstm, f"bias_hh_l{layer}")
         assert torch.all(bias_ih[h:2 * h] == 1) and torch.all(bias_ih[:h] == 0) and torch.all(bias_hh == 0)
-    assert torch.all(model.token_embedding.weight[0] == 0)
+    embedding = model.token_embedding.weight
+    assert torch.all(embedding[0] == 0)
     assert abs(model.lstm.weight_hh_l0.std().item() - 0.02) < 0.002
+    assert abs(model.output_adapter.weight.std().item() - 0.02) < 0.002
+    # LSTM exception (protocol lstm_token_embedding): U(-0.1, 0.1), std 0.1 / sqrt(3).
+    assert embedding.abs().max().item() <= 0.1
+    assert abs(embedding[1:].std().item() - 0.1 / 3 ** 0.5) < 0.002
+    assert PROTOCOL["training"]["initialization"]["lstm_token_embedding"] == "uniform_minus_0.1_to_0.1"
 
 
 def tiny():
