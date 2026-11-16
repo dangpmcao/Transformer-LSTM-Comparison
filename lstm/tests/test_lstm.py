@@ -53,7 +53,7 @@ def test_initialization_follows_protocol():
     assert abs(model.lstm.weight_hh_l0.std().item() - 0.02) < 0.002
     assert abs(model.output_adapter.weight.std().item() - 0.02) < 0.002
     # LSTM exception (protocol lstm_token_embedding): U(-0.1, 0.1), std 0.1 / sqrt(3).
-    assert embedding.abs().max().item() <= 0.1
+    assert embedding.abs().max().item() <= 0.1 + 1e-6  # float32 rounding of the bound
     assert abs(embedding[1:].std().item() - 0.1 / 3 ** 0.5) < 0.002
     assert PROTOCOL["training"]["initialization"]["lstm_token_embedding"] == "uniform_minus_0.1_to_0.1"
 
