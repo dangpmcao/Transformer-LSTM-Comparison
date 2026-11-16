@@ -1,0 +1,97 @@
+{
+  "budget_tokens": 50000000,
+  "code_sha256": {
+    "dataset/model_inputs.py": "d6495bcb748d7abc69bb5597617c349a75d18dd0a4baa20841afec247bea14cd",
+    "tokenizer/core.py": "174a0701a6c03eee3f604fae92d15a9632b904bf89875c5ffb9dad6c53ceb5fe",
+    "transformer/model.py": "f8949051a7fe06f0c4483f59180e9ec395ade5c3d567cad5f72b529dca377a4b",
+    "transformer/train.py": "c1711e5c315c98d6dd8bf5529543e0f3c57381f3a6fc2852ba035fac8247a93b",
+    "transformer/tune_s.sbatch": "3436589adf6d168ca36a14bc803f381114b78d56990e629ef3a78efda25b4ec8",
+    "transformer/tuning.py": "a2ff3cea2b5ba9c4b1c860b5033102e7c2e65c627dafc3ed774f003bd8ab5004"
+  },
+  "created_at": "2026-11-16T03:59:28.167248+00:00",
+  "cuda_version": "12.6",
+  "effective_batch_windows": 64,
+  "microbatch_windows": 16,
+  "purpose": "transformer_s_tuning",
+  "schema_version": 1,
+  "seed": 101,
+  "size": "s",
+  "snapshot_sha256": "6730365ffc1c7e13d4fd042f6b42ea152132aca375a2a610cabf06858bfe7705",
+  "token_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/dataset/processed/tokens",
+  "tokenizer_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/tokenizer/artifacts",
+  "torch_version": "2.7.1+cu126",
+  "trials": [
+    {
+      "directory": "trial_00",
+      "dropout": 0.0,
+      "index": 0,
+      "learning_rate": 0.0001
+    },
+    {
+      "directory": "trial_01",
+      "dropout": 0.1,
+      "index": 1,
+      "learning_rate": 0.0001
+    },
+    {
+      "directory": "trial_02",
+      "dropout": 0.0,
+      "index": 2,
+      "learning_rate": 0.0003
+    },
+    {
+      "directory": "trial_03",
+      "dropout": 0.1,
+      "index": 3,
+      "learning_rate": 0.0003
+    },
+    {
+      "directory": "trial_04",
+      "dropout": 0.0,
+      "index": 4,
+      "learning_rate": 0.001
+    },
+    {
+      "directory": "trial_05",
+      "dropout": 0.1,
+      "index": 5,
+      "learning_rate": 0.001
+    },
+    {
+      "directory": "trial_06",
+      "dropout": 0.0,
+      "index": 6,
+      "learning_rate": 0.003
+    },
+    {
+      "directory": "trial_07",
+      "dropout": 0.1,
+      "index": 7,
+      "learning_rate": 0.003
+    },
+    {
+      "directory": "trial_08",
+      "dropout": 0.0,
+      "index": 8,
+      "learning_rate": 0.01
+    },
+    {
+      "directory": "trial_09",
+      "dropout": 0.1,
+      "index": 9,
+      "learning_rate": 0.01
+    },
+    {
+      "directory": "trial_10",
+      "dropout": 0.0,
+      "index": 10,
+      "learning_rate": 0.03
+    },
+    {
+      "directory": "trial_11",
+      "dropout": 0.1,
+      "index": 11,
+      "learning_rate": 0.03
+    }
+  ]
+}

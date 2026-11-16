@@ -1,0 +1,6 @@
+validation tokens=0 nll=9.83167 ppl=18613.961
+validation tokens=1027211 nll=7.87296 ppl=2625.335
+validation tokens=2019795 nll=7.07603 ppl=1183.259
+validation tokens=3004897 nll=6.72245 ppl=830.855
+validation tokens=4027771 nll=6.38870 ppl=595.082
+validation tokens=5010411 nll=6.17743 ppl=481.754

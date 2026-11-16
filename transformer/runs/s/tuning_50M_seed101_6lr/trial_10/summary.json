@@ -1,0 +1,19 @@
+{
+  "best_checkpoint_tokens": 50000000,
+  "best_validation_nll": 6.193571470965684,
+  "consumed_tokens": 50000000,
+  "last_validation_seconds": 0.5849176689516753,
+  "latest_checkpoint_bytes": 89898315,
+  "mode": "exploratory",
+  "parameters": {
+    "non_embedding": 3290624,
+    "token_embedding": 4194304,
+    "total": 7484928
+  },
+  "peak_cuda_bytes": 2889336832,
+  "prediction_tokens_per_second": 158602.49268018448,
+  "size": "s",
+  "status": "complete",
+  "train_seconds": 315.2535572112538,
+  "updates": 1617
+}

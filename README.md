@@ -8,6 +8,12 @@ S/M/L training is complete for the exploratory runs: 250M prediction tokens per
 model, seed 101, completed on 2026-11-11. See the
 [training results](transformer/README.md#completed-training) for metrics and artifacts.
 The production run matrix and final evaluation remain pending.
+All 12 Transformer S tuning trials are complete (50M prediction tokens each):
+selected LR **0.001**, dropout **0.0**, validation PPL **94.30**.
+The [nine-run Slurm launcher](transformer/README.md#run-all-three-seeds-on-two-gpus)
+is ready for S/M/L × seeds 13/37/73, two runs concurrently. Run immediately with
+`bash transformer/run_production.sh --standalone` at 250M tokens/run. The shared
+LSTM/Transformer readiness gate remains separate from this explicit Transformer-only campaign.
 
 ## Current Transformer results
 

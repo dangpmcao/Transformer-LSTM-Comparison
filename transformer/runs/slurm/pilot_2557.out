@@ -1,0 +1,9 @@
+job=2557 CUDA_VISIBLE_DEVICES=5
+Starting Transformer S; log: /mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/s.log
+S: 157,637 prediction tok/s; peak 2.71 GiB; validation 0.593s
+Starting Transformer M; log: /mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/m.log
+M: 67,579 prediction tok/s; peak 3.51 GiB; validation 1.422s
+Starting Transformer L; log: /mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/l.log
+L: 24,843 prediction tok/s; peak 5.44 GiB; validation 3.909s
+Transformer evidence: /mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/transformer_pilot.json
+Merge with LSTM S/M/L evidence before production.

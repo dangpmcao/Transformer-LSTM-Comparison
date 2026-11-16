@@ -1,0 +1,408 @@
+{
+  "code_sha256": {
+    "encode.py": "769e31e11709a3d789009806f433cabc30253526b0be9a5cc4b6170900985dbe",
+    "protocol.py": "d26f10047077769271f9f5561d10fb60e7857e8fb5290c1096135a29549e3d2e",
+    "windows.py": "30b51b6cc8562e673f11604d70f7a1a9093806b414df95be408f824f2f11efd4"
+  },
+  "configuration": {
+    "budget": {
+      "accumulated_loss": "sum_microbatch_nll_divided_by_total_valid_targets_in_optimizer_step",
+      "counted": "nonpadding_targets_including_eos_excluding_bos",
+      "exact_prediction_tokens": null,
+      "final_batch": "mask_surplus_valid_targets_in_batch_major_order",
+      "gradient_accumulation_steps": null,
+      "microbatch_windows": null,
+      "pilot_evidence": "throughput_and_memory_for_both_architectures_at_s_m_l",
+      "pilot_required_before_production": true,
+      "target_prediction_tokens": 250000000,
+      "tuning_prediction_tokens": null
+    },
+    "evaluation": {
+      "blimp": {
+        "include_eos": true,
+        "overlength": "score_all_targets_in_independent_512_target_windows_and_report_count",
+        "primary_score": "summed_subword_log_probability",
+        "report": [
+          "overall",
+          "twelve_groups",
+          "sixty_seven_paradigms"
+        ],
+        "sensitivities": [
+          "equal_bpe_length_pairs",
+          "length_normalized_log_probability"
+        ],
+        "start_with_bos": true,
+        "ties": "incorrect_including_identical_candidates",
+        "truncate_or_drop": false
+      },
+      "context": {
+        "early_positions_one_based": [
+          1,
+          32
+        ],
+        "gain": "early_mean_nll_minus_late_mean_nll",
+        "history_limits": [
+          4,
+          32,
+          128,
+          "full"
+        ],
+        "late_positions_one_based": [
+          385,
+          512
+        ],
+        "restricted_history": "reinitialize_positions_and_states_for_each_identical_target_history",
+        "same_target": {
+          "checkpoint_selection": "validation_only_no_selection_by_ablation_results",
+          "checkpoint_views": "selection.report_views",
+          "deep_lstm_control": "apply_identical_rules_at_size_m",
+          "distant_shuffle": {
+            "draws_per_target": 1,
+            "fixed": [
+              "bos",
+              "local_suffix_order",
+              "target_id",
+              "input_length",
+              "transformer_position_ids"
+            ],
+            "input": "[BOS, permute(x_1, ..., x_(t-129)), x_(t-128), ..., x_(t-1)]",
+            "local_history_tokens": 128,
+            "pairing": "reuse_identical_permutation_across_models_sizes_training_seeds_and_views",
+            "permutation": "uniform_over_distant_token_indices_without_replacement",
+            "rng": "numpy_PCG64_SeedSequence",
+            "role": "secondary_length_and_position_preserving_sensitivity",
+            "seed": 1618,
+            "seed_components": [
+              "seed",
+              "article_index",
+              "window_target_start_zero_based",
+              "target_position_one_based"
+            ],
+            "unchanged_permutations": "retain_and_report_count_including_duplicate_token_sequences"
+          },
+          "five_gram_extension": {
+            "absolute_tolerance_nats": 1e-06,
+            "expected_gains": "zero_for_all_declared_history_limits_and_distant_shuffle_128",
+            "invariance_check": "per_target_not_only_aggregate",
+            "status": "deferred",
+            "target_manifest": "reuse_neural_same_target_manifest"
+          },
+          "histories": {
+            "bos": "prepend_exactly_one_in_every_condition_not_counted_toward_k",
+            "boundaries": "never_cross_window_or_article_never_include_target_or_future_tokens",
+            "finite_limit_handling": "retain_exactly_k_nearest_preceding_tokens_in_original_order",
+            "full_input": "[BOS, x_1, ..., x_(t-1)]",
+            "limits": "evaluation.context.history_limits",
+            "truncated_input": "[BOS, x_(t-k), ..., x_(t-1)] for finite limit k",
+            "unit": "preceding_bpe_token_ids_excluding_bos_and_target"
+          },
+          "metrics": {
+            "aggregation": "token_weighted_within_each_run_then_equal_weight_across_training_seeds",
+            "architecture_contrast": "transformer_gain_minus_lstm_gain_paired_within_size_seed_and_view",
+            "condition_nll": "sum_target_nll_divided_by_identical_target_count",
+            "primary_truncation_limit": 128,
+            "secondary_truncation_limits": [
+              4,
+              32
+            ],
+            "shuffle_gain": "mean_over_same_targets(nll_distant_shuffle_128 - nll_full)",
+            "sign": "positive_gain_means_intact_full_history_improves_prediction",
+            "truncation_gain": "mean_over_same_targets(nll_k - nll_full) for k in [4, 32, 128]",
+            "unit": "nats_per_target"
+          },
+          "models": [
+            "transformer",
+            "lstm"
+          ],
+          "primary_checkpoint_view": "best_validation",
+          "reporting": {
+            "coverage": [
+              "included_articles",
+              "included_windows",
+              "included_targets",
+              "excluded_short_windows",
+              "excluded_short_window_targets"
+            ],
+            "interpretation": "context_sensitivity_on_this_target_subset_not_proof_of_sentence_grammar_or_exclusive_cause_of_ppl_gap",
+            "persist_before_scoring": [
+              "ordered_target_id_manifest",
+              "target_token_ids",
+              "shuffle_rng_spec_and_seed"
+            ],
+            "persist_scores": "per_target_nll_for_every_condition_with_model_size_seed_and_checkpoint_view",
+            "provenance": [
+              "protocol_sha256",
+              "tokenizer_sha256",
+              "token_manifest_sha256",
+              "window_manifest_sha256",
+              "checkpoint_sha256",
+              "scorer_code_sha256",
+              "numpy_version"
+            ],
+            "shuffle_caveat": "bpe_token_shuffle_also_disrupts_distant_word_forms_and_is_a_sensitivity_not_a_pure_semantic_intervention"
+          },
+          "role": "supporting_context_intervention_not_a_replacement_for_h1_h3_endpoints",
+          "scoring": {
+            "batching": "right_padding_masked_score_only_final_valid_input_position",
+            "lstm_state": "fresh_zero_hidden_and_cell_then_replay_only_supplied_input",
+            "mode": "eval_and_inference_mode_dropout_disabled_no_parameter_updates",
+            "nonfinite_or_missing_scores": "fail_run_never_drop_targets_or_change_denominators",
+            "prediction": "negative_natural_log_probability_of_x_t_from_final_valid_input_logit_only",
+            "prefix_losses": "excluded",
+            "state_reuse": "forbidden_across_targets_or_conditions_except_equivalent_full_causal_forward",
+            "transformer_positions": "contiguous_from_zero_for_each_bos_prefixed_input"
+          },
+          "seeds": "training.seeds",
+          "sizes": [
+            "s",
+            "m",
+            "l"
+          ],
+          "split": "test",
+          "status": "defined_scorer_pending",
+          "targets": {
+            "bos_and_padding_scored": false,
+            "eos_scored": true,
+            "identity": [
+              "split",
+              "article_index",
+              "window_target_start_zero_based",
+              "target_position_one_based"
+            ],
+            "pairing": "identical_target_ids_and_order_across_conditions_models_sizes_seeds_and_views",
+            "positions_one_based": [
+              385,
+              512
+            ],
+            "sampling": "exhaustive_no_subsampling",
+            "short_windows": "exclude_and_report_window_and_target_counts",
+            "windows": "evaluation.context.windows"
+          },
+          "uncertainty": {
+            "bootstrap_pairing": "same_resampled_articles_for_all_conditions_and_models_keep_all_targets_together",
+            "evaluation": "paired_article_cluster_bootstrap_using_hypotheses.evaluation_bootstrap",
+            "inference": "descriptive_no_new_confirmatory_p_values_or_changes_to_holm_families",
+            "interpretation": "evaluation_intervals_conditional_on_checkpoints_separate_from_training_seed_intervals",
+            "training": "report_every_seed_and_mean_sd_and_95_percent_t_interval_across_paired_seed_contrasts"
+          }
+        },
+        "short_windows": "include_in_ppl_exclude_from_position_curve_report_exclusions",
+        "windows": "all_full_test_windows_in_frozen_order"
+      },
+      "copy": {
+        "controls": [
+          "independent_nonrepeat_span",
+          "exclude_first_four_positions_of_each_span"
+        ],
+        "eos_scored": false,
+        "examples_per_length_per_source": 1000,
+        "lengths": [
+          25,
+          50,
+          100,
+          200
+        ],
+        "metric": "first_span_mean_nll_minus_repeated_span_mean_nll",
+        "natural_sampling": "uniform_valid_content_start_with_replacement_never_cross_article_or_eos",
+        "persist": "span_ids_token_ids_and_sampling_seed_before_scoring",
+        "primary_length": 100,
+        "random_ids": "uniform_integers_4_through_16383",
+        "seed": 2718,
+        "sources": [
+          "test_natural_text",
+          "uniform_nonspecial_token_ids"
+        ]
+      },
+      "kenlm": {
+        "log_base_conversion": "multiply_base10_log_probability_by_ln10",
+        "oov": "require_full_coverage_or_predeclare_normalized_missing_token_treatment",
+        "order": 5,
+        "symbols": "shared_bpe_token_ids"
+      },
+      "perplexity": "exp_total_nll_over_total_nonpadding_targets"
+    },
+    "hypotheses": {
+      "alpha": 0.05,
+      "architecture_effect": "transformer_minus_lstm_paired_within_seed",
+      "descriptive_confidence": 0.95,
+      "evaluation_bootstrap": {
+        "interpretation": "evaluation_set_uncertainty_conditional_on_trained_models",
+        "replicates": 10000,
+        "seed": 31415,
+        "units": "articles_for_wikitext_pairs_for_blimp"
+      },
+      "h1": {
+        "alternative": "transformer_minus_lstm_greater_than_zero",
+        "endpoints": [
+          "context_gain",
+          "natural_copy_100"
+        ],
+        "multiplicity": "holm_over_six_endpoint_size_comparisons",
+        "sizes": [
+          "s",
+          "m",
+          "l"
+        ],
+        "test": "paired_one_sided_t_test_across_seeds"
+      },
+      "h2": {
+        "endpoint": "overall_blimp_accuracy",
+        "equivalence_margin_percentage_points": 2.0,
+        "multiplicity": "holm_over_three_size_specific_equivalence_p_values",
+        "test": "paired_tost_across_seeds",
+        "unadjusted_tost_confidence": 0.9
+      },
+      "h3": {
+        "alternative": "greater_than_zero",
+        "contrast": "l_minus_s_change_in_architecture_effect",
+        "endpoints": [
+          "context_gain",
+          "natural_copy_100"
+        ],
+        "m_role": "intermediate_pattern",
+        "multiplicity": "holm_over_two_endpoint_contrasts",
+        "test": "paired_one_sided_t_test_across_seeds"
+      },
+      "independent_units": "training_seeds"
+    },
+    "inputs": {
+      "blimp_use": "final_evaluation_only",
+      "fitting_split": "train",
+      "test_use": "final_reporting_only",
+      "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+      "vocab_size": 16384
+    },
+    "matching": {
+      "count_tied_parameters_once": true,
+      "embedding_widths": {
+        "l": 640,
+        "m": 384,
+        "s": 256
+      },
+      "include_lstm_output_adapter": true,
+      "non_embedding_relative_tolerance": 0.05,
+      "tie_input_output_embeddings": true,
+      "tolerance_denominator": "transformer_non_embedding_parameters"
+    },
+    "name": "context_not_grammar",
+    "schema_version": 1,
+    "selection": {
+      "cadence": "validate_at_first_optimizer_step_reaching_each_threshold_plus_final_step",
+      "checkpoint": "lowest_validation_nll",
+      "evaluate_at_start": true,
+      "matched_quality_validation_ppl_relative_tolerance": 0.01,
+      "metric": "total_nll_divided_by_total_prediction_tokens",
+      "report_views": [
+        "best_validation",
+        "final_budget"
+      ],
+      "split": "validation",
+      "tie_break": "earliest_consumed_token_count",
+      "validation_every_prediction_tokens": 1000000
+    },
+    "stage": "prepared_awaiting_timing_pilot",
+    "training": {
+      "dropout": {
+        "lstm": [
+          "token_embeddings",
+          "between_recurrent_layers",
+          "output_adapter"
+        ],
+        "recurrent_hidden_to_hidden_dropout": false,
+        "transformer": [
+          "token_plus_position_embeddings",
+          "attention_probabilities",
+          "attention_output_residual",
+          "feedforward_output_residual"
+        ]
+      },
+      "effective_batch_windows": 64,
+      "gradient_clip_global_norm": 1.0,
+      "initialization": {
+        "biases": "zero",
+        "lstm_forget_gate": "input_bias_one_recurrent_bias_zero",
+        "matrix_weights": "normal_mean_0_std_0.02",
+        "normalization_scale": 1.0,
+        "padding_embedding": "zero_at_initialization_trainable_through_tied_head"
+      },
+      "objective": "next_token_prediction_from_scratch",
+      "optimizer": {
+        "betas": [
+          0.9,
+          0.95
+        ],
+        "eps": 1e-08,
+        "name": "AdamW",
+        "weight_decay": 0.1,
+        "weight_decay_exclude": [
+          "biases",
+          "normalization_parameters"
+        ]
+      },
+      "partial_epoch_batch": "step_with_actual_valid_targets_same_for_both_architectures",
+      "precision": "float32",
+      "reproducibility": {
+        "cudnn_benchmark": false,
+        "deterministic_algorithms": true,
+        "resume": "save_rng_optimizer_scheduler_epoch_and_window_cursor",
+        "seed": [
+          "python",
+          "numpy",
+          "torch_cpu",
+          "torch_cuda"
+        ]
+      },
+      "scheduler": {
+        "minimum_lr_ratio": 0.1,
+        "name": "cosine_by_consumed_prediction_tokens",
+        "warmup_fraction": 0.01
+      },
+      "seeds": [
+        13,
+        37,
+        73
+      ],
+      "tuning_seed": 101
+    },
+    "tuning": {
+      "dropouts": [
+        0.0,
+        0.1
+      ],
+      "failed_trials": "retain_and_report",
+      "grid_extension": "symmetric_and_recorded_before_production",
+      "learning_rates": [
+        0.0001,
+        0.0003,
+        0.001,
+        0.003
+      ],
+      "selection": "lowest_validation_nll_then_grid_order",
+      "size": "s",
+      "transfer_to_m_l_and_deep_lstm": "reuse_architecture_specific_s_winner_without_extra_tuning",
+      "trials_per_architecture": 8
+    },
+    "windows": {
+      "article_boundaries": "never_cross",
+      "bos": "restart_each_window",
+      "drop_last": false,
+      "eos": "exactly_one_per_article",
+      "evaluation_order": "article_then_target_start",
+      "loss": "summed_natural_log_cross_entropy_divided_by_valid_target_count",
+      "padding_id": 0,
+      "reset_lstm_hidden_and_cell": "each_window",
+      "reset_transformer_positions": "each_window",
+      "stride": 512,
+      "targets": 512,
+      "training_order": "numpy_PCG64_SeedSequence_seed_epoch_permutation"
+    }
+  },
+  "created_at": "2026-11-14T11:56:37.632560+00:00",
+  "pilot": null,
+  "pilot_sha256": null,
+  "production_ready": false,
+  "protocol_sha256": "f4775f24968c8d28e68db9a203ef1ab7e6d092efcadef529e87d9c91ca5fb688",
+  "schema_version": 1,
+  "token_manifest_sha256": "c90c17aa717c8da6ba00481266fa0b1111c99808956f67c0d05305d26676ef6f",
+  "window_manifest_sha256": "71e9edf6b6e40424c583a2a605792d26fa9a8863fd3e26d4be52f2b0917278e1"
+}

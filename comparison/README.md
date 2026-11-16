@@ -50,13 +50,17 @@ snapshots with the runs they describe.
 | Learning-rate schedule | Cosine decay based on consumed prediction tokens; 1% warmup; minimum LR is 10% of peak |
 | Gradient clipping | Global norm 1.0 after loss normalization |
 | Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1 |
-| Hyperparameter search | Four learning rates × two dropout values: eight trials per architecture at size S |
+| Hyperparameter search | Six learning rates × two dropout values: 12 trials per architecture at size S |
 | Larger sizes | Reuse each architecture's selected S settings without extra tuning |
 | Checkpoint selection | Lowest validation mean prediction loss; earlier checkpoint wins ties |
 | Validation timing | Every 1M prediction targets, at the first optimizer step reaching each threshold, plus start/end |
 | Parameter matching | Tied token embeddings/output head; same embedding width; other parameter counts within 5% of Transformer |
 
 These are prospective experiment choices, not measured optimal settings.
+On 2026-11-16, the shared grid added LR 0.01 and 0.03 after Hugo reported
+LSTM optima at the original grid boundary. Both architectures must use the
+expanded grid and equal per-trial token budgets. Transformer tuning commands
+are in the [two-GPU tuning guide](../transformer/README.md#tune-size-s-on-two-gpus).
 Dropout locations and random-seed/resume requirements are also recorded in the
 YAML. Stage 4 must implement the models and verify causal attention, state
 resets, numerical behavior, and parameter counts.
