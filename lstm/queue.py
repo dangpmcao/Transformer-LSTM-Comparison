@@ -7,7 +7,7 @@ queue; nothing is ever started on a GPU someone else is using. Finished runs
 (summary.json) are skipped and interrupted ones resume from latest.pt, so the
 queue can simply be restarted. Every training process runs under nice/ionice.
 
-    python -m lstm.queue pilot      --budget-tokens 2000000
+    python -m lstm.queue pilot      --budget-tokens 5000000
     python -m lstm.queue tuning     --tuning-tokens 50000000
     python -m lstm.queue production --learning-rate 0.001 --dropout 0.1 --sizes s m m_deep l
     python -m lstm.queue tuning --tuning-tokens 50000000 --dry-run     # print the plan only
@@ -50,9 +50,10 @@ def plan(command: str, options: argparse.Namespace) -> list[Job]:
     jobs = []
     if command == "pilot":
         for size in options.sizes:
-            run_dir = RUN_ROOT / f"pilot_mb{options.microbatch_windows}" / size
+            # Same pilot settings as the Transformer pilot (transformer/timing_pilot.py): 5M tokens, lr 3e-4.
+            run_dir = RUN_ROOT / f"pilot_mb{options.microbatch_windows}_{options.budget_tokens // 1_000_000}M" / size
             jobs.append(Job(f"pilot {size}", run_dir, [*common, *microbatch, "--mode", "exploratory", "--size", size,
-                            "--budget-tokens", str(options.budget_tokens), "--learning-rate", "0.001",
+                            "--budget-tokens", str(options.budget_tokens), "--learning-rate", "0.0003",
                             "--dropout", "0.1", "--seed", str(protocol["training"]["tuning_seed"])]))
     elif command == "tuning":
         size = protocol["tuning"]["size"]
@@ -139,7 +140,7 @@ def run_queue(jobs: list[Job], options: argparse.Namespace) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("command", choices=["pilot", "tuning", "production"])
-    parser.add_argument("--budget-tokens", type=int, default=2_000_000, help="pilot only")
+    parser.add_argument("--budget-tokens", type=int, default=5_000_000, help="pilot only")
     parser.add_argument("--tuning-tokens", type=int, help="tuning only: tokens per trial (same as the Transformer)")
     parser.add_argument("--sizes", nargs="+", default=None, help="pilot: s m l; production: s m m_deep l")
     parser.add_argument("--microbatch-windows", type=int, default=16,
