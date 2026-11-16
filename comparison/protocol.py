@@ -51,13 +51,14 @@ def load_protocol(path: Path = DEFAULT_PROTOCOL) -> dict:
         positive_int(training["effective_batch_windows"], "Effective batch")
         if training["precision"] != "float32":
             raise ValueError("This protocol freezes float32; revise and revalidate before changing precision")
-        if (len(tuning["learning_rates"]) * len(tuning["dropouts"]) != 8
-                or tuning["trials_per_architecture"] != 8
+        # The original grid had 8 trials; grid_extension allows a recorded, symmetric extension.
+        trials = len(tuning["learning_rates"]) * len(tuning["dropouts"])
+        if (trials < 8 or tuning["trials_per_architecture"] != trials
                 or len(set(tuning["learning_rates"])) != len(tuning["learning_rates"])
                 or len(set(tuning["dropouts"])) != len(tuning["dropouts"])
                 or any(lr <= 0 for lr in tuning["learning_rates"])
                 or any(not 0 <= d < 1 for d in tuning["dropouts"])):
-            raise ValueError("Require eight distinct valid LR/dropout trials per architecture")
+            raise ValueError("Require at least eight distinct valid LR/dropout trials per architecture")
         budget = config["budget"]
         positive_int(budget["target_prediction_tokens"], "Target budget")
         if not budget["pilot_required_before_production"] or any(budget[k] is not None for k in (

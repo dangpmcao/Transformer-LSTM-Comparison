@@ -54,7 +54,7 @@ snapshots with the runs they describe.
 | Learning-rate schedule | Cosine decay based on consumed prediction tokens; 1% warmup; minimum LR is 10% of peak |
 | Gradient clipping | Global norm 1.0 after loss normalization |
 | Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1. Exception: LSTM token embedding uniform(−0.1, 0.1), because the LSTM has no input normalization ([LSTM finding](../lstm/README.md#finding-normal0-002-embeddings-stall-the-lstm-at-unigram-loss)) |
-| Hyperparameter search | Four learning rates × two dropout values: eight trials per architecture at size S, 50M prediction tokens per trial |
+| Hyperparameter search | Six learning rates (1e-4 to 3e-2) × two dropout values: twelve trials per architecture at size S, 50M prediction tokens per trial. Extended from four learning rates on 2026-11-16 because the LSTM winner was at the grid edge ([LSTM tuning](../lstm/README.md#tuning-2026-11-16-fixed-initialization)) |
 | Training budget | 250M exact prediction tokens per production run |
 | Larger sizes | Reuse each architecture's selected S settings without extra tuning |
 | Checkpoint selection | Lowest validation mean prediction loss; earlier checkpoint wins ties |

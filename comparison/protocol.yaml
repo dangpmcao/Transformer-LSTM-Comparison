@@ -93,9 +93,11 @@ selection:
 
 tuning:
   size: s
-  learning_rates: [0.0001, 0.0003, 0.001, 0.003]
+  # Extended 2026-11-16 (grid_extension rule): with the fixed LSTM initialization the S winner was
+  # the largest LR (0.003), so the grid could not bracket the optimum. Symmetric: both architectures.
+  learning_rates: [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03]
   dropouts: [0.0, 0.1]
-  trials_per_architecture: 8
+  trials_per_architecture: 12
   selection: lowest_validation_nll_then_grid_order
   transfer_to_m_l_and_deep_lstm: reuse_architecture_specific_s_winner_without_extra_tuning
   failed_trials: retain_and_report

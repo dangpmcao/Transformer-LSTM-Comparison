@@ -61,7 +61,7 @@ batch of 64) is 7–7.5× faster and gives the same validation NLL after 2M toke
 optimization unchanged apart from floating-point summation order.
 
 Estimated GPU time at 250M tokens per run (microbatch 16, excluding validation):
-S 26 min, M 34 min, M deep 39 min, L 1 h 31 min. The 8-trial tuning grid at
+S 26 min, M 34 min, M deep 39 min, L 1 h 31 min. The original 8-trial tuning grid at
 50M tokens per trial: ~41 min. Full LSTM plan (tuning + 3 seeds × 4 sizes):
 **~10–11 GPU-hours**, versus roughly 70 GPU-hours at microbatch 2.
 
@@ -126,7 +126,7 @@ finished runs skipped, interrupted runs resumed.
 
 ```bash
 python -m lstm.queue pilot                                   # timing pilot S/M/L (2M tokens each)
-python -m lstm.queue tuning --tuning-tokens 50000000         # 8-trial grid at S, microbatch 16 (agreed with Transformer side)
+python -m lstm.queue tuning --tuning-tokens 50000000         # 12-trial grid at S, microbatch 16 (agreed with Transformer side)
 python -m lstm.queue production --learning-rate <lr> --dropout <p>   # seeds 13/37/73; S, M, M deep, L
 python -m lstm.queue tuning --tuning-tokens 50000000 --dry-run       # show plan and idle GPUs only
 ```

@@ -111,7 +111,8 @@ def test_queue_plans_follow_protocol_grid_and_priority_order():
     from lstm.queue import plan
 
     tuning = plan("tuning", Namespace(tuning_tokens=50_000_000, microbatch_windows=16))
-    assert len(tuning) == 8 and len({job.run_dir for job in tuning}) == 8
+    trials = PROTOCOL["tuning"]["trials_per_architecture"]
+    assert len(tuning) == trials == 12 and len({job.run_dir for job in tuning}) == trials
     assert all("50000000" in job.args and job.args[job.args.index("--microbatch-windows") + 1] == "16" for job in tuning)
     production = plan("production", Namespace(sizes=["s", "m", "m_deep", "l"], learning_rate=0.001,
                                               dropout=0.1, snapshot_file=Path("lock.json"), microbatch_windows=16))
