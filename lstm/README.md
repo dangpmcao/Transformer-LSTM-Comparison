@@ -98,9 +98,25 @@ validation NLL):
 
 The embedding scale alone causes the stall. The fix changes only the LSTM token
 embedding (and therefore its tied output head); all other LSTM parameters and the
-whole Transformer keep the shared initialization. The tuning grid is rerun with
-the fixed initialization; the first grid is kept on the server as
-`lstm/runs/tuning_superseded_normal_init/`.
+whole Transformer keep the shared initialization. The first grid is kept on the
+server as `lstm/runs/tuning_superseded_normal_init/`.
+
+## Tuning (2026-11-16, fixed initialization)
+
+Same grid and settings (S, seed 101, 50M tokens per trial, microbatch 16 × 4).
+Validation NLL at 50M tokens, superseded → fixed initialization:
+
+| lr \ dropout | 0 | 0.1 |
+|---|---:|---:|
+| 1e-4 | 7.343 → 7.159 | 7.343 → 7.108 |
+| 3e-4 | 6.497 → 6.324 | 6.475 → 6.331 |
+| 1e-3 | 6.097 → 5.717 | 6.105 → 5.656 |
+| 3e-3 | 6.176 → 5.113 | 6.377 → **5.079** |
+
+Every trial improves, and the ranking changes: the winner moves from lr 1e-3,
+dropout 0 (6.097) to **lr 3e-3, dropout 0.1 (5.079)**, so the initialization bug
+would have changed the tuning decision, not only the loss. The winner is the
+largest learning rate in the protocol grid.
 
 ## Run
 
