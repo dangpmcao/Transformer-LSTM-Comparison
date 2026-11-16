@@ -65,7 +65,13 @@ def plan(command: str, options: argparse.Namespace) -> list[Job]:
                 "--learning-rate", str(lr), "--dropout", str(dropout),
                 "--seed", str(protocol["training"]["tuning_seed"])]))
     elif command == "production":
-        for size, seed in itertools.product(options.sizes, protocol["training"]["seeds"]):
+        pairs = list(itertools.product(options.sizes, protocol["training"]["seeds"]))
+        if getattr(options, "only", None):  # e.g. --only l:13 s:13: run just these, in this order.
+            wanted = [(size, int(seed)) for size, seed in (item.split(":") for item in options.only)]
+            if any(pair not in pairs for pair in wanted):
+                raise ValueError("--only must name size:seed pairs from the production matrix")
+            pairs = wanted
+        for size, seed in pairs:
             run_dir = RUN_ROOT / "production" / size / f"seed{seed}"
             jobs.append(Job(f"prod {size} seed {seed}", run_dir, [
                 *common, "--mode", "production", "--size", size, "--snapshot-file", str(options.snapshot_file),
@@ -146,6 +152,7 @@ def main() -> None:
     parser.add_argument("--microbatch-windows", type=int, default=16,
                         help="pilot/tuning: shared microbatch agreed for both architectures (16 x 4 = 64)")
     parser.add_argument("--learning-rate", type=float, help="production only: tuning winner")
+    parser.add_argument("--only", nargs="+", help="production only: size:seed pairs to run, in order (e.g. l:13 s:13)")
     parser.add_argument("--dropout", type=float, help="production only: tuning winner")
     parser.add_argument("--snapshot-file", type=Path, default=PROJECT_ROOT / "comparison/protocol.production.lock.json")
     parser.add_argument("--token-dir", type=Path, default=PROJECT_ROOT.parent / "dataset/processed/tokens")
