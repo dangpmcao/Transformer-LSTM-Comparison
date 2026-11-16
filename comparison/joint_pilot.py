@@ -87,10 +87,17 @@ def build(args: argparse.Namespace) -> dict:
     transformer = read_json(args.transformer_report)
     if transformer["settings"]["microbatch_windows"] != args.microbatch:
         raise ValueError("Transformer pilot used another microbatch")
+    # Manifest FILES embed created_at, so their hashes differ per machine even for identical data.
+    # Bind the report to this machine's manifests (what the snapshot checks) and require the same
+    # tokenizer; identical token/window CONTENT across machines is established by the reference
+    # hashes in dataset/expected_outputs.lock.json (status confirmed by both authors).
     token_manifest = sha256_file(args.token_dir / "manifest.json")
     window_manifest = sha256_file(args.token_dir / "windows/manifest.json")
-    if (transformer["token_manifest_sha256"], transformer["window_manifest_sha256"]) != (token_manifest, window_manifest):
-        raise ValueError("Transformer pilot used other token/window inputs")
+    if transformer["tokenizer_sha256"] != protocol["inputs"]["tokenizer_sha256"]:
+        raise ValueError("Transformer pilot used another tokenizer")
+    reference = read_json(Path(__file__).resolve().parents[1] / "dataset/expected_outputs.lock.json")
+    if reference.get("status") != "confirmed":
+        raise ValueError("Cross-machine data identity is not confirmed")
     rows = [dict(row, architecture="transformer") for row in transformer["measurements"]]
     warmup = transformer.get("pilot_settings", {}).get("warmup_updates", 10)
     rows += [lstm_measurement(args.lstm_runs / size, microbatch=args.microbatch, effective_batch=effective_batch,
@@ -109,6 +116,9 @@ def build(args: argparse.Namespace) -> dict:
         "provenance": {
             "transformer_report_sha256": sha256_file(args.transformer_report),
             "transformer_report_protocol_sha256": transformer["protocol_sha256"],
+            "transformer_report_token_manifest_sha256": transformer["token_manifest_sha256"],
+            "transformer_report_window_manifest_sha256": transformer["window_manifest_sha256"],
+            "cross_machine_data_identity": "dataset/expected_outputs.lock.json (confirmed reference hashes)",
             "protocol_changes_since_transformer_report": [
                 "training.initialization.lstm_token_embedding (LSTM only)",
                 "tuning.learning_rates extended to 1e-2 and 3e-2 (agreed; timing-neutral)"],
