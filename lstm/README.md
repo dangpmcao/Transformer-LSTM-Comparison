@@ -174,6 +174,21 @@ Handling:
   (4.543 vs 4.530 at S), same snapshot and budget. Runs go to
   `lstm/runs/sensitivity_mdeep_lr0.01/` and never replace production runs.
 
+Sensitivity result (2026-11-17; best-checkpoint validation NLL):
+
+| M deep | seed 13 | seed 37 | seed 73 | Mean | Spread |
+|---|---:|---:|---:|---:|---:|
+| lr 3e-2, dropout 0.1 (production) | 3.890 | diverged | 4.045 | 3.968 (2 seeds) | 0.155 |
+| lr 1e-2, dropout 0 (sensitivity) | 3.986 | 3.981 | 3.955 | 3.974 | 0.031 |
+
+- At lr 1e-2 all three seeds train; the seed spread is 5 times smaller.
+- The mean is almost the same (3.974 vs 3.968 over the two surviving seeds), so
+  the divergence did not hide a better or worse M deep: the result does not depend
+  on the learning-rate choice.
+- The depth control holds under both learning rates: 4-layer M deep is about
+  0.2 nats worse than the 2-layer M at the same non-embedding parameters
+  (M at lr 3e-2: 3.758 / 3.765 / 3.776, mean 3.766). M was not run at lr 1e-2.
+
 ## Run
 
 On the shared server, use the queue: at most 2 GPUs, only idle ones (≤5%
