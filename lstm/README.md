@@ -141,6 +141,39 @@ other 8 settings are unchanged. Validation NLL at 50M tokens:
   (4.543) is only 0.013 nats with one seed. lr 3e-2 is high for the larger sizes;
   any diverged production run is kept and reported (`failed_trials: retain_and_report`).
 
+## Production (2026-11-16/17)
+
+Snapshot `comparison/protocol.production.lock.json` (SHA-256 `47f139a9…`): 250M
+exact prediction tokens, microbatch 16 × 4, lr 3e-2, dropout 0.1. Staged: L seed 13
+first as a stability check, then the rest once it finished stable. Validation NLL
+of the best checkpoint (lowest validation NLL, protocol selection rule):
+
+| Size | seed 13 | seed 37 | seed 73 |
+|---|---:|---:|---:|
+| S | 4.008 | 4.005 | 4.008 |
+| M | 3.758 | 3.765 | 3.776 |
+| M deep | 3.890 | **diverged** | 4.045 |
+| L | 3.786 | 3.761 | 3.586 |
+
+### Finding: lr 3e-2 diverges for the 4-layer LSTM
+
+M deep seed 37 stopped at 4.2M tokens with `FloatingPointError: Non-finite gradient
+norm`, just after warm-up reached the peak lr of 3e-2; its loss was still at the
+unigram plateau (~7.43). The trainer is deterministic, so rerunning the same seed
+would diverge at the same point. Other signs that 3e-2 is at the edge of
+stability: M deep seed 73 ends above its best checkpoint (final 4.069, best
+4.045; training NLL 4.42), and the L seeds spread by 0.20 nats. The learning rate was
+selected at S (2 layers) and, by protocol, reused without retuning.
+
+Handling:
+- **Primary result (as registered):** the run is kept and reported as diverged;
+  M deep has 2 of 3 seeds. Picking another seed instead was rejected, because it
+  would select seeds after seeing outcomes.
+- **Declared sensitivity analysis (agreed with the Transformer side):** M deep,
+  all three seeds, with the second-ranked tuning setting, lr 1e-2 and dropout 0
+  (4.543 vs 4.530 at S), same snapshot and budget. Runs go to
+  `lstm/runs/sensitivity_mdeep_lr0.01/` and never replace production runs.
+
 ## Run
 
 On the shared server, use the queue: at most 2 GPUs, only idle ones (≤5%

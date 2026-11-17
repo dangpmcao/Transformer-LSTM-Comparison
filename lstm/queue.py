@@ -72,7 +72,9 @@ def plan(command: str, options: argparse.Namespace) -> list[Job]:
                 raise ValueError("--only must name size:seed pairs from the production matrix")
             pairs = wanted
         for size, seed in pairs:
-            run_dir = RUN_ROOT / "production" / size / f"seed{seed}"
+            # Declared sensitivity analyses (e.g. another LR) go to their own folder, never over production.
+            root = RUN_ROOT / (f"sensitivity_{options.tag}" if getattr(options, "tag", None) else "production")
+            run_dir = root / size / f"seed{seed}"
             jobs.append(Job(f"prod {size} seed {seed}", run_dir, [
                 *common, "--mode", "production", "--size", size, "--snapshot-file", str(options.snapshot_file),
                 "--learning-rate", str(options.learning_rate), "--dropout", str(options.dropout),
@@ -153,6 +155,7 @@ def main() -> None:
                         help="pilot/tuning: shared microbatch agreed for both architectures (16 x 4 = 64)")
     parser.add_argument("--learning-rate", type=float, help="production only: tuning winner")
     parser.add_argument("--only", nargs="+", help="production only: size:seed pairs to run, in order (e.g. l:13 s:13)")
+    parser.add_argument("--tag", help="production only: write to lstm/runs/sensitivity_<tag>/ (declared sensitivity analysis)")
     parser.add_argument("--dropout", type=float, help="production only: tuning winner")
     parser.add_argument("--snapshot-file", type=Path, default=PROJECT_ROOT / "comparison/protocol.production.lock.json")
     parser.add_argument("--token-dir", type=Path, default=PROJECT_ROOT.parent / "dataset/processed/tokens")
