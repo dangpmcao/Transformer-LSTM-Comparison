@@ -74,6 +74,19 @@ class KenLMScorer:
             state, next_state = next_state, state
         return values, oov
 
+    def next_log_prob(self, history: Sequence[int], target: int) -> float:
+        """Natural-log P(target | history) from a null context.
+
+        Only the last ORDER-1 history tokens can matter to a 5-gram, so feeding just
+        those gives exactly the state that feeding the whole history would.
+        """
+        state, next_state = self._kenlm.State(), self._kenlm.State()
+        self.model.NullContextWrite(state)
+        for token in list(history)[-(ORDER - 1):]:
+            self.model.BaseScore(state, id_to_word(token), next_state)
+            state, next_state = next_state, state
+        return self.model.BaseScore(state, id_to_word(target), next_state) * LN10
+
 
 def window_scorer(target_log_probs: TargetLogProbs) -> Callable[[list[list[int]]], list[float]]:
     """Adapter for comparison.blimp_scorer.ScoreWindows: summed natural log per window."""
