@@ -9,7 +9,6 @@ __pycache__/
 # Local data, experiment outputs, and settings snapshots
 *.pt
 /data/
-/results/
 /comparison/protocol*.lock.json
 /transformer/.test_tmp/
 

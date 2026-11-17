@@ -1,6 +1,6 @@
 # Transformer results
 
-**2026-11-16 17:29:04 (UTC+8)**
+**2026-11-17 15:06:57 (UTC+8)**
 
 ## Training and performance
 
@@ -8,13 +8,13 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Transformer-only | L | 13 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.197021 / 24.46 | 3.197838 / 24.48 | 30,288.25 | Whole run | 8,254.03 | — | 18.80 | [summary](runs/transformer_only_250M_3seed/l/seed13/summary.json) |
 | Transformer-only | L | 37 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.207560 / 24.72 | 3.208693 / 24.75 | 29,822.19 | Whole run | 8,383.02 | — | 18.80 | [summary](runs/transformer_only_250M_3seed/l/seed37/summary.json) |
-| Transformer-only | L | 73 | Running | 71,917,652 / 250M | 0.001 | 0.0 | 64 × 1 | 3.706375 / 40.71 | — | — | — | — | — | — | [metrics](runs/transformer_only_250M_3seed/l/seed73/metrics.jsonl) |
-| Transformer-only | M | 13 | Running | 167,903,984 / 250M | 0.001 | 0.0 | 64 × 1 | 3.535605 / 34.32 | — | — | — | — | — | — | [metrics](runs/transformer_only_250M_3seed/m/seed13/metrics.jsonl) |
-| Transformer-only | M | 37 | Queued | 0 / 250M | 0.001 | 0.0 | 64 × 1 | — | — | — | — | — | — | — | — |
-| Transformer-only | M | 73 | Queued | 0 / 250M | 0.001 | 0.0 | 64 × 1 | — | — | — | — | — | — | — | — |
-| Transformer-only | S | 13 | Queued | 0 / 250M | 0.001 | 0.0 | 64 × 1 | — | — | — | — | — | — | — | — |
-| Transformer-only | S | 37 | Queued | 0 / 250M | 0.001 | 0.0 | 64 × 1 | — | — | — | — | — | — | — | — |
-| Transformer-only | S | 73 | Queued | 0 / 250M | 0.001 | 0.0 | 64 × 1 | — | — | — | — | — | — | — | — |
+| Transformer-only | L | 73 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.188073 / 24.24 | 3.189523 / 24.28 | 29,667.82 | Whole run | 8,426.64 | — | 18.80 | [summary](runs/transformer_only_250M_3seed/l/seed73/summary.json) |
+| Transformer-only | M | 13 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.423503 / 30.68 | 3.424903 / 30.72 | 72,759.53 | Whole run | 3,435.98 | — | 12.86 | [summary](runs/transformer_only_250M_3seed/m/seed13/summary.json) |
+| Transformer-only | M | 37 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.423024 / 30.66 | 3.423024 / 30.66 | 71,961.18 | Whole run | 3,474.10 | — | 12.86 | [summary](runs/transformer_only_250M_3seed/m/seed37/summary.json) |
+| Transformer-only | M | 73 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.415118 / 30.42 | 3.416080 / 30.45 | 67,066.16 | Whole run | 3,727.66 | — | 12.86 | [summary](runs/transformer_only_250M_3seed/m/seed73/summary.json) |
+| Transformer-only | S | 13 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.723964 / 41.43 | 3.725636 / 41.50 | 143,121.24 | Whole run | 1,746.77 | — | 10.21 | [summary](runs/transformer_only_250M_3seed/s/seed13/summary.json) |
+| Transformer-only | S | 37 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.696880 / 40.32 | 3.696880 / 40.32 | 143,707.22 | Whole run | 1,739.65 | — | 10.21 | [summary](runs/transformer_only_250M_3seed/s/seed37/summary.json) |
+| Transformer-only | S | 73 | Complete | 250,000,000 / 250M | 0.001 | 0.0 | 64 × 1 | 3.677939 / 39.56 | 3.679255 / 39.62 | 133,956.07 | Whole run | 1,866.28 | — | 10.21 | [summary](runs/transformer_only_250M_3seed/s/seed73/summary.json) |
 | Initial exploratory | S | 101 | Complete | 250M / 250M | 0.0003 | 0.1 | 2 × 32 | 4.110006 / 60.95 | 4.110006 / 60.95 | 56,818.05 | Whole run | 4,400.01 | — | 0.49 | [summary](runs/s/exploratory_250M_seed101/summary.json) |
 | Initial exploratory | M | 101 | Complete | 250M / 250M | 0.0003 | 0.1 | 2 × 32 | 3.772511 / 43.49 | 3.773657 / 43.54 | 37,332.10 | Whole run | 6,696.65 | — | 0.73 | [summary](runs/m/exploratory_250M_seed101/summary.json) |
 | Initial exploratory | L | 101 | Complete | 250M / 250M | 0.0003 | 0.1 | 2 × 32 | 3.452494 / 31.58 | 3.453102 / 31.60 | 16,153.18 | Whole run | 15,476.82 | — | 1.39 | [summary](runs/l/exploratory_250M_seed101/summary.json) |
