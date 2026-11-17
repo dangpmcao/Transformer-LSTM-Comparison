@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/.venv/bin/python",
+    "-u",
+    "-m",
+    "transformer.train",
+    "--mode",
+    "exploratory",
+    "--size",
+    "m",
+    "--device",
+    "cuda",
+    "--token-dir",
+    "/mnt/disk1/backup_user/dang.cpm/NLP/dataset/processed/tokens",
+    "--tokenizer-dir",
+    "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/tokenizer/artifacts",
+    "--budget-tokens",
+    "5000000",
+    "--microbatch-windows",
+    "16",
+    "--learning-rate",
+    "0.0003",
+    "--dropout",
+    "0.1",
+    "--seed",
+    "101",
+    "--save-every-updates",
+    "25",
+    "--run-dir",
+    "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/m"
+  ],
+  "cwd": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project"
+}

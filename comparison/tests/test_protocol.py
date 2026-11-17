@@ -29,6 +29,8 @@ def pilot_fixture():
 
 def test_protocol_and_deferred_pilot_settings():
     config = load_protocol()
+    assert config["tuning"]["learning_rates"] == [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03]
+    assert config["tuning"]["trials_per_architecture"] == 12
     assert config["training"]["seeds"] == [13, 37, 73]
     assert config["budget"]["exact_prediction_tokens"] is None
     ready = apply_pilot(config, pilot_fixture())
@@ -58,6 +60,8 @@ def test_invalid_pilot_is_rejected(failure):
     ("windows", "stride", 256), ("windows", "bos", "article_only"),
     ("training", "tuning_seed", 13), ("selection", "split", "test"),
     ("budget", "exact_prediction_tokens", 250000000),
+    ("tuning", "trials_per_architecture", 8),
+    ("tuning", "learning_rates", [0.0001, float("nan"), 0.001, 0.003, 0.01, 0.03]),
 ])
 def test_protocol_cannot_silently_break_shared_contract(tmp_path, section, key, value):
     config = load_protocol()

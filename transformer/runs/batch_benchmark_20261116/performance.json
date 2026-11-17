@@ -1,0 +1,131 @@
+{
+  "benchmark_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116",
+  "benchmark_sha256": "aafb86a903c8438f58b2513ff241947a84891a78e5bfd27a2651fa0a3c30ca28",
+  "limitations": "One short timing run per candidate on two shared-server GPUs. Fastest observed common batch, not a guarantee of maximal throughput. Apply only after agreeing the shared pilot settings with Hugo.",
+  "production_ready": false,
+  "recommendation": {
+    "gradient_accumulation_steps": 1,
+    "microbatch_windows": 64,
+    "sum_wall_seconds_per_million_tokens": 69.02090837759897
+  },
+  "rows": [
+    {
+      "directory": "l_mb64",
+      "gpu_memory_bytes": 25298141184,
+      "index": 0,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 64,
+      "peak_memory_bytes": 20145239040,
+      "prediction_tokens_per_second": 34575.05067888908,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/l_mb64/attempt_1794806709159186779/transformer_pilot.json",
+      "size": "l",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 40.508274391060695
+    },
+    {
+      "directory": "l_mb32",
+      "gpu_memory_bytes": 25298141184,
+      "index": 1,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 32,
+      "peak_memory_bytes": 10632845312,
+      "prediction_tokens_per_second": 34526.25802216022,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/l_mb32/attempt_1794806709112607453/transformer_pilot.json",
+      "size": "l",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 40.69576645945199
+    },
+    {
+      "directory": "l_mb16",
+      "gpu_memory_bytes": 25298141184,
+      "index": 2,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 16,
+      "peak_memory_bytes": 5751044096,
+      "prediction_tokens_per_second": 32692.281739946633,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/l_mb16/attempt_1794806797492295354/transformer_pilot.json",
+      "size": "l",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 42.008173690526746
+    },
+    {
+      "directory": "m_mb64",
+      "gpu_memory_bytes": 25298141184,
+      "index": 3,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 64,
+      "peak_memory_bytes": 13767682048,
+      "prediction_tokens_per_second": 85852.30897715238,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/m_mb64/attempt_1794806797695560610/transformer_pilot.json",
+      "size": "m",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 17.686207528575324
+    },
+    {
+      "directory": "m_mb32",
+      "gpu_memory_bytes": 25298141184,
+      "index": 4,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 32,
+      "peak_memory_bytes": 7108708352,
+      "prediction_tokens_per_second": 84593.94882302474,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/m_mb32/attempt_1794806840022283298/transformer_pilot.json",
+      "size": "m",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 17.76643821655307
+    },
+    {
+      "directory": "m_mb16",
+      "gpu_memory_bytes": 25298141184,
+      "index": 5,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 16,
+      "peak_memory_bytes": 3725715456,
+      "prediction_tokens_per_second": 79456.30347612103,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/m_mb16/attempt_1794806882470941934/transformer_pilot.json",
+      "size": "m",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 18.561599829932675
+    },
+    {
+      "directory": "s_mb64",
+      "gpu_memory_bytes": 25298141184,
+      "index": 6,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 64,
+      "peak_memory_bytes": 10930229248,
+      "prediction_tokens_per_second": 161123.71215066768,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/s_mb64/attempt_1794806888615514897/transformer_pilot.json",
+      "size": "s",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 10.826426457962953
+    },
+    {
+      "directory": "s_mb32",
+      "gpu_memory_bytes": 25298141184,
+      "index": 7,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 32,
+      "peak_memory_bytes": 5591803904,
+      "prediction_tokens_per_second": 164341.41226459996,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/s_mb32/attempt_1794806917294340222/transformer_pilot.json",
+      "size": "s",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 10.657235984457657
+    },
+    {
+      "directory": "s_mb16",
+      "gpu_memory_bytes": 25298141184,
+      "index": 8,
+      "memory_headroom_ok": true,
+      "microbatch_windows": 16,
+      "peak_memory_bytes": 2889336832,
+      "prediction_tokens_per_second": 162081.433339613,
+      "report_path": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/s_mb16/attempt_1794806926532507791/transformer_pilot.json",
+      "size": "s",
+      "status": "complete",
+      "wall_seconds_per_million_tokens": 10.715984921436757
+    }
+  ],
+  "status": "finished"
+}

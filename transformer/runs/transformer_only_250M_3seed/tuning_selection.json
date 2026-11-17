@@ -1,0 +1,360 @@
+{
+  "caveat": "Failed trials are retained; investigate infrastructure failures before accepting selection.",
+  "failed_trials": 0,
+  "selection": "lowest_validation_nll_then_grid_order",
+  "status": "finished",
+  "study_sha256": "9a7b2c115bb0c2c63b18df2a17fbb5bf5dd413bfae97a599ccfc1b9ebcf94bbf",
+  "trials": [
+    {
+      "directory": "trial_00",
+      "dropout": 0.0,
+      "index": 0,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_00_1794801893545615209.json",
+      "learning_rate": 0.0001,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 5.9141797989763285,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.6217290088534355,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2889336832,
+        "prediction_tokens_per_second": 156331.8944018275,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 319.8323681249749,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_01",
+      "dropout": 0.1,
+      "index": 1,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_01_1794801893541517414.json",
+      "learning_rate": 0.0001,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 5.952899754746717,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.5946813060436398,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2908211200,
+        "prediction_tokens_per_second": 156058.15429803522,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 320.39338299818337,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_02",
+      "dropout": 0.0,
+      "index": 2,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_02_1794802274744655355.json",
+      "learning_rate": 0.0003,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 5.227199320730551,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.595553319901228,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2889336832,
+        "prediction_tokens_per_second": 157911.9059939591,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 316.63223672262393,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_03",
+      "dropout": 0.1,
+      "index": 3,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_03_1794802275659714253.json",
+      "learning_rate": 0.0003,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 5.291913709762787,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.6191743819508702,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2908211200,
+        "prediction_tokens_per_second": 148646.23063272575,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 336.36910796305165,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_04",
+      "dropout": 0.0,
+      "index": 4,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_04_1794802652581066966.json",
+      "learning_rate": 0.001,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 4.546444105181116,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.5968142480123788,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2889336832,
+        "prediction_tokens_per_second": 157082.39342156146,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 318.3042918490246,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_05",
+      "dropout": 0.1,
+      "index": 5,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_05_1794802674100450690.json",
+      "learning_rate": 0.001,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 4.661615706317618,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.6340968310832977,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2908211200,
+        "prediction_tokens_per_second": 147502.49231253407,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 338.97732313605957,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_06",
+      "dropout": 0.0,
+      "index": 6,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_06_1794803032238927184.json",
+      "learning_rate": 0.003,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 4.790328290600919,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.592450361000374,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2889336832,
+        "prediction_tokens_per_second": 157471.27409827942,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 317.5182285550982,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_07",
+      "dropout": 0.1,
+      "index": 7,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_07_1794803075564240207.json",
+      "learning_rate": 0.003,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 4.81486334721895,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.6217752371449023,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2908211200,
+        "prediction_tokens_per_second": 148413.396362023,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 336.8968113770243,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_08",
+      "dropout": 0.0,
+      "index": 8,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_08_1794803411454132804.json",
+      "learning_rate": 0.01,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 5.820429206566923,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.5919129450339824,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2889336832,
+        "prediction_tokens_per_second": 158474.95198514953,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 315.50727338087745,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_09",
+      "dropout": 0.1,
+      "index": 9,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_09_1794803475173904274.json",
+      "learning_rate": 0.01,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 6.085196255627258,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.6174006129149348,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2908211200,
+        "prediction_tokens_per_second": 149677.45971336841,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 334.0516340653412,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_10",
+      "dropout": 0.0,
+      "index": 10,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_10_1794803787330329822.json",
+      "learning_rate": 0.03,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 6.193571470965684,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 0.5849176689516753,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2889336832,
+        "prediction_tokens_per_second": 158602.49268018448,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 315.2535572112538,
+        "updates": 1617
+      },
+      "status": "complete"
+    },
+    {
+      "directory": "trial_11",
+      "dropout": 0.1,
+      "index": 11,
+      "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_11_1794803871450060420.json",
+      "learning_rate": 0.03,
+      "result": {
+        "best_checkpoint_tokens": 50000000,
+        "best_validation_nll": 6.404502141509277,
+        "consumed_tokens": 50000000,
+        "last_validation_seconds": 1.1692990041337907,
+        "latest_checkpoint_bytes": 89898315,
+        "mode": "exploratory",
+        "parameters": {
+          "non_embedding": 3290624,
+          "token_embedding": 4194304,
+          "total": 7484928
+        },
+        "peak_cuda_bytes": 2908211200,
+        "prediction_tokens_per_second": 131257.5608271477,
+        "size": "s",
+        "status": "complete",
+        "train_seconds": 380.93043695855886,
+        "updates": 1617
+      },
+      "status": "complete"
+    }
+  ],
+  "winner": {
+    "directory": "trial_04",
+    "dropout": 0.0,
+    "index": 4,
+    "last_attempt": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/s/tuning_50M_seed101_6lr/attempts/trial_04_1794802652581066966.json",
+    "learning_rate": 0.001,
+    "result": {
+      "best_checkpoint_tokens": 50000000,
+      "best_validation_nll": 4.546444105181116,
+      "consumed_tokens": 50000000,
+      "last_validation_seconds": 0.5968142480123788,
+      "latest_checkpoint_bytes": 89898315,
+      "mode": "exploratory",
+      "parameters": {
+        "non_embedding": 3290624,
+        "token_embedding": 4194304,
+        "total": 7484928
+      },
+      "peak_cuda_bytes": 2889336832,
+      "prediction_tokens_per_second": 157082.39342156146,
+      "size": "s",
+      "status": "complete",
+      "train_seconds": 318.3042918490246,
+      "updates": 1617
+    },
+    "status": "complete"
+  }
+}

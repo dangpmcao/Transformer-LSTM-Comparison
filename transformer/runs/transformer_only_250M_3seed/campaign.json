@@ -1,0 +1,89 @@
+{
+  "budget_tokens": 250000000,
+  "code_sha256": {
+    "dataset/model_inputs.py": "d6495bcb748d7abc69bb5597617c349a75d18dd0a4baa20841afec247bea14cd",
+    "tokenizer/core.py": "174a0701a6c03eee3f604fae92d15a9632b904bf89875c5ffb9dad6c53ceb5fe",
+    "transformer/model.py": "f8949051a7fe06f0c4483f59180e9ec395ade5c3d567cad5f72b529dca377a4b",
+    "transformer/production.py": "a9a27c41091e0f9cd9f865d541a1c375c24aac50e46de906fa2a13d698a60537",
+    "transformer/production.sbatch": "fd874492b090b8e853196fc2475bc86ecdc52589f85a9a2854856ae525ebddee",
+    "transformer/run_production.sh": "7136681c858ea949618435af8b814f399fc7515e6c26dd1b6d9e9aa9452b52a5",
+    "transformer/train.py": "c1711e5c315c98d6dd8bf5529543e0f3c57381f3a6fc2852ba035fac8247a93b"
+  },
+  "created_at": "2026-11-16T06:03:23.938230+00:00",
+  "cuda_version": "12.6",
+  "dropout": 0.0,
+  "effective_batch_windows": 64,
+  "execution_sha256": "f1df3086606ee25bffa28275bab42dbcbe0c9c5c53311cfff39a1684fdd92400",
+  "gradient_accumulation_steps": 1,
+  "joint_production_ready": false,
+  "learning_rate": 0.001,
+  "microbatch_windows": 64,
+  "pilot_requirement": "user_requested_transformer_only_before_joint_pilot",
+  "precision": "float32",
+  "purpose": "transformer_only_three_seeds",
+  "runs": [
+    {
+      "directory": "l/seed13",
+      "index": 0,
+      "seed": 13,
+      "size": "l"
+    },
+    {
+      "directory": "l/seed37",
+      "index": 1,
+      "seed": 37,
+      "size": "l"
+    },
+    {
+      "directory": "l/seed73",
+      "index": 2,
+      "seed": 73,
+      "size": "l"
+    },
+    {
+      "directory": "m/seed13",
+      "index": 3,
+      "seed": 13,
+      "size": "m"
+    },
+    {
+      "directory": "m/seed37",
+      "index": 4,
+      "seed": 37,
+      "size": "m"
+    },
+    {
+      "directory": "m/seed73",
+      "index": 5,
+      "seed": 73,
+      "size": "m"
+    },
+    {
+      "directory": "s/seed13",
+      "index": 6,
+      "seed": 13,
+      "size": "s"
+    },
+    {
+      "directory": "s/seed37",
+      "index": 7,
+      "seed": 37,
+      "size": "s"
+    },
+    {
+      "directory": "s/seed73",
+      "index": 8,
+      "seed": 73,
+      "size": "s"
+    }
+  ],
+  "save_every_updates": 100,
+  "schema_version": 1,
+  "selection_sha256": "b9990c04e3560a703f1dcfe12e25d2b4048c733bf6adfc3256523e54713f2a27",
+  "snapshot_sha256": "6730365ffc1c7e13d4fd042f6b42ea152132aca375a2a610cabf06858bfe7705",
+  "token_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/dataset/processed/tokens",
+  "tokenizer_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/tokenizer/artifacts",
+  "torch_version": "2.7.1+cu126",
+  "trainer_mode": "exploratory",
+  "tuning_study_sha256": "9a7b2c115bb0c2c63b18df2a17fbb5bf5dd413bfae97a599ccfc1b9ebcf94bbf"
+}

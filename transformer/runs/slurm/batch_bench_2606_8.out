@@ -1,0 +1,5 @@
+job=2606 task=8 CUDA_VISIBLE_DEVICES=3
+Starting Transformer S; log: /mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/s_mb16/attempt_1794806926532507791/s.log
+S: 162,081 prediction tok/s; peak 2.69 GiB; validation 0.571s
+Transformer evidence: /mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/s_mb16/attempt_1794806926532507791/transformer_pilot.json
+Merge with LSTM S/M/L evidence before production.

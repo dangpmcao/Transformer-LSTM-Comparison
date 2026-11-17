@@ -5,8 +5,11 @@ compared. The rules are written in [`protocol.yaml`](protocol.yaml).
 *Protocol* means the agreed experiment settings; a *snapshot* is a saved copy
 of those settings together with the exact input/code checksums.
 
-The data and shared input code are ready. The models, timing trial, and full
-training are later steps. Run commands from the repository root, using the
+The data and shared input code are ready. Transformer S/M/L exploratory training
+is complete at 250M prediction tokens per model, seed 101; see the
+[completed training results](../transformer/README.md#completed-training).
+The joint Transformer/LSTM timing pilot and production run matrix remain pending.
+Run commands from the repository root, using the
 [Python environment](../README.md#set-up-python).
 
 ## Save or verify a settings snapshot
@@ -28,8 +31,8 @@ python -m comparison.experiment_settings --check
 ```
 
 The snapshot is generated and ignored by Git. Archive it with the future runs
-that use it. The [naming guide](../NAMING.md) maps the readable public commands
-and names to their earlier equivalents; both interfaces use the same code.
+that use it. Changes to the protocol require a new snapshot; retain earlier
+snapshots with the runs they describe.
 
 ## Rules shared by both models
 
@@ -47,13 +50,17 @@ and names to their earlier equivalents; both interfaces use the same code.
 | Learning-rate schedule | Cosine decay based on consumed prediction tokens; 1% warmup; minimum LR is 10% of peak |
 | Gradient clipping | Global norm 1.0 after loss normalization |
 | Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1 |
-| Hyperparameter search | Four learning rates × two dropout values: eight trials per architecture at size S |
+| Hyperparameter search | Six learning rates × two dropout values: 12 trials per architecture at size S |
 | Larger sizes | Reuse each architecture's selected S settings without extra tuning |
 | Checkpoint selection | Lowest validation mean prediction loss; earlier checkpoint wins ties |
 | Validation timing | Every 1M prediction targets, at the first optimizer step reaching each threshold, plus start/end |
 | Parameter matching | Tied token embeddings/output head; same embedding width; other parameter counts within 5% of Transformer |
 
 These are prospective experiment choices, not measured optimal settings.
+On 2026-11-16, the shared grid added LR 0.01 and 0.03 after Hugo reported
+LSTM optima at the original grid boundary. Both architectures must use the
+expanded grid and equal per-trial token budgets. Transformer tuning commands
+are in the [two-GPU tuning guide](../transformer/README.md#tune-size-s-on-two-gpus).
 Dropout locations and random-seed/resume requirements are also recorded in the
 YAML. Stage 4 must implement the models and verify causal attention, state
 resets, numerical behavior, and parameter counts.
@@ -164,7 +171,7 @@ The output folder is new and is never overwritten:
 | `summary.json` | Accuracy overall and for 12 groups and 67 paradigms, both sensitivity analyses, tie and overlength counts, and input hashes |
 | `pairs.jsonl` | One record per pair: both scores, both target counts, and each decision; use these for bootstrap and model-disagreement analyses |
 
-## Why full training is not ready yet
+## Why production training is not ready yet
 
 The existing snapshot has **`production_ready: false`**. The plan requires a
 short measured *timing trial* (also called a pilot) before fixing the exact

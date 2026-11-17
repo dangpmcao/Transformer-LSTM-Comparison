@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "reported_by_one_machine_awaiting_independent_confirmation",
+  "status": "confirmed",
   "generated_on": "2026-11-13",
   "paths_relative_to": "<data root>/processed",
   "commands": [
