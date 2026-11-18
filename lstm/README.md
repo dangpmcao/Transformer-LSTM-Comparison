@@ -189,6 +189,112 @@ Sensitivity result (2026-11-17; best-checkpoint validation NLL):
   0.2 nats worse than the 2-layer M at the same non-embedding parameters
   (M at lr 3e-2: 3.758 / 3.765 / 3.776, mean 3.766). M was not run at lr 1e-2.
 
+## Final evaluation (test, 2026-11-18)
+
+`lstm/evaluate.py` scores every production and sensitivity run in two views:
+**best_validation** (`best.pt`, the protocol's selection rule; primary) and
+**final_budget** (`final.pt`, after exactly 250M tokens). Numerics: fp32, no
+autocast, TF32 off, eval mode, fresh zero state for every input. M deep seed 37
+(production) diverged and is listed as unscored in
+[`results/campaign_summary.json`](results/campaign_summary.json).
+
+Before any test scoring, each view must pass a **validation gate**: the evaluator
+recomputes the validation NLL from the checkpoint and compares it with the training
+record (tolerance 1e-4 nats). All 28 views pass; the largest difference is 3.6e-05.
+
+Summaries (`summary.json`, `validation_check.json`) are versioned in
+[`results/`](results/) as `<run>/<view>/{test,blimp,same_target,copy}/summary.json`.
+They record the sha256 of the detail files (`windows.npz`, `pairs.jsonl`,
+`per_target_nll.npz`), which stay outside git in `../results/lstm/` (server and a
+backup copy next to the repo).
+
+### Test perplexity (best_validation)
+
+| Size | seed 13 | seed 37 | seed 73 | Mean | Context gain (mean) |
+|---|---:|---:|---:|---:|---:|
+| S | 56.68 | 56.31 | 56.75 | 56.58 | 0.400 |
+| M | 44.16 | 44.42 | 45.12 | 44.57 | 0.441 |
+| M deep | 50.70 | **diverged** | 59.09 | 54.89 (2 seeds) | 0.401 |
+| L | 45.32 | 44.89 | 37.42 | 42.55 | 0.436 |
+| M deep, lr 1e-2 (sensitivity) | 55.52 | 55.28 | 54.32 | 55.04 | 0.409 |
+| 5-gram (reference) | | | | 66.45 | 0.183 |
+
+final_budget means: S 56.83, M 44.82, M deep 55.64, L 42.75, M deep lr 1e-2 55.38.
+The views differ by at most 1.4 perplexity points per run; L seed 13 and M deep
+lr 1e-2 seed 37 have their best checkpoint at the final step (identical views).
+The test ranking of the means matches validation: L < M < M deep < S. L seed 73 is the best
+single run (37.4), and the L seed spread (7.9 points) is the largest; this agrees
+with the instability at lr 3e-2 noted above.
+
+### Same-target context ablation (test, best_validation)
+
+The same 69,376 targets as the 5-gram (positions 385–512 of 542 full windows).
+Values are the extra NLL (nats) of each reduced history over the full one; the
+5-gram has exactly 0 in every column.
+
+| Size | Full NLL | k = 4 | k = 32 | k = 128 | Distant shuffle (keep 128) |
+|---|---:|---:|---:|---:|---:|
+| S | 3.985 | +0.708 | +0.099 | +0.014 | +0.014 |
+| M | 3.746 | +0.806 | +0.123 | +0.018 | +0.021 |
+| M deep | 3.957 | +0.712 | +0.099 | +0.014 | +0.013 |
+| L | 3.701 | +0.810 | +0.120 | +0.018 | +0.021 |
+| M deep, lr 1e-2 | 3.960 | +0.702 | +0.104 | +0.014 | +0.011 |
+
+- Almost all of the LSTM's context benefit comes from the last 32 tokens. Going
+  from 128 tokens to the full history (up to 511) gives only 0.014–0.018 nats.
+- Shuffling the history beyond the nearest 128 tokens costs about as much as
+  removing it. So the small benefit of distant context does not depend on word
+  order. This agrees with Khandelwal et al. (2018), *Sharp Nearby, Fuzzy Far
+  Away*, for LSTM language models.
+- The full-history values come from one forward pass per window. A check against
+  explicit prefixes on 256 rows per view passes (largest deviation 1.0e-05).
+
+### Copy(L) (test, best_validation)
+
+Shared manifest (see `ngram/README.md`): `[BOS]+A+A` (copy) and `[BOS]+A+B`
+(control). Copy gain = mean NLL of the first span minus mean NLL of the second.
+Natural test text:
+
+| Size | L = 25 | 50 | **100** | 200 | Copy − control at 100 | Copy gain at 100, positions 5+ |
+|---|---:|---:|---:|---:|---:|---:|
+| S | 0.173 | 0.117 | **0.068** | 0.029 | 0.385 | 0.101 |
+| M | 0.234 | 0.157 | **0.096** | 0.044 | 0.452 | 0.132 |
+| M deep | 0.132 | 0.098 | **0.061** | 0.026 | 0.391 | 0.097 |
+| L | 0.216 | 0.147 | **0.090** | 0.041 | 0.453 | 0.128 |
+| M deep, lr 1e-2 | 0.114 | 0.086 | **0.058** | 0.025 | 0.428 | 0.097 |
+| 5-gram | −0.089 | −0.044 | **−0.024** | −0.012 | 0.005 | 0.000 |
+
+Random-ID spans at L = 100: 0.17 (S), 0.25 (M), 0.19 (M deep), 0.18 (L), 0.10 (M deep lr 1e-2).
+
+- The LSTMs copy only weakly: `natural_copy_100` is 0.06–0.10 nats, compared
+  with a first-span NLL of about 4. The gain falls steadily with L (L: 0.22 at
+  L = 25, 0.04 at L = 200), so the LSTM keeps little of a span that is 100 or
+  more tokens away.
+- Copy − control is much larger (0.39–0.45) because the control gain is
+  negative: span B, which follows an unrelated span, is harder than span A, which
+  follows BOS (about 0.3 nats, also beyond position 4). Copy − control therefore
+  overstates copying, and the primary metric stays the copy gain itself.
+
+### BLiMP (best_validation)
+
+| Size | Overall | Without the 8 `?` paradigms | Equal-BPE-length pairs | Length-normalized | `matrix_question_npi_licensor_present` |
+|---|---:|---:|---:|---:|---:|
+| S | 62.2% | 64.8% | 62.9% | 60.9% | 0.2% |
+| M | 63.0% | 65.4% | 63.8% | 61.5% | 0.2% |
+| M deep | 60.7% | 63.1% | 61.7% | 59.9% | 0.2% |
+| L | 62.1% | 64.4% | 62.9% | 60.9% | 0.3% |
+| M deep, lr 1e-2 | 60.4% | 62.9% | 59.8% | 58.3% | 0.4% |
+| 5-gram | 54.0% | 55.2% | 54.3% | 53.1% | 3.9% |
+
+Seed means; within a size the seeds span 1.0–4.3 points (S 60.3–64.6%), larger than the
+differences between sizes. Every LSTM beats the 5-gram by 6–9 points, but BLiMP
+accuracy does not increase with size or perplexity: L is the best size on
+perplexity and not on BLiMP. On the paradigm where only the acceptable sentence
+has the unseen bare `?` (finding 3 in `ngram/README.md`), the LSTMs are almost
+always wrong (0.2–0.4%): they give the untrained ID-34 row a very low
+probability. The "without" column removes this artifact. Per-group and
+per-paradigm accuracies are in each `blimp/summary.json`.
+
 ## Saved run records
 
 `lstm/runs/` holds the records of every LSTM run (`run.json`, `metrics.jsonl`,
@@ -227,6 +333,17 @@ Runs go to `lstm/runs/<pilot|tuning|production>/…` (ignored by Git), each with
 
 ```bash
 python -m comparison.status --roots lstm/runs --watch 60
+```
+
+Final evaluation (after `comparison.same_target --split test` and
+`comparison.copy_task`; one free GPU, runs in series, finished parts skipped,
+so an interrupted campaign resumes where it stopped):
+
+```bash
+nice -n 10 python -m lstm.evaluate --device cuda:N            # every run, both views
+nice -n 10 python -m lstm.evaluate --runs lstm/runs/production/s/seed13 --views best_validation
+python -m lstm.evaluate --collect                             # rewrite campaign_summary.json only
+python -m pytest lstm/tests -q
 ```
 
 Production runs need `comparison/protocol.production.lock.json` (see the
