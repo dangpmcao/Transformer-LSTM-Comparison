@@ -1,0 +1,62 @@
+{
+  "condition_nll": {
+    "distant_shuffle_128": 4.170831454375358,
+    "full": 4.170831454375358,
+    "k128": 4.170831454375358,
+    "k32": 4.170831454375358,
+    "k4": 4.170831454375358
+  },
+  "coverage": {
+    "excluded_short_window_targets": 14206,
+    "excluded_short_windows": 60,
+    "included_articles": 60,
+    "included_targets": 69376,
+    "included_windows": 542
+  },
+  "created_at": "2026-11-18T02:15:07.129660+00:00",
+  "invariance": {
+    "absolute_tolerance_nats": 1e-06,
+    "check": "per_target",
+    "max_abs_deviation": {
+      "distant_shuffle_128": 0.0,
+      "k128": 0.0,
+      "k32": 0.0,
+      "k4": 0.0
+    },
+    "status": "PASS",
+    "targets_outside_tolerance": {
+      "distant_shuffle_128": 0,
+      "k128": 0,
+      "k32": 0,
+      "k4": 0
+    }
+  },
+  "model_label": "kenlm_5gram_train",
+  "provenance": {
+    "code_sha256": "15daac53c181967a0dd9bb6ae74bae1db2c554a513895560b879f3a6ab263c23",
+    "manifest_sha256": "48dbdecf890b2e42d3e7a1aa2502e845d7036dba42385b0945aed8f7e959f009",
+    "model_manifest_sha256": "e5b461fcc73ca32ebe43534844c73443a2c9f730f8b4b33d764dcdab1d39be2a",
+    "numpy_version": "1.26.4",
+    "protocol_sha256": "9acb9a1fd9540ee80c80ef80c36b5836cdfeec2810fc22deba5dd23a316c7e56",
+    "scorer_code_sha256": "3c6dc06e6ea2077809b075470d08977b9a6ef5bf4c242a4b3cf2ff9fa6becef4",
+    "token_manifest_sha256": "76509c2cc5e9dd596c7691e5dc5e433f211bbd27cc832c5ed2a7ede97d01f754",
+    "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+    "window_manifest_sha256": "5c52c113c48f2a069e6a96b27597230fdfde92175b24de57856642ea7dd3505e"
+  },
+  "schema_version": 1,
+  "scores_file": {
+    "bytes": 2927724,
+    "path": "per_target_nll.npz",
+    "sha256": "47a3a4d845ffff504fd45992fd9e6ef8e9313da4fc466ea701f36cb3bf941dbd"
+  },
+  "shuffle_gain": 0.0,
+  "split": "test",
+  "start_symbol": "kenlm_null_context_in_place_of_bos",
+  "status": "PASS",
+  "targets": 69376,
+  "truncation_gain": {
+    "k128": 0.0,
+    "k32": 0.0,
+    "k4": 0.0
+  }
+}

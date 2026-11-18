@@ -25,6 +25,8 @@ On a shared server, keep priority low:
 nice -n 19 ionice -c3 python -m ngram.train --memory 16G          # ~7 min
 nice -n 19 ionice -c3 python -m ngram.evaluate --split validation # sanity check
 nice -n 19 ionice -c3 python -m ngram.evaluate --split test --blimp   # final reporting only
+nice -n 19 ionice -c3 python -m ngram.same_target --split test       # after comparison.same_target
+nice -n 19 ionice -c3 python -m ngram.copy_task                      # after comparison.copy_task
 python -m pytest ngram/tests -q
 ```
 
@@ -34,15 +36,86 @@ never overwritten. `summary.json` holds perplexity, OOV counts, the position
 curve and context gain; `windows.npz` holds per-target NLL for each window
 (for article bootstrap and model-disagreement analyses).
 
-## Results so far (validation)
+## Results
 
-| Metric | Value |
-|---|---|
-| Perplexity | 66.60 (mean NLL 4.199 nats/token, 255,099 targets) |
-| OOV targets | 0 (16,284 of 16,380 non-control IDs occur in train) |
-| Context gain (positions 1–32 minus 385–512, 469 full windows) | 0.098 |
+Summaries (`summary.json`) are versioned in [`results/`](results/); they record the
+sha256 of the per-target/per-pair detail files, which stay outside git in
+`../results/` (server and a backup copy next to the repo).
 
-Test perplexity and BLiMP are kept for final reporting.
+### Perplexity and position curve
+
+| Metric | Validation | Test |
+|---|---|---|
+| Perplexity | 66.60 | **66.45** |
+| Mean NLL (nats/token) | 4.199 | 4.196 |
+| Targets / windows | 255,099 / 529 | 291,710 / 602 |
+| OOV targets | 0 | 0 |
+| Context gain (positions 1–32 minus 385–512) | 0.098 | **0.183** |
+| Full windows (short excluded) | 469 (60) | 542 (60) |
+
+Test position curve (full windows): 8.09, 6.06, 4.82, 4.28 at positions 1–4;
+4.15 over 5–32, 4.19 over 33–384, 4.17 over 385–512. As on validation (finding 2),
+the whole context gain comes from positions 1–4, where the history is still
+shorter than four tokens; from position 5 on it is −0.03.
+
+### Same-target context ablation (test)
+
+69,376 targets from 542 full windows (60 short windows / 14,206 targets excluded).
+Mean NLL 4.1708 in every condition (full, k = 4, 32, 128, distant shuffle);
+per-target invariance **PASS**, maximum deviation exactly 0. The test manifest was
+rebuilt because `protocol.yaml` changed after it was built (training/tuning
+sections only); the rebuilt targets and shuffle permutations are byte-identical
+to the superseded ones.
+
+### Copy(L) (test)
+
+Shared manifest from `comparison/copy_task.py` (protocol `evaluation.copy`):
+1,000 examples per length and source, seed 2718. Each example scores
+`[start, A, A]` (copy) and `[start, A, B]` (control, independent span B of the
+same length). Gain = mean NLL of the first span minus mean NLL of the second.
+
+| Source | L | Copy gain | Control gain | Copy gain, positions 5+ |
+|---|---|---|---|---|
+| Natural test text | 25 | −0.089 | −0.079 | 0.000 |
+| Natural test text | 50 | −0.044 | −0.043 | 0.000 |
+| Natural test text | **100** | **−0.024** | −0.029 | 0.000 |
+| Natural test text | 200 | −0.012 | −0.011 | 0.000 |
+| Random IDs | 25 | −0.055 | −0.057 | 0.000 |
+| Random IDs | 50 | −0.028 | −0.020 | 0.000 |
+| Random IDs | 100 | −0.014 | −0.004 | 0.000 |
+| Random IDs | 200 | −0.007 | −0.004 | 0.000 |
+
+`natural_copy_100` = −0.024: the 5-gram does not copy. From position 5 of the
+repeated span it sees exactly the same four tokens as in the first span, so the
+gain is exactly zero (an end-to-end check of the span alignment). The small
+negative values come from positions 1–4: the first span starts from no history,
+while the second starts after unrelated tokens, which costs back-off penalties.
+Random-ID spans contain 309–2,402 tokens (per L) among the 99 IDs never seen in
+train; they are scored as KenLM `<unk>`, as declared before scoring.
+
+### BLiMP
+
+**Overall accuracy 54.0%** (67,000 pairs; 72 ties, including 7 identical
+candidates, counted incorrect). Sensitivities: equal-BPE-length pairs 54.3%
+(50,019 pairs); length-normalized 53.1%.
+
+| Group | Accuracy (%) | Pairs |
+|---|---|---|
+| anaphor_agreement | 46.4 | 2,000 |
+| argument_structure | 63.3 | 9,000 |
+| binding | 61.9 | 7,000 |
+| control_raising | 64.0 | 5,000 |
+| determiner_noun_agreement | 58.6 | 8,000 |
+| ellipsis | 31.7 | 2,000 |
+| filler_gap_dependency | 63.5 | 7,000 |
+| irregular_forms | 60.2 | 2,000 |
+| island_effects | 49.9 | 8,000 |
+| npi_licensing | 30.5 | 7,000 |
+| quantifiers | 41.3 | 4,000 |
+| subject_verb_agreement | 54.6 | 6,000 |
+
+Excluding the 8 paradigms affected by the OOV `?` (finding 3): 55.2% (59,000 pairs).
+Per-paradigm accuracies are in `results/kenlm_5gram_train_blimp/summary.json`.
 
 ## Findings log (for the report and presentation)
 
@@ -125,9 +198,31 @@ Invariance **PASS**: maximum per-target deviation exactly 0. The full-history
 NLL also equals the window evaluation's late-position mean (4.223), an
 independent check that histories are aligned. This is the reference row for the
 neural models: any gain they show here comes from context beyond four tokens.
-The test manifest is built (69,376 targets) but not scored until final reporting.
+Test results are under Results above.
+
+### Finding 3 — BLiMP's attached `?` never occurs in WikiText train
+
+**What happened.** The coverage check required by the protocol
+(`evaluation.kenlm.oov`) found exactly one missing ID before any BLiMP scoring:
+bare `?` (ID 34), in 15,000 sentences. BLiMP attaches it to the word (`grin?`),
+while WikiText always spaces punctuation (` ?`, ID 2885, 12,026 times in train).
+
+**Affected paradigms.** Seven island/question paradigms, where both sentences of
+a pair end in `?` (nearly symmetric), and `matrix_question_npi_licensor_present`,
+where only the acceptable sentence ends in `?` (`Should Monica ever grin?` vs
+`Monica should ever grin.`). The 5-gram scores 3.9% there.
+
+**Treatment (declared before seeing any accuracy).** Keep the original BLiMP text
+for every model; score the ID as KenLM `<unk>`, never drop it; report every model
+with and without the 8 paradigms (computed from `pairs.jsonl`). `protocol.yaml`
+was not changed, because its hash binds existing manifests and production locks.
+The first failing check is kept as
+`results/kenlm_5gram_train_blimp_coverage_UNDECLARED_first_check.json`.
+
+**Lesson.** This is not a 5-gram problem: neural models never trained the
+ID-34 embedding or output row either. Text normalization differences between
+the training corpus and a benchmark show up as unseen token IDs.
 
 ## Pending
 
-- Test perplexity, BLiMP and the test-split ablation (final reporting).
-- Copy(L): needs the shared span sampler from `evaluation.copy` in the protocol (not yet implemented), so that all models score identical spans.
+- Article/pair bootstrap intervals: computed in the shared comparison step for all models.
