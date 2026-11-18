@@ -21,7 +21,21 @@ from dataset.model_inputs import (
 )
 from tokenizer.core import DEFAULT_OUTPUT as DEFAULT_TOKENIZER_DIR, load_tokenizer
 
+from lstm.model import MODEL_SIZES as LSTM_SIZES, PROTOCOL_SIZE as LSTM_PROTOCOL_SIZE, LSTMConfig, LSTMLM
 from .model import TransformerConfig, TransformerLM
+
+
+def build_model_config(architecture: str, size: str, dropout: float):
+    """Both architectures share this training loop; only the model differs."""
+    if architecture == "transformer":
+        if size not in ("s", "m", "l"):
+            raise ValueError(f"Unknown Transformer size: {size}")
+        return TransformerConfig.for_size(size, dropout=dropout), TransformerLM, size, "transformer/model.py"
+    if architecture == "lstm":
+        if size not in LSTM_SIZES:
+            raise ValueError(f"Unknown LSTM size: {size}")
+        return LSTMConfig.for_size(size, dropout=dropout), LSTMLM, LSTM_PROTOCOL_SIZE[size], "lstm/model.py"
+    raise ValueError(f"Unknown architecture: {architecture}")
 
 
 def set_seed(seed: int) -> None:
@@ -122,6 +136,7 @@ def checkpoint(model: TransformerLM, optimizer: torch.optim.Optimizer, *, identi
 
 
 def run(args: argparse.Namespace) -> dict:
+    architecture = getattr(args, "architecture", "transformer")  # Older callers predate the option.
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA is unavailable; install a CUDA-enabled PyTorch build on the server")
     device = torch.device(args.device)
@@ -158,11 +173,11 @@ def run(args: argparse.Namespace) -> dict:
         raise ValueError("Invalid dropout, learning rate, or seed")
     if args.save_every_updates <= 0:
         raise ValueError("--save-every-updates must be positive")
-    config = TransformerConfig.for_size(args.size, dropout=args.dropout)
+    config, model_class, protocol_size, model_file = build_model_config(architecture, args.size, args.dropout)
     if (config.vocab_size != protocol["inputs"]["vocab_size"]
-            or config.width != protocol["matching"]["embedding_widths"][args.size]
+            or config.width != protocol["matching"]["embedding_widths"][protocol_size]
             or config.max_positions != protocol["windows"]["targets"]):
-        raise ValueError("Transformer architecture conflicts with the shared protocol")
+        raise ValueError(f"{architecture} architecture conflicts with the shared protocol")
     training_data = NextTokenWindowDataset(args.token_dir, "train")
     validation_data = NextTokenWindowDataset(args.token_dir, "validation")
     if training_data.manifest["tokenizer_sha256"] != protocol["inputs"]["tokenizer_sha256"]:
@@ -176,9 +191,13 @@ def run(args: argparse.Namespace) -> dict:
         "token_manifest_sha256": sha256_file(args.token_dir / "manifest.json"),
         "window_manifest_sha256": sha256_file(args.token_dir / "windows/manifest.json"),
         "tokenizer_sha256": sha256_file(args.tokenizer_dir / "tokenizer.json"),
-        "model_code_sha256": sha256_file(Path(__file__).with_name("model.py")),
+        "model_code_sha256": sha256_file(Path(__file__).parents[1] / model_file),
         "train_code_sha256": sha256_file(Path(__file__)),
     }
+    if architecture != "transformer":
+        # Added only for other architectures so existing Transformer checkpoints still resume.
+        identity["architecture"] = architecture
+        identity["dropout"] = args.dropout
     run_dir = args.run_dir.resolve()
     if args.resume:
         if not (run_dir / "latest.pt").is_file():
@@ -189,7 +208,7 @@ def run(args: argparse.Namespace) -> dict:
         run_dir.mkdir(parents=True, exist_ok=True)
         write_json(run_dir / "run.json", {"created_at": utc_now(), "identity": identity})
     set_seed(args.seed)
-    model = TransformerLM(config).to(device)
+    model = model_class(config).to(device)
     optimizer = make_optimizer(model, protocol)
     if args.resume:
         saved = torch.load(run_dir / "latest.pt", map_location="cpu", weights_only=False)
@@ -314,7 +333,7 @@ def run(args: argparse.Namespace) -> dict:
                                           "consumed_tokens": consumed})
     save_latest()
     summary = {
-        "status": "complete", "mode": args.mode, "size": args.size,
+        "status": "complete", "architecture": architecture, "mode": args.mode, "size": args.size,
         "consumed_tokens": consumed, "updates": updates,
         "best_validation_nll": best_nll, "best_checkpoint_tokens": best_tokens,
         "train_seconds": train_seconds,
@@ -332,7 +351,9 @@ def run(args: argparse.Namespace) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("exploratory", "production"), default="exploratory")
-    parser.add_argument("--size", choices=("s", "m", "l"), default="s")
+    parser.add_argument("--architecture", choices=("transformer", "lstm"), default="transformer")
+    parser.add_argument("--size", choices=("s", "m", "l", "m_deep"), default="s",
+                        help="m_deep (4-layer depth control) exists only for --architecture lstm")
     parser.add_argument("--token-dir", type=Path, default=DEFAULT_DATA_ROOT / "processed/tokens")
     parser.add_argument("--tokenizer-dir", type=Path, default=DEFAULT_TOKENIZER_DIR)
     parser.add_argument("--snapshot-file", type=Path, default=DEFAULT_LOCK)

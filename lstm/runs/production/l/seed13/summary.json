@@ -1,0 +1,20 @@
+{
+  "architecture": "lstm",
+  "best_checkpoint_tokens": 250000000,
+  "best_validation_nll": 3.785780746174463,
+  "consumed_tokens": 250000000,
+  "last_validation_seconds": 2.205710545182228,
+  "latest_checkpoint_bytes": 602363144,
+  "mode": "production",
+  "parameters": {
+    "non_embedding": 39708880,
+    "token_embedding": 10485760,
+    "total": 50194640
+  },
+  "peak_cuda_bytes": 3798241280,
+  "prediction_tokens_per_second": 37495.41847806411,
+  "size": "l",
+  "status": "complete",
+  "train_seconds": 6667.481258977205,
+  "updates": 8087
+}

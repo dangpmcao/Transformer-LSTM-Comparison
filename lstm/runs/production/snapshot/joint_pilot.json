@@ -1,0 +1,205 @@
+{
+  "created_at": "2026-11-16T10:24:37.139266+00:00",
+  "hardware": {
+    "lstm": {
+      "cuda_runtime": "12.6",
+      "gpus": [
+        "NVIDIA GeForce RTX 4090 D, 560.35.03, 24564 MiB"
+      ],
+      "host": "user-ESC8000A-E11",
+      "python": "3.12.16",
+      "torch": "2.7.1+cu126"
+    },
+    "note": "Architectures were measured on different GPUs; throughput is not comparable across architectures. Timing does not affect results (float32, same trainer).",
+    "transformer": {
+      "compute_capability": [
+        8,
+        6
+      ],
+      "cpu_threads": 4,
+      "cuda_runtime": "12.6",
+      "cuda_visible_devices": "5",
+      "gpu_name": "NVIDIA GeForce RTX 3090",
+      "gpu_total_memory_bytes": 25298141184,
+      "gpu_uuid": "e8e3c43f-2603-7f2a-487c-5843b6551c20",
+      "hostname": "vishc-server-1",
+      "logical_cuda_device": 0,
+      "nvidia_smi_inventory": "GPU-1b792338-b37e-e436-01be-e9872074f515, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:1A:00.0\nGPU-a8490f9a-7e53-945f-72e9-f6aa723e256a, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:3D:00.0\nGPU-a33608fe-e126-a55a-faa5-c422001c8e05, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:3E:00.0\nGPU-68b2882a-5e80-d410-d096-1eb35950092e, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:88:00.0\nGPU-ea65c85c-da8d-dc2b-5beb-caffb4e0b180, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:89:00.0\nGPU-e8e3c43f-2603-7f2a-487c-5843b6551c20, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:B1:00.0\nGPU-280c4133-a1a7-6add-4226-ad859ab0c8ae, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:B2:00.0",
+      "python_executable": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/.venv/bin/python",
+      "python_version": "3.12.9",
+      "slurm_job_id": "2557",
+      "torch_version": "2.7.1+cu126"
+    }
+  },
+  "measurements": [
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "8ad393ac5a3ea7cb5f72a9564c86046ad3846c8163da292692ea10311caa8374",
+        "run.json": "2cb85ffd76ab42581606fca5256002b6fa675e5a0892fc6d90f400b75747cfe4",
+        "summary.json": "e15affdf5842d89a4c5b96f02dc50c2c3a264c4d037e5c9ca53c89f1ddf19d5b"
+      },
+      "checkpoint_bytes": 89898315,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 29.639618614921346,
+      "measured_updates": 151,
+      "parameters": {
+        "non_embedding": 3290624,
+        "token_embedding": 4194304,
+        "total": 7484928
+      },
+      "peak_memory_bytes": 2908211200,
+      "prediction_tokens_per_second": 157637.18355160754,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/s",
+      "size": "s",
+      "subprocess_wall_seconds": 43.96489635691978,
+      "trainer_prediction_tokens_per_second_including_warmup": 156663.77524065174,
+      "update_tokens_per_second_max": 168419.09366519505,
+      "update_tokens_per_second_median": 158053.1689318113,
+      "update_tokens_per_second_min": 146425.16601447438,
+      "validation_nll_final": 6.833964989622442,
+      "validation_nll_start": 9.748593959343511,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 0.5925438900012523,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "5843b258e13aaa016721dc7a72c673f0d17cf6a490b257246c538897ef8ba51c",
+        "run.json": "acf7ac0400fa0a91e42beeefaa83785069d97c649106ce5935aa60d88abda695",
+        "summary.json": "66566c4403cfdb290b767d65e251827a2dba63ed7638a3fde557e400cd7dd4d5"
+      },
+      "checkpoint_bytes": 205735691,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 69.13829749799334,
+      "measured_updates": 151,
+      "parameters": {
+        "non_embedding": 10844160,
+        "token_embedding": 6291456,
+        "total": 17135616
+      },
+      "peak_memory_bytes": 3768707072,
+      "prediction_tokens_per_second": 67579.13007816845,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/m",
+      "size": "m",
+      "subprocess_wall_seconds": 93.69924633391201,
+      "trainer_prediction_tokens_per_second_including_warmup": 67811.29781244062,
+      "update_tokens_per_second_max": 79929.2717560365,
+      "update_tokens_per_second_median": 68068.56737047329,
+      "update_tokens_per_second_min": 51734.26101763539,
+      "validation_nll_final": 6.608971122734611,
+      "validation_nll_start": 9.775578528362855,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 1.4219323450233787,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "fc64c4976f281ff7543a3e8f247d1349ab823019b70d20d923f16f568bbf6031",
+        "run.json": "051717e51215f85b4be1108b0a22389e047e0a538b9acf7be2b64a6b793311a2",
+        "summary.json": "9554962bd166795d9333412f9a6b78d495725d2eea704f99bbdf0cc7b5afc6d8"
+      },
+      "checkpoint_bytes": 602571979,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 188.0729889171198,
+      "measured_updates": 151,
+      "parameters": {
+        "non_embedding": 39717120,
+        "token_embedding": 10485760,
+        "total": 50202880
+      },
+      "peak_memory_bytes": 5844629504,
+      "prediction_tokens_per_second": 24843.046451816623,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/l",
+      "size": "l",
+      "subprocess_wall_seconds": 245.82191304978915,
+      "trainer_prediction_tokens_per_second_including_warmup": 24940.15595666046,
+      "update_tokens_per_second_max": 30194.830748414395,
+      "update_tokens_per_second_median": 24611.39536912788,
+      "update_tokens_per_second_min": 21803.950758392508,
+      "validation_nll_final": 6.501251574450017,
+      "validation_nll_start": 9.83166703018975,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 3.908918631961569,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "lstm",
+      "checkpoint_bytes": 89783688,
+      "dropout": 0.1,
+      "final_validation_nll": 7.395059144681176,
+      "learning_rate": 0.0003,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 31.019226104021072,
+      "measured_updates": 151,
+      "peak_memory_bytes": 2562209792,
+      "pilot_prediction_tokens": 5000000,
+      "prediction_tokens_per_second": 150626.13052729648,
+      "run_dir": "lstm/runs/pilot_mb16_5M/s",
+      "size": "s",
+      "update_tokens_per_second_median": 148573.3534963721,
+      "validation_seconds": 0.5265664234757423,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "lstm",
+      "checkpoint_bytes": 205557448,
+      "dropout": 0.1,
+      "final_validation_nll": 7.374798139127021,
+      "learning_rate": 0.0003,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 37.39257116615772,
+      "measured_updates": 151,
+      "peak_memory_bytes": 2900477440,
+      "pilot_prediction_tokens": 5000000,
+      "prediction_tokens_per_second": 124952.7875266488,
+      "run_dir": "lstm/runs/pilot_mb16_5M/m",
+      "size": "m",
+      "update_tokens_per_second_median": 125600.75336943161,
+      "validation_seconds": 0.6519733481109142,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "lstm",
+      "checkpoint_bytes": 602362952,
+      "dropout": 0.1,
+      "final_validation_nll": 7.249878677137816,
+      "learning_rate": 0.0003,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 100.61955294758081,
+      "measured_updates": 151,
+      "peak_memory_bytes": 3798241280,
+      "pilot_prediction_tokens": 5000000,
+      "prediction_tokens_per_second": 46435.36830693438,
+      "run_dir": "lstm/runs/pilot_mb16_5M/l",
+      "size": "l",
+      "update_tokens_per_second_median": 46558.1118018471,
+      "validation_seconds": 2.204986158758402,
+      "warmup_updates_excluded": 10
+    }
+  ],
+  "protocol_sha256": "3ba167b6557e4c760ec2a033eaab16b8ece16e82302d0a3c40922c9265df2f4d",
+  "provenance": {
+    "cross_machine_data_identity": "dataset/expected_outputs.lock.json (confirmed reference hashes)",
+    "protocol_changes_since_transformer_report": [
+      "training.initialization.lstm_token_embedding (LSTM only)",
+      "tuning.learning_rates extended to 1e-2 and 3e-2 (agreed; timing-neutral)"
+    ],
+    "transformer_report_protocol_sha256": "f4775f24968c8d28e68db9a203ef1ab7e6d092efcadef529e87d9c91ca5fb688",
+    "transformer_report_sha256": "d89c74dd56b0fc7d0e72926f1db97c6d78d4b2c21703928e16980601c96b47f2",
+    "transformer_report_token_manifest_sha256": "c90c17aa717c8da6ba00481266fa0b1111c99808956f67c0d05305d26676ef6f",
+    "transformer_report_window_manifest_sha256": "71e9edf6b6e40424c583a2a605792d26fa9a8863fd3e26d4be52f2b0917278e1"
+  },
+  "schema_version": 1,
+  "settings": {
+    "exact_prediction_tokens": 250000000,
+    "gradient_accumulation_steps": 4,
+    "microbatch_windows": 16,
+    "tuning_prediction_tokens": 50000000
+  },
+  "status": "PASS",
+  "token_manifest_sha256": "76509c2cc5e9dd596c7691e5dc5e433f211bbd27cc832c5ed2a7ede97d01f754",
+  "window_manifest_sha256": "5c52c113c48f2a069e6a96b27597230fdfde92175b24de57856642ea7dd3505e"
+}

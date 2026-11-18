@@ -1,0 +1,4 @@
+validation tokens=0 nll=9.70406 ppl=16384.039
+validation tokens=1027211 nll=7.42540 ppl=1678.076
+validation tokens=2000000 nll=7.39510 ppl=1627.994
+{"architecture": "lstm", "best_checkpoint_tokens": 2000000, "best_validation_nll": 7.395103872548317, "consumed_tokens": 2000000, "last_validation_seconds": 2.1901754587888718, "latest_checkpoint_bytes": 602362952, "mode": "exploratory", "parameters": {"non_embedding": 39708880, "token_embedding": 10485760, "total": 50194640}, "peak_cuda_bytes": 3798241280, "prediction_tokens_per_second": 45918.643454808196, "size": "l", "status": "complete", "train_seconds": 43.555293656885624, "updates": 65}

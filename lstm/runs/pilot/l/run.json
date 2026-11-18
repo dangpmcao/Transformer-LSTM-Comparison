@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-11-14T10:07:01.508903+00:00",
+  "identity": {
+    "architecture": "lstm",
+    "budget_tokens": 2000000,
+    "cuda_version": "12.6",
+    "dropout": 0.1,
+    "effective_batch_windows": 64,
+    "learning_rate": 0.001,
+    "microbatch_windows": 2,
+    "mode": "exploratory",
+    "model": {
+      "dropout": 0.1,
+      "hidden": 1690,
+      "layers": 2,
+      "max_positions": 512,
+      "vocab_size": 16384,
+      "width": 640
+    },
+    "model_code_sha256": "6757919bfe21c67fea30b9bcb2630fa5d33b66e65f8ed5dfbb41f740cc89ed26",
+    "protocol_sha256": "f4775f24968c8d28e68db9a203ef1ab7e6d092efcadef529e87d9c91ca5fb688",
+    "seed": 101,
+    "size": "l",
+    "snapshot_sha256": null,
+    "token_manifest_sha256": "76509c2cc5e9dd596c7691e5dc5e433f211bbd27cc832c5ed2a7ede97d01f754",
+    "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+    "torch_version": "2.7.1+cu126",
+    "train_code_sha256": "c1405bd6f0b64c2eae87ea728ea91b7d37daea8cc6878e4d68f1a074f8f606ab",
+    "window_manifest_sha256": "5c52c113c48f2a069e6a96b27597230fdfde92175b24de57856642ea7dd3505e"
+  }
+}

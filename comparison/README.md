@@ -1,14 +1,18 @@
 # Experiment settings and shared training rules
 
-This folder defines how the future Transformer and LSTM experiments will be
-compared. The rules are written in [`protocol.yaml`](protocol.yaml).
+This folder defines how the Transformer and LSTM experiments are compared. The
+rules are written in [`protocol.yaml`](protocol.yaml).
 *Protocol* means the agreed experiment settings; a *snapshot* is a saved copy
 of those settings together with the exact input/code checksums.
 
 The data and shared input code are ready. Transformer S/M/L exploratory training
 is complete at 250M prediction tokens per model, seed 101; see the
 [completed training results](../transformer/README.md#completed-training).
-The joint Transformer/LSTM timing pilot and production run matrix remain pending.
+The LSTM is implemented in [`lstm/`](../lstm/README.md) and trains with the same
+trainer (`python -m transformer.train --architecture lstm`). The joint
+Transformer/LSTM timing pilot and the production snapshot were created on
+2026-11-16, and the LSTM production runs are complete; see the
+[LSTM production results](../lstm/README.md#production-2026-11-1617).
 Run commands from the repository root, using the
 [Python environment](../README.md#set-up-python).
 
@@ -45,12 +49,14 @@ snapshots with the runs they describe.
 | Training order | Same run seed, epoch, and batch size for both architectures |
 | Run seeds | 13, 37, 73; separate tuning seed 101 |
 | Effective batch | 64 windows per optimizer update; identical partial-batch handling |
+| Microbatch | 16 windows × 4 gradient-accumulation steps for both architectures (agreed 2026-11-14; frozen by the production snapshot) |
 | Numerical precision | float32 |
 | Optimizer | AdamW; betas (0.9, 0.95), epsilon 1e-8, weight decay 0.1 except biases/norm parameters |
 | Learning-rate schedule | Cosine decay based on consumed prediction tokens; 1% warmup; minimum LR is 10% of peak |
 | Gradient clipping | Global norm 1.0 after loss normalization |
-| Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1 |
-| Hyperparameter search | Six learning rates × two dropout values: 12 trials per architecture at size S |
+| Weight initialization | Matrix weights normal(0, 0.02), normalization scales 1, biases 0; LSTM forget bias totals 1. Exception: LSTM token embedding uniform(−0.1, 0.1), because the LSTM has no input normalization ([LSTM finding](../lstm/README.md#finding-normal0-002-embeddings-stall-the-lstm-at-unigram-loss)) |
+| Hyperparameter search | Six learning rates (1e-4 to 3e-2) × two dropout values: twelve trials per architecture at size S, 50M prediction tokens per trial. Extended from four learning rates on 2026-11-16 because the LSTM winner was at the grid edge ([LSTM tuning](../lstm/README.md#tuning-2026-11-16-fixed-initialization)) |
+| Training budget | 250M exact prediction tokens per production run |
 | Larger sizes | Reuse each architecture's selected S settings without extra tuning |
 | Checkpoint selection | Lowest validation mean prediction loss; earlier checkpoint wins ties |
 | Validation timing | Every 1M prediction targets, at the first optimizer step reaching each threshold, plus start/end |
@@ -62,8 +68,9 @@ LSTM optima at the original grid boundary. Both architectures must use the
 expanded grid and equal per-trial token budgets. Transformer tuning commands
 are in the [two-GPU tuning guide](../transformer/README.md#tune-size-s-on-two-gpus).
 Dropout locations and random-seed/resume requirements are also recorded in the
-YAML. Stage 4 must implement the models and verify causal attention, state
-resets, numerical behavior, and parameter counts.
+YAML. Both models are implemented; their tests verify causal attention
+(`transformer/tests`), fresh LSTM states per window, initialization and parameter
+counts against the Transformer (`lstm/tests`).
 
 ## Load the same examples for either model
 
@@ -84,7 +91,7 @@ batch = next(iter(training_batches))
 assert batch["input_ids"].shape == (2, 512)
 
 hidden_state, cell_state = create_lstm_zero_state(
-    batch["input_ids"], layers=2, hidden_width=460, dtype=torch.float32,
+    batch["input_ids"], layers=2, hidden_width=472, dtype=torch.float32,
 )
 ```
 
@@ -176,7 +183,24 @@ The output folder is new and is never overwritten:
 The existing snapshot has **`production_ready: false`**. The plan requires a
 short measured *timing trial* (also called a pilot) before fixing the exact
 training budget, tuning-trial budget, microbatch size, and gradient-accumulation
-count. **250M prediction targets is currently a target, not a finalized budget.**
+count.
+
+**Status (2026-11-16): a production snapshot exists.** It was created from the
+joint pilot report built by [`joint_pilot.py`](joint_pilot.py) (Transformer
+measurements from `transformer/runs/timing_mb16_job2557/`, LSTM measurements from
+the [LSTM timing pilot](../lstm/README.md#timing-pilot-2026-11-14), both at
+microbatch 16) and freezes **250M exact prediction tokens, 50M tuning tokens,
+microbatch 16, accumulation 4**. The snapshot, the joint pilot report and the
+exact `protocol.yaml` it was frozen from are archived in
+[`lstm/runs/production/`](../lstm/runs/production/). Manifest files embed their
+creation time, so a snapshot is bound to one machine's data files; identical data
+across machines is established by the confirmed reference hashes in
+[`dataset/expected_outputs.lock.json`](../dataset/expected_outputs.lock.json).
+The Transformer three-seed campaign described in the
+[Transformer guide](../transformer/README.md) uses microbatch 64 × 1 in exploratory
+mode, outside this snapshot.
+
+The rest of this section describes how a snapshot is made.
 
 This readiness check intentionally fails until those measurements exist:
 

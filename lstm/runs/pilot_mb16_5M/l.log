@@ -1,0 +1,9 @@
+
+=== 2026-11-16 12:54:16 GPU 3: nice -n 19 ionice -c3 /home/hugo/NLP/NLP-Project/.venv/bin/python -m transformer.train --architecture lstm --microbatch-windows 16 --mode exploratory --size l --budget-tokens 5000000 --learning-rate 0.0003 --dropout 0.1 --seed 101 --run-dir /home/hugo/NLP/NLP-Project/lstm/runs/pilot_mb16_5M/l --token-dir /home/hugo/NLP/dataset/processed/tokens
+validation tokens=0 nll=9.70477 ppl=16395.594
+validation tokens=1027211 nll=7.42741 ppl=1681.442
+validation tokens=2019795 nll=7.38869 ppl=1617.578
+validation tokens=3004897 nll=7.33340 ppl=1530.579
+validation tokens=4027771 nll=7.28543 ppl=1458.884
+validation tokens=5000000 nll=7.24988 ppl=1407.934
+{"architecture": "lstm", "best_checkpoint_tokens": 5000000, "best_validation_nll": 7.249878677137816, "consumed_tokens": 5000000, "last_validation_seconds": 2.204986158758402, "latest_checkpoint_bytes": 602362952, "mode": "exploratory", "parameters": {"non_embedding": 39708880, "token_embedding": 10485760, "total": 50194640}, "peak_cuda_bytes": 3798241280, "prediction_tokens_per_second": 46299.414300224926, "size": "l", "status": "complete", "train_seconds": 107.99272681027651, "updates": 162}
