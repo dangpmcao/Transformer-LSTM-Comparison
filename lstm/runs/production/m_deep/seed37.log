@@ -1,0 +1,17 @@
+
+=== 2026-11-16 22:44:04 GPU 2: nice -n 19 ionice -c3 /home/hugo/NLP/NLP-Project/.venv/bin/python -m transformer.train --architecture lstm --mode production --size m_deep --snapshot-file /home/hugo/NLP/NLP-Project/comparison/protocol.production.lock.json --learning-rate 0.03 --dropout 0.1 --seed 37 --run-dir /home/hugo/NLP/NLP-Project/lstm/runs/production/m_deep/seed37 --token-dir /home/hugo/NLP/dataset/processed/tokens
+validation tokens=0 nll=9.70407 ppl=16384.186
+validation tokens=1023529 nll=7.50626 ppl=1819.401
+validation tokens=2005845 nll=7.46318 ppl=1742.688
+validation tokens=3028714 nll=7.44277 ppl=1707.472
+validation tokens=4019988 nll=7.43492 ppl=1694.122
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/hugo/NLP/NLP-Project/transformer/train.py", line 373, in <module>
+    main()
+  File "/home/hugo/NLP/NLP-Project/transformer/train.py", line 369, in main
+    run(parser.parse_args())
+  File "/home/hugo/NLP/NLP-Project/transformer/train.py", line 297, in run
+    raise FloatingPointError("Non-finite gradient norm")
+FloatingPointError: Non-finite gradient norm

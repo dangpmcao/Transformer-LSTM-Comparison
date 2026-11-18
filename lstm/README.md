@@ -189,6 +189,26 @@ Sensitivity result (2026-11-17; best-checkpoint validation NLL):
   0.2 nats worse than the 2-layer M at the same non-embedding parameters
   (M at lr 3e-2: 3.758 / 3.765 / 3.776, mean 3.766). M was not run at lr 1e-2.
 
+## Saved run records
+
+`lstm/runs/` holds the records of every LSTM run (`run.json`, `metrics.jsonl`,
+`summary.json` and the `<run>.log` next to each folder). Checkpoints (`*.pt`) are
+not in Git; they stay on the training server.
+
+| Folder | What it is |
+|---|---|
+| `production/{s,m,m_deep,l}/seed{13,37,73}` | Production runs (lr 3e-2, dropout 0.1); `m_deep/seed37` is the diverged run |
+| `production/snapshot/` | `protocol.production.lock.json` (SHA-256 `47f139a9…`), `joint_pilot.json`, the Transformer pilot it was built from, and `protocol.yaml` exactly as frozen (SHA-256 `3ba167b6…`, commit `5337da6`) |
+| `sensitivity_mdeep_lr0.01/` | Declared sensitivity analysis: M deep, lr 1e-2, dropout 0 |
+| `tuning/` | 12-trial S grid with the fixed initialization (selection) |
+| `tuning_superseded_normal_init/` | First 8-trial grid with N(0, 0.02) embeddings (superseded) |
+| `pilot_mb16_5M/` | Timing pilot in the production snapshot (same method as the Transformer pilot) |
+| `pilot/`, `pilot_mb16/` | Earlier timing pilots at microbatch 2 and 16 (2M tokens, old initialization) |
+
+The `protocol.yaml` in `comparison/` changed after the snapshot (the Transformer
+side's merge added `grid_extension_reason`); the LSTM runs were trained under the
+archived copy above.
+
 ## Run
 
 On the shared server, use the queue: at most 2 GPUs, only idle ones (≤5%
