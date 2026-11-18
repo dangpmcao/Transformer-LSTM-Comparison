@@ -96,24 +96,40 @@ def evaluate_windows(target_log_probs: TargetLogProbs, output: Path, *, split: s
     return result
 
 
+# Predeclared before any BLiMP accuracy was computed (2026-11-18). The only ID the
+# 5-gram lacks is bare "?" (34): BLiMP attaches it to the word ("grin?"), while
+# WikiText always spaces it (" ?" = 2885), so it never occurs in train. It is scored
+# as KenLM <unk>, never dropped; the affected paradigms are listed so the shared
+# comparison can report every model with and without them (from pairs.jsonl).
+DECLARED_BLIMP_OOV = {34: "bare '?' attached to a word; WikiText spaces it as ' ?' (ID 2885)"}
+
+
 def check_blimp_coverage(knows, output: Path, *, model_label: str) -> dict:
-    """Write BLiMP OOV coverage before any BLiMP scoring; stop if any target would be <unk>.
+    """Write BLiMP OOV coverage before any BLiMP scoring; stop on any undeclared OOV ID.
 
     Protocol evaluation.kenlm.oov: require full coverage, or predeclare a treatment.
-    Running this first means a treatment would be chosen without seeing accuracies.
     """
     output = Path(output).resolve()
     if output.exists():
         raise FileExistsError(f"Refusing to overwrite results: {output}")
     tokenizer = load_tokenizer()
-    sentences = [encode_text(tokenizer, pair[key], add_eos=True)
-                 for pair in load_pairs() for key in ("sentence_good", "sentence_bad")]
-    result = {"schema_version": 1, "created_at": utc_now(), "model_label": model_label, "sentences": len(sentences),
-              "eos_included": True, **coverage(sentences, knows)}
+    pairs = load_pairs()
+    sentences = [[encode_text(tokenizer, pair[key], add_eos=True) for key in ("sentence_good", "sentence_bad")]
+                 for pair in pairs]
+    result = coverage((ids for both in sentences for ids in both), knows)
+    affected = sorted({pair["paradigm"] for pair, both in zip(pairs, sentences, strict=True)
+                       if any(not knows(token) for ids in both for token in ids)})
+    undeclared = sorted(set(map(int, result["missing_ids"])) - set(DECLARED_BLIMP_OOV))
+    result = {"schema_version": 1, "created_at": utc_now(), "model_label": model_label,
+              "sentences": 2 * len(pairs), "eos_included": True, **result,
+              "status": "PASS" if not result["missing_ids"] else "FAIL" if undeclared else "PASS_DECLARED_UNK",
+              "declared_treatment": {"scored_as": "kenlm_unk_never_dropped",
+                                     "ids": {str(k): v for k, v in DECLARED_BLIMP_OOV.items()}},
+              "undeclared_missing_ids": undeclared, "affected_paradigms": affected}
     output.parent.mkdir(parents=True, exist_ok=True)
     write_json(output, result)
-    if result["status"] != "PASS":
-        raise ValueError(f"BLiMP has {result['oov_targets']} OOV targets; decide a treatment first: {output}")
+    if undeclared:
+        raise ValueError(f"BLiMP has undeclared OOV IDs {undeclared}; decide a treatment first: {output}")
     return result
 
 
