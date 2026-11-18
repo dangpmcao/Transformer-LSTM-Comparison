@@ -99,7 +99,7 @@ def token_nll(model: LSTMLM, batch: dict[str, torch.Tensor]) -> np.ndarray:
     """Per-target natural-log NLL [B, T] in float64; NaN where loss_mask is false."""
     logits = model(batch["input_ids"]).float()
     nll = F.cross_entropy(logits.transpose(1, 2), batch["target_ids"], reduction="none").double()
-    nll = nll.masked_fill(~batch["loss_mask"], math.nan).cpu().numpy()
+    nll = nll.masked_fill(~batch["loss_mask"], math.nan).detach().cpu().numpy()
     if not np.isfinite(nll[batch["loss_mask"].cpu().numpy()]).all():
         raise ValueError("Non-finite NLL for a scored target")
     return nll
