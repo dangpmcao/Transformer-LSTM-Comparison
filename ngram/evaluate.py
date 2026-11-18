@@ -18,12 +18,13 @@ from pathlib import Path
 
 import numpy as np
 
-from comparison.blimp_scorer import evaluate_blimp
+from comparison.blimp_scorer import evaluate_blimp, load_pairs
 from comparison.protocol import DEFAULT_PROTOCOL, load_protocol
 from dataset.common import DEFAULT_DATA_ROOT, file_record, read_json, sha256_file, utc_now, write_json
 from dataset.encode import split_arrays
 from dataset.windows import WINDOW_TARGETS, load_windows
-from .lm import DEFAULT_MODEL_ROOT, KenLMScorer, TargetLogProbs, window_scorer
+from tokenizer.core import encode_text, load_tokenizer
+from .lm import DEFAULT_MODEL_ROOT, KenLMScorer, TargetLogProbs, coverage, window_scorer
 from .train import DEFAULT_LABEL
 
 
@@ -95,6 +96,27 @@ def evaluate_windows(target_log_probs: TargetLogProbs, output: Path, *, split: s
     return result
 
 
+def check_blimp_coverage(knows, output: Path, *, model_label: str) -> dict:
+    """Write BLiMP OOV coverage before any BLiMP scoring; stop if any target would be <unk>.
+
+    Protocol evaluation.kenlm.oov: require full coverage, or predeclare a treatment.
+    Running this first means a treatment would be chosen without seeing accuracies.
+    """
+    output = Path(output).resolve()
+    if output.exists():
+        raise FileExistsError(f"Refusing to overwrite results: {output}")
+    tokenizer = load_tokenizer()
+    sentences = [encode_text(tokenizer, pair[key], add_eos=True)
+                 for pair in load_pairs() for key in ("sentence_good", "sentence_bad")]
+    result = {"schema_version": 1, "created_at": utc_now(), "model_label": model_label, "sentences": len(sentences),
+              "eos_included": True, **coverage(sentences, knows)}
+    output.parent.mkdir(parents=True, exist_ok=True)
+    write_json(output, result)
+    if result["status"] != "PASS":
+        raise ValueError(f"BLiMP has {result['oov_targets']} OOV targets; decide a treatment first: {output}")
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--model-dir", type=Path, default=DEFAULT_MODEL_ROOT / DEFAULT_LABEL)
@@ -111,6 +133,9 @@ def main() -> None:
         raise ValueError(f"Model manifest is not PASS: {model_manifest}")
     label = args.model_dir.name
     scorer = KenLMScorer(args.model_dir / "model.bin")
+    if args.blimp:  # Fail fast, before the long window scoring.
+        print({"blimp_coverage": check_blimp_coverage(
+            scorer.knows, args.results / f"{label}_blimp_coverage.json", model_label=label)["status"]})
     summary = evaluate_windows(
         scorer.target_log_probs, args.results / f"{label}_{args.split}", split=args.split,
         token_root=args.tokens, window_root=args.windows or args.tokens / "windows",

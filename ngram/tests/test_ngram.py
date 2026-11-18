@@ -159,3 +159,13 @@ def test_next_log_prob_matches_window_scoring(tmp_path):
     in_window, _ = scorer.target_log_probs(window)
     for t in range(1, 20):
         assert scorer.next_log_prob(window[:t], window[t]) == pytest.approx(in_window[t], abs=1e-9)
+
+
+def test_coverage_counts_unknown_targets_and_treats_eos_as_known():
+    from ngram.lm import coverage
+
+    known = {4, 5, EOS}
+    result = coverage([[4, 5, EOS], [4, 77, 77, EOS], [88, EOS]], known.__contains__)
+    assert result["targets"] == 9 and result["oov_targets"] == 3 and result["sequences_with_oov"] == 2
+    assert result["missing_ids"] == {"77": 2, "88": 1} and result["status"] == "FAIL"
+    assert coverage([[4, EOS]], known.__contains__)["status"] == "PASS"
