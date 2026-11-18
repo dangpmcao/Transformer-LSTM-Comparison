@@ -8,6 +8,29 @@ S/M/L training is complete for the exploratory runs: 250M prediction tokens per
 model, seed 101, completed on 2026-11-11. See the
 [training results](transformer/README.md#completed-training) for metrics and artifacts.
 The production run matrix and final evaluation remain pending.
+All 12 Transformer S tuning trials are complete (50M prediction tokens each):
+selected LR **0.001**, dropout **0.0**, validation PPL **94.30**.
+The [nine-run Slurm launcher](transformer/README.md#run-all-three-seeds-on-two-gpus)
+is ready for S/M/L × seeds 13/37/73, two runs concurrently. Run immediately with
+`bash transformer/run_production.sh --standalone` at 250M tokens/run. The shared
+LSTM/Transformer readiness gate remains separate from this explicit Transformer-only campaign.
+
+## Current Transformer results
+
+Each model completed 250,000,000 prediction tokens with seed 101. These are
+**final-checkpoint validation results from exploratory runs**; test, same-target
+context, and BLiMP evaluation remain pending.
+
+| Model | Parameters | Validation NLL | Validation perplexity |
+|---|---:|---:|---:|
+| Transformer S | 7,484,928 | 4.110006 | 60.95 |
+| Transformer M | 17,135,616 | 3.773657 | 43.54 |
+| Transformer L | 50,202,880 | 3.453102 | 31.60 |
+
+Lower NLL and perplexity mean better next-token prediction. The
+[Transformer guide](transformer/README.md#completed-training) records training
+measurements and artifact locations. Raw logs and checkpoints are stored locally
+under `transformer/runs/`, which is ignored by Git and is not included in a clone.
 
 ## Start here
 

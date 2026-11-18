@@ -9,9 +9,10 @@ The data and shared input code are ready. Transformer S/M/L exploratory training
 is complete at 250M prediction tokens per model, seed 101; see the
 [completed training results](../transformer/README.md#completed-training).
 The LSTM is implemented in [`lstm/`](../lstm/README.md) and trains with the same
-trainer (`python -m transformer.train --architecture lstm`). Pending: the joint
-Transformer/LSTM timing pilot at the agreed microbatch, the production snapshot,
-and the production run matrix.
+trainer (`python -m transformer.train --architecture lstm`). The joint
+Transformer/LSTM timing pilot and the production snapshot were created on
+2026-11-16, and the LSTM production runs are complete; see the
+[LSTM production results](../lstm/README.md#production-2026-11-1617).
 Run commands from the repository root, using the
 [Python environment](../README.md#set-up-python).
 
@@ -62,6 +63,10 @@ snapshots with the runs they describe.
 | Parameter matching | Tied token embeddings/output head; same embedding width; other parameter counts within 5% of Transformer |
 
 These are prospective experiment choices, not measured optimal settings.
+On 2026-11-16, the shared grid added LR 0.01 and 0.03 after Hugo reported
+LSTM optima at the original grid boundary. Both architectures must use the
+expanded grid and equal per-trial token budgets. Transformer tuning commands
+are in the [two-GPU tuning guide](../transformer/README.md#tune-size-s-on-two-gpus).
 Dropout locations and random-seed/resume requirements are also recorded in the
 YAML. Both models are implemented; their tests verify causal attention
 (`transformer/tests`), fresh LSTM states per window, initialization and parameter
@@ -178,11 +183,24 @@ The output folder is new and is never overwritten:
 The existing snapshot has **`production_ready: false`**. The plan requires a
 short measured *timing trial* (also called a pilot) before fixing the exact
 training budget, tuning-trial budget, microbatch size, and gradient-accumulation
-count. The values are agreed: **250M exact prediction tokens, 50M tuning tokens,
-microbatch 16, accumulation 4**. They become binding only in the production
-snapshot, which still needs timing measurements of **both** architectures at S/M/L
-with microbatch 16 (LSTM: measured, see the [LSTM timing pilot](../lstm/README.md#timing-pilot-2026-11-14);
-Transformer: earlier measurements used microbatch 2).
+count.
+
+**Status (2026-11-16): a production snapshot exists.** It was created from the
+joint pilot report built by [`joint_pilot.py`](joint_pilot.py) (Transformer
+measurements from `transformer/runs/timing_mb16_job2557/`, LSTM measurements from
+the [LSTM timing pilot](../lstm/README.md#timing-pilot-2026-11-14), both at
+microbatch 16) and freezes **250M exact prediction tokens, 50M tuning tokens,
+microbatch 16, accumulation 4**. The snapshot, the joint pilot report and the
+exact `protocol.yaml` it was frozen from are archived in
+[`lstm/runs/production/`](../lstm/runs/production/). Manifest files embed their
+creation time, so a snapshot is bound to one machine's data files; identical data
+across machines is established by the confirmed reference hashes in
+[`dataset/expected_outputs.lock.json`](../dataset/expected_outputs.lock.json).
+The Transformer three-seed campaign described in the
+[Transformer guide](../transformer/README.md) uses microbatch 64 × 1 in exploratory
+mode, outside this snapshot.
+
+The rest of this section describes how a snapshot is made.
 
 This readiness check intentionally fails until those measurements exist:
 

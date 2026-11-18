@@ -101,8 +101,33 @@ difficulty. This is exactly the TA's concern, and it supports the planned
 truncated or shuffled distant context, and report the 5-gram curve next to
 the neural ones as the reference for "no long-context use".
 
+## Same-target context ablation
+
+`comparison/same_target.py` builds the shared target manifest defined in
+`evaluation.context.same_target` (positions 385–512 of every full window;
+histories full, 4, 32, 128 tokens, and a distant shuffle that keeps the nearest
+128 tokens). `ngram/same_target.py` scores the 5-gram on that same manifest and
+checks invariance **per target** (tolerance 1e-6 nats), as the protocol's
+`five_gram_extension` requires.
+
+```bash
+python -m comparison.same_target --split validation   # persist manifest before any scoring
+python -m ngram.same_target --split validation
+```
+
+Validation (60,032 targets from 469 full windows; 60 short windows / 14,971 targets excluded):
+
+| Condition | full | k = 4 | k = 32 | k = 128 | distant shuffle |
+|---|---|---|---|---|---|
+| Mean NLL | 4.2227 | 4.2227 | 4.2227 | 4.2227 | 4.2227 |
+
+Invariance **PASS**: maximum per-target deviation exactly 0. The full-history
+NLL also equals the window evaluation's late-position mean (4.223), an
+independent check that histories are aligned. This is the reference row for the
+neural models: any gain they show here comes from context beyond four tokens.
+The test manifest is built (69,376 targets) but not scored until final reporting.
+
 ## Pending
 
-- Test perplexity and BLiMP (final reporting).
+- Test perplexity, BLiMP and the test-split ablation (final reporting).
 - Copy(L): needs the shared span sampler from `evaluation.copy` in the protocol (not yet implemented), so that all models score identical spans.
-- Same-target ablation: to be defined in `protocol.yaml` for all models (`evaluation.context.history_limits` already points in that direction).

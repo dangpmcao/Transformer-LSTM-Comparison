@@ -1,0 +1,9 @@
+{
+  "budget_tokens": 250000000,
+  "gradient_accumulation_steps": 1,
+  "joint_production_ready": false,
+  "microbatch_windows": 64,
+  "pilot_requirement": "user_requested_transformer_only_before_joint_pilot",
+  "purpose": "transformer_only_three_seeds",
+  "trainer_mode": "exploratory"
+}

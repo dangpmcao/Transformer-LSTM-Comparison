@@ -1,0 +1,151 @@
+{
+  "completed_at": "2026-11-14T12:03:01.133970+00:00",
+  "created_at": "2026-11-14T11:56:37.637509+00:00",
+  "cuda_version": "12.6",
+  "hardware": {
+    "compute_capability": [
+      8,
+      6
+    ],
+    "cpu_threads": 4,
+    "cuda_runtime": "12.6",
+    "cuda_visible_devices": "5",
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "gpu_total_memory_bytes": 25298141184,
+    "gpu_uuid": "e8e3c43f-2603-7f2a-487c-5843b6551c20",
+    "hostname": "vishc-server-1",
+    "logical_cuda_device": 0,
+    "nvidia_smi_inventory": "GPU-1b792338-b37e-e436-01be-e9872074f515, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:1A:00.0\nGPU-a8490f9a-7e53-945f-72e9-f6aa723e256a, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:3D:00.0\nGPU-a33608fe-e126-a55a-faa5-c422001c8e05, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:3E:00.0\nGPU-68b2882a-5e80-d410-d096-1eb35950092e, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:88:00.0\nGPU-ea65c85c-da8d-dc2b-5beb-caffb4e0b180, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:89:00.0\nGPU-e8e3c43f-2603-7f2a-487c-5843b6551c20, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:B1:00.0\nGPU-280c4133-a1a7-6add-4226-ad859ab0c8ae, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:B2:00.0",
+    "python_executable": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/.venv/bin/python",
+    "python_version": "3.12.9",
+    "slurm_job_id": "2557",
+    "torch_version": "2.7.1+cu126"
+  },
+  "limitations": "Transformer-only evidence. Not a production lock, tuning result, or proof of equal converged NLL at microbatch 2 and 16. Peak memory includes warm-up and validation; allocated bytes, not reserved/total GPU use.",
+  "measurements": [
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "8ad393ac5a3ea7cb5f72a9564c86046ad3846c8163da292692ea10311caa8374",
+        "run.json": "2cb85ffd76ab42581606fca5256002b6fa675e5a0892fc6d90f400b75747cfe4",
+        "summary.json": "e15affdf5842d89a4c5b96f02dc50c2c3a264c4d037e5c9ca53c89f1ddf19d5b"
+      },
+      "checkpoint_bytes": 89898315,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 29.639618614921346,
+      "measured_updates": 151,
+      "parameters": {
+        "non_embedding": 3290624,
+        "token_embedding": 4194304,
+        "total": 7484928
+      },
+      "peak_memory_bytes": 2908211200,
+      "prediction_tokens_per_second": 157637.18355160754,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/s",
+      "size": "s",
+      "subprocess_wall_seconds": 43.96489635691978,
+      "trainer_prediction_tokens_per_second_including_warmup": 156663.77524065174,
+      "update_tokens_per_second_max": 168419.09366519505,
+      "update_tokens_per_second_median": 158053.1689318113,
+      "update_tokens_per_second_min": 146425.16601447438,
+      "validation_nll_final": 6.833964989622442,
+      "validation_nll_start": 9.748593959343511,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 0.5925438900012523,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "5843b258e13aaa016721dc7a72c673f0d17cf6a490b257246c538897ef8ba51c",
+        "run.json": "acf7ac0400fa0a91e42beeefaa83785069d97c649106ce5935aa60d88abda695",
+        "summary.json": "66566c4403cfdb290b767d65e251827a2dba63ed7638a3fde557e400cd7dd4d5"
+      },
+      "checkpoint_bytes": 205735691,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 69.13829749799334,
+      "measured_updates": 151,
+      "parameters": {
+        "non_embedding": 10844160,
+        "token_embedding": 6291456,
+        "total": 17135616
+      },
+      "peak_memory_bytes": 3768707072,
+      "prediction_tokens_per_second": 67579.13007816845,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/m",
+      "size": "m",
+      "subprocess_wall_seconds": 93.69924633391201,
+      "trainer_prediction_tokens_per_second_including_warmup": 67811.29781244062,
+      "update_tokens_per_second_max": 79929.2717560365,
+      "update_tokens_per_second_median": 68068.56737047329,
+      "update_tokens_per_second_min": 51734.26101763539,
+      "validation_nll_final": 6.608971122734611,
+      "validation_nll_start": 9.775578528362855,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 1.4219323450233787,
+      "warmup_updates_excluded": 10
+    },
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "fc64c4976f281ff7543a3e8f247d1349ab823019b70d20d923f16f568bbf6031",
+        "run.json": "051717e51215f85b4be1108b0a22389e047e0a538b9acf7be2b64a6b793311a2",
+        "summary.json": "9554962bd166795d9333412f9a6b78d495725d2eea704f99bbdf0cc7b5afc6d8"
+      },
+      "checkpoint_bytes": 602571979,
+      "measured_prediction_tokens": 4672306,
+      "measured_training_seconds": 188.0729889171198,
+      "measured_updates": 151,
+      "parameters": {
+        "non_embedding": 39717120,
+        "token_embedding": 10485760,
+        "total": 50202880
+      },
+      "peak_memory_bytes": 5844629504,
+      "prediction_tokens_per_second": 24843.046451816623,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/timing_mb16_job2557/l",
+      "size": "l",
+      "subprocess_wall_seconds": 245.82191304978915,
+      "trainer_prediction_tokens_per_second_including_warmup": 24940.15595666046,
+      "update_tokens_per_second_max": 30194.830748414395,
+      "update_tokens_per_second_median": 24611.39536912788,
+      "update_tokens_per_second_min": 21803.950758392508,
+      "validation_nll_final": 6.501251574450017,
+      "validation_nll_start": 9.83166703018975,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 3.908918631961569,
+      "warmup_updates_excluded": 10
+    }
+  ],
+  "model_code_sha256": "f8949051a7fe06f0c4483f59180e9ec395ade5c3d567cad5f72b529dca377a4b",
+  "pilot_script_sha256": "1f4ec214f98d9bb778960ea852dd05f2b3e022bd17eb17bbd4765a342ac7a622",
+  "pilot_settings": {
+    "dropout": 0.1,
+    "learning_rate": 0.0003,
+    "minimum_measured_updates": 20,
+    "precision": "float32",
+    "prediction_tokens_per_size": 5000000,
+    "seed": 101,
+    "sizes": [
+      "s",
+      "m",
+      "l"
+    ],
+    "warmup_updates": 10
+  },
+  "prepared_snapshot_sha256": "2835c2fe33a9580614a1f0be5af5f9962d713f2f3df3839014dfe04d74d270cb",
+  "production_ready": false,
+  "protocol_sha256": "f4775f24968c8d28e68db9a203ef1ab7e6d092efcadef529e87d9c91ca5fb688",
+  "schema_version": 1,
+  "settings": {
+    "gradient_accumulation_steps": 4,
+    "microbatch_windows": 16
+  },
+  "status": "TRANSFORMER_ONLY",
+  "timing_method": "Sum valid targets / sum trainer step-time deltas after warm-up; exclude epoch-partial and final updates, validation, checkpoint I/O and logging. Uses unchanged trainer timers, not separately synchronized CUDA events. Subprocess wall time includes setup, input verification, validation and saves.",
+  "token_manifest_sha256": "c90c17aa717c8da6ba00481266fa0b1111c99808956f67c0d05305d26676ef6f",
+  "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+  "torch_version": "2.7.1+cu126",
+  "train_code_sha256": "c1711e5c315c98d6dd8bf5529543e0f3c57381f3a6fc2852ba035fac8247a93b",
+  "window_manifest_sha256": "71e9edf6b6e40424c583a2a605792d26fa9a8863fd3e26d4be52f2b0917278e1"
+}

@@ -1,0 +1,158 @@
+{
+  "checked_at_utc": "2026-11-11T08:46:06.331910+00:00",
+  "runs": {
+    "s": {
+      "latest_update": {
+        "at": "2026-11-11T08:46:06.166468+00:00",
+        "batch_windows": 64,
+        "consumed_tokens": 39587910,
+        "epoch": 0,
+        "event": "update",
+        "gradient_norm": 0.7343086004257202,
+        "learning_rate": 0.0002853147218330362,
+        "peak_cuda_bytes": 529134592,
+        "prediction_tokens": 31751,
+        "train_seconds": 715.8806768879294,
+        "training_nll": 5.178015746858859,
+        "updates": 1280,
+        "window_cursor": 81920
+      },
+      "since_slurm_updates": 480,
+      "metrics_age_seconds": 0.165442,
+      "finite_model_optimizer_best_and_metrics": true,
+      "monotonic_since_slurm": true,
+      "checkpoint_tokens": 39433201,
+      "checkpoint_updates": 1275,
+      "checkpoint_age_seconds": 2.9591846466064453,
+      "checkpoint_lag_updates": 5,
+      "recent_wall_tokens_per_second": 51636.92359704581,
+      "measurement_seconds": 120.32663,
+      "projected_remaining_hours_at_recent_rate": 1.1318993988464803,
+      "slurm_validation_first": {
+        "at": "2026-11-11T08:41:23.036472+00:00",
+        "consumed_tokens": 25018520,
+        "event": "validation",
+        "nll": 5.464209523094312,
+        "perplexity": 236.0891583015044,
+        "seconds": 1.416650302009657,
+        "tokens": 255099,
+        "updates": 809
+      },
+      "slurm_validation_last": {
+        "at": "2026-11-11T08:45:56.148434+00:00",
+        "consumed_tokens": 39029081,
+        "event": "validation",
+        "nll": 5.111024570927534,
+        "perplexity": 165.8401828884545,
+        "seconds": 1.382340386044234,
+        "tokens": 255099,
+        "updates": 1262
+      },
+      "best_validation_nll": 5.111024570927534,
+      "best_tokens": 39029081,
+      "hashes_and_runtime_match": true
+    },
+    "l": {
+      "latest_update": {
+        "at": "2026-11-11T08:46:06.357812+00:00",
+        "batch_windows": 64,
+        "consumed_tokens": 7480308,
+        "epoch": 0,
+        "event": "update",
+        "gradient_norm": 0.5180517435073853,
+        "learning_rate": 0.000299730337300025,
+        "peak_cuda_bytes": 1495474688,
+        "prediction_tokens": 30608,
+        "train_seconds": 550.2295991692226,
+        "training_nll": 5.98221929922069,
+        "updates": 242,
+        "window_cursor": 15488
+      },
+      "since_slurm_updates": 142,
+      "metrics_age_seconds": -0.025902,
+      "finite_model_optimizer_best_and_metrics": true,
+      "monotonic_since_slurm": true,
+      "checkpoint_tokens": 6955795,
+      "checkpoint_updates": 225,
+      "checkpoint_age_seconds": 37.27938961982727,
+      "checkpoint_lag_updates": 17,
+      "recent_wall_tokens_per_second": 14769.82294214291,
+      "measurement_seconds": 121.498816,
+      "projected_remaining_hours_at_recent_rate": 4.561096052065272,
+      "slurm_validation_first": {
+        "at": "2026-11-11T08:42:12.970855+00:00",
+        "consumed_tokens": 4027771,
+        "event": "validation",
+        "nll": 6.3886986195570765,
+        "perplexity": 595.0816479383033,
+        "seconds": 4.268974406877533,
+        "tokens": 255099,
+        "updates": 130
+      },
+      "slurm_validation_last": {
+        "at": "2026-11-11T08:45:37.642639+00:00",
+        "consumed_tokens": 7018351,
+        "event": "validation",
+        "nll": 5.939133254067998,
+        "perplexity": 379.60576515509115,
+        "seconds": 4.607892885105684,
+        "tokens": 255099,
+        "updates": 227
+      },
+      "best_validation_nll": 5.939133254067998,
+      "best_tokens": 7018351,
+      "hashes_and_runtime_match": true
+    }
+  },
+  "followup": {
+    "s": {
+      "tokens": 50774179,
+      "percent": 20.31,
+      "updates": 1642,
+      "latest_update_utc": "2026-11-11T08:49:43.290486+00:00",
+      "metrics_age_seconds": 0.36,
+      "latest_validation_perplexity": 137.55212612992258,
+      "validation_ppl_since_slurm": [
+        236.0891583015044,
+        137.55212612992258
+      ],
+      "checkpoint_tokens": 50252063,
+      "checkpoint_updates": 1625,
+      "checkpoint_lag_updates": 17,
+      "checkpoint_age_seconds": 10.4,
+      "progress_observation_seconds": 217.1,
+      "observed_tokens_per_second": 51520,
+      "remaining_hours_at_observed_rate": 1.07,
+      "finite_model_optimizer_and_metrics": true,
+      "checkpoint_advanced_since_first_check": true
+    },
+    "l": {
+      "tokens": 10695740,
+      "percent": 4.28,
+      "updates": 346,
+      "latest_update_utc": "2026-11-11T08:49:42.913351+00:00",
+      "metrics_age_seconds": 1.71,
+      "latest_validation_perplexity": 304.87367877280565,
+      "validation_ppl_since_slurm": [
+        595.0816479383033,
+        304.87367877280565
+      ],
+      "checkpoint_tokens": 10045416,
+      "checkpoint_updates": 325,
+      "checkpoint_lag_updates": 21,
+      "checkpoint_age_seconds": 41.9,
+      "progress_observation_seconds": 216.6,
+      "observed_tokens_per_second": 14848,
+      "remaining_hours_at_observed_rate": 4.48,
+      "finite_model_optimizer_and_metrics": true,
+      "checkpoint_advanced_since_first_check": true
+    }
+  },
+  "verified_at_utc": "2026-11-11T08:49:44.664240+00:00",
+  "logout_independent": true,
+  "process_cgroup": "/system.slice/slurmd.service",
+  "controlling_terminal": null,
+  "slurm_array_job_id": "2319",
+  "node_failure_requeue_enabled": true,
+  "pending_m": "Waiting for array concurrency slot; starts automatically under Slurm"
+}

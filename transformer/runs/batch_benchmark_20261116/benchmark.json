@@ -1,0 +1,79 @@
+{
+  "budget_tokens": 2000000,
+  "code_sha256": {
+    "dataset/model_inputs.py": "d6495bcb748d7abc69bb5597617c349a75d18dd0a4baa20841afec247bea14cd",
+    "transformer/batch_benchmark.py": "663baf9a31e38b46a4175a82517f26f46ef36d289c61e56752d31c7a3075c79f",
+    "transformer/batch_benchmark.sbatch": "09dfc120f2a7fa48f33b4d859493b957c10642f5e674ef11498f70a5e035c49e",
+    "transformer/model.py": "f8949051a7fe06f0c4483f59180e9ec395ade5c3d567cad5f72b529dca377a4b",
+    "transformer/timing_pilot.py": "1f4ec214f98d9bb778960ea852dd05f2b3e022bd17eb17bbd4765a342ac7a622",
+    "transformer/train.py": "c1711e5c315c98d6dd8bf5529543e0f3c57381f3a6fc2852ba035fac8247a93b"
+  },
+  "created_at": "2026-11-16T05:23:23.087198+00:00",
+  "cuda_version": "12.6",
+  "dropout": 0.0,
+  "learning_rate": 0.001,
+  "purpose": "transformer_microbatch_timing_only",
+  "schema_version": 1,
+  "seed": 101,
+  "snapshot_sha256": "fea900397e969aac4b50dab9b3a65c85284a3da0454f3d8a89d551e45a621667",
+  "tasks": [
+    {
+      "directory": "l_mb64",
+      "index": 0,
+      "microbatch_windows": 64,
+      "size": "l"
+    },
+    {
+      "directory": "l_mb32",
+      "index": 1,
+      "microbatch_windows": 32,
+      "size": "l"
+    },
+    {
+      "directory": "l_mb16",
+      "index": 2,
+      "microbatch_windows": 16,
+      "size": "l"
+    },
+    {
+      "directory": "m_mb64",
+      "index": 3,
+      "microbatch_windows": 64,
+      "size": "m"
+    },
+    {
+      "directory": "m_mb32",
+      "index": 4,
+      "microbatch_windows": 32,
+      "size": "m"
+    },
+    {
+      "directory": "m_mb16",
+      "index": 5,
+      "microbatch_windows": 16,
+      "size": "m"
+    },
+    {
+      "directory": "s_mb64",
+      "index": 6,
+      "microbatch_windows": 64,
+      "size": "s"
+    },
+    {
+      "directory": "s_mb32",
+      "index": 7,
+      "microbatch_windows": 32,
+      "size": "s"
+    },
+    {
+      "directory": "s_mb16",
+      "index": 8,
+      "microbatch_windows": 16,
+      "size": "s"
+    }
+  ],
+  "token_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/dataset/processed/tokens",
+  "tokenizer_dir": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/tokenizer/artifacts",
+  "torch_version": "2.7.1+cu126",
+  "tuning_study_sha256": "9a7b2c115bb0c2c63b18df2a17fbb5bf5dd413bfae97a599ccfc1b9ebcf94bbf"
+}

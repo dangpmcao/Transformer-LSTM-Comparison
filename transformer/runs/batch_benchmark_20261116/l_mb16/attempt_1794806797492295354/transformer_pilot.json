@@ -1,0 +1,87 @@
+{
+  "completed_at": "2026-11-16T05:28:04.344564+00:00",
+  "created_at": "2026-11-16T05:26:40.325775+00:00",
+  "cuda_version": "12.6",
+  "hardware": {
+    "compute_capability": [
+      8,
+      6
+    ],
+    "cpu_threads": 4,
+    "cuda_runtime": "12.6",
+    "cuda_visible_devices": "0",
+    "gpu_name": "NVIDIA GeForce RTX 3090",
+    "gpu_total_memory_bytes": 25298141184,
+    "gpu_uuid": "1b792338-b37e-e436-01be-e9872074f515",
+    "hostname": "vishc-server-1",
+    "logical_cuda_device": 0,
+    "nvidia_smi_inventory": "GPU-1b792338-b37e-e436-01be-e9872074f515, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:1A:00.0\nGPU-a8490f9a-7e53-945f-72e9-f6aa723e256a, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:3D:00.0\nGPU-a33608fe-e126-a55a-faa5-c422001c8e05, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:3E:00.0\nGPU-68b2882a-5e80-d410-d096-1eb35950092e, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:88:00.0\nGPU-ea65c85c-da8d-dc2b-5beb-caffb4e0b180, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:89:00.0\nGPU-e8e3c43f-2603-7f2a-487c-5843b6551c20, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:B1:00.0\nGPU-280c4133-a1a7-6add-4226-ad859ab0c8ae, NVIDIA GeForce RTX 3090, 595.91.07, 00000000:B2:00.0",
+    "python_executable": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/.venv/bin/python",
+    "python_version": "3.12.9",
+    "slurm_job_id": "2609",
+    "torch_version": "2.7.1+cu126"
+  },
+  "limitations": "Transformer-only evidence. Not a production lock, tuning result, or proof of equal converged NLL at microbatch 2 and 16. Peak memory includes warm-up and validation; allocated bytes, not reserved/total GPU use.",
+  "measurements": [
+    {
+      "architecture": "transformer",
+      "artifact_sha256": {
+        "metrics.jsonl": "d14d4ab31b939d6585e44895c030869e49050fadce39f69b6cbe1df21c8a97e6",
+        "run.json": "dc2b747de11056c8afb530a3129cecfef23dcd11ee4949fcb84fc465f8b0b294",
+        "summary.json": "d23eb22797020f8a20985e1cafe6dc1872d8853b9a43d3e8cdea5c7c383d2883"
+      },
+      "checkpoint_bytes": 602571979,
+      "measured_prediction_tokens": 1680632,
+      "measured_training_seconds": 51.40760786808096,
+      "measured_updates": 54,
+      "parameters": {
+        "non_embedding": 39717120,
+        "token_embedding": 10485760,
+        "total": 50202880
+      },
+      "peak_memory_bytes": 5751044096,
+      "prediction_tokens_per_second": 32692.281739946633,
+      "run_directory": "/mnt/disk1/backup_user/dang.cpm/NLP/NLP-Project/transformer/runs/batch_benchmark_20261116/l_mb16/attempt_1794806797492295354/l",
+      "size": "l",
+      "subprocess_wall_seconds": 84.01634738105349,
+      "trainer_prediction_tokens_per_second_including_warmup": 32679.170841647487,
+      "update_tokens_per_second_max": 34614.114280531096,
+      "update_tokens_per_second_median": 32736.248028156166,
+      "update_tokens_per_second_min": 30384.078543068958,
+      "validation_nll_final": 7.02033338477629,
+      "validation_nll_start": 9.83166703018975,
+      "validation_prediction_tokens": 255099,
+      "validation_seconds": 3.0365657559596,
+      "warmup_updates_excluded": 10
+    }
+  ],
+  "model_code_sha256": "f8949051a7fe06f0c4483f59180e9ec395ade5c3d567cad5f72b529dca377a4b",
+  "pilot_script_sha256": "1f4ec214f98d9bb778960ea852dd05f2b3e022bd17eb17bbd4765a342ac7a622",
+  "pilot_settings": {
+    "dropout": 0.0,
+    "learning_rate": 0.001,
+    "minimum_measured_updates": 20,
+    "precision": "float32",
+    "prediction_tokens_per_size": 2000000,
+    "seed": 101,
+    "sizes": [
+      "l"
+    ],
+    "warmup_updates": 10
+  },
+  "prepared_snapshot_sha256": "42e6ac6e2a9e139630a26214329baed0f7c772a463c32f857a13a54119af5753",
+  "production_ready": false,
+  "protocol_sha256": "74c66e31aa7858bbf738eaa33350874730d22f1f7a3ee469160da24269fc2cca",
+  "schema_version": 1,
+  "settings": {
+    "gradient_accumulation_steps": 4,
+    "microbatch_windows": 16
+  },
+  "status": "TRANSFORMER_ONLY",
+  "timing_method": "Sum valid targets / sum trainer step-time deltas after warm-up; exclude epoch-partial and final updates, validation, checkpoint I/O and logging. Uses unchanged trainer timers, not separately synchronized CUDA events. Subprocess wall time includes setup, input verification, validation and saves.",
+  "token_manifest_sha256": "c90c17aa717c8da6ba00481266fa0b1111c99808956f67c0d05305d26676ef6f",
+  "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70",
+  "torch_version": "2.7.1+cu126",
+  "train_code_sha256": "c1711e5c315c98d6dd8bf5529543e0f3c57381f3a6fc2852ba035fac8247a93b",
+  "window_manifest_sha256": "71e9edf6b6e40424c583a2a605792d26fa9a8863fd3e26d4be52f2b0917278e1"
+}
