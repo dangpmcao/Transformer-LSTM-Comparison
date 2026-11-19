@@ -1,0 +1,5 @@
+.cache/
+.matplotlib/
+.test_tmp/
+runs/
+slurm/

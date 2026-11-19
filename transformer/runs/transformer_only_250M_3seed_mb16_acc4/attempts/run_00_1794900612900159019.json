@@ -32,9 +32,11 @@
     "16"
   ],
   "cuda_visible_devices": "1",
+  "finished_at": "2026-11-17T09:54:42.196960+00:00",
+  "returncode": 0,
   "slurm_job_id": "2643",
   "started_at": "2026-11-17T07:30:12.900199+00:00",
-  "status": "running",
+  "status": "complete",
   "task": {
     "directory": "l/seed13",
     "index": 0,
