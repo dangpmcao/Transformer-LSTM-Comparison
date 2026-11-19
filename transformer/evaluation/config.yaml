@@ -1,0 +1,26 @@
+schema_version: 1
+primary_campaign: mb16
+checkpoint_views: [best_validation, final_budget]
+metrics: [test, blimp, copy, same_target]
+inference_batch_size: 16
+target_chunk_size: 2048
+copy_lengths: [25, 50, 100, 200]
+copy_examples: 1000
+copy_seed: 2718
+shuffle_seed: 1618
+bootstrap_replicates: 10000
+bootstrap_seed: 31415
+case_examples: 20
+campaigns:
+  - name: mb16
+    role: primary
+    root: transformer/runs/transformer_only_250M_3seed_mb16_acc4
+    seeds: [13, 37, 73]
+  - name: mb64
+    role: batch_sensitivity
+    root: transformer/runs/transformer_only_250M_3seed
+    seeds: [13, 37, 73]
+  - name: initial
+    role: historical_single_seed
+    root: transformer/runs
+    seeds: [101]
