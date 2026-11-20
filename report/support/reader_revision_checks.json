@@ -1,0 +1,15 @@
+{
+  "status": "PASS_READER_REVISION_CHECKS",
+  "abstract_words": 214,
+  "hypothesis_sentence_present": true,
+  "local_paths_in_rendered_report": false,
+  "internal_experiment_labels_in_rendered_report": false,
+  "result_data_byte_unchanged": true,
+  "per_run_rows_verified": 18,
+  "aggregate_rows_verified": 6,
+  "references": 11,
+  "main_pages": 8,
+  "total_pdf_pages": 11,
+  "latex_warnings": 0,
+  "formal_integrity_review": "not_performed"
+}

@@ -1,0 +1,317 @@
+% Course-report draft. Numerical evidence and source tracing are documented in support/.
+% Compile from this directory; retain the supplied template's layout and section order.
+\documentclass[10pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\definecolor{hkustblue}{HTML}{003B71}
+\hypersetup{colorlinks=true,urlcolor=hkustblue,citecolor=hkustblue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\title{\vspace{-1.5em}\textbf{Context, Not Grammar?}\\
+Where Transformers Beat LSTMs in Small-Scale Language Modeling}
+\author{Cao Pham Minh Dang (21453430) \and Hugo Centeno Sanz}
+\date{COMP 4221 Natural Language Processing --- Fall 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Lower language-model perplexity does not establish whether a model uses longer context or makes better grammatical distinctions. We compare causal Transformers and classic two-layer LSTMs trained from scratch on WikiText-103 with a shared 16,384-ID tokenizer, closely matched parameter counts, 250 million prediction tokens per run, and three seeds at each of three sizes. Evaluation combines test perplexity, position-wise context gain, repeated-span prediction, BLiMP minimal pairs, and interventions on identical targets. Transformers achieve test perplexities of 40.31, 30.75, and 24.70 at sizes S/M/L, versus 56.58, 44.57, and 42.55 for LSTMs. They show larger early-to-late loss reductions and markedly stronger repeated-text gains. Removing history beyond 128 tokens costs Transformers about 0.09--0.10 nats per target, compared with 0.01--0.02 for LSTMs, providing direct evidence of stronger distant-context sensitivity. Grammar accuracy behaves differently: Transformer--LSTM gaps change sign across sizes, and none meets the prespecified $\pm2$-point equivalence criterion. A 5-gram control is exactly invariant to distant-context interventions, while a deeper LSTM fails to close the observed performance gap and includes a diverged seed. The results support a substantial context-use advantage under this training protocol, but do not establish that long context explains most of the perplexity gap or that distant-context benefits grow monotonically with model size.
+\end{abstract}
+
+\section{Introduction}
+
+Lower prediction loss can reflect local grammar, retrieval of earlier words, or sequence repetition. Aggregate perplexity combines these abilities and cannot establish which improved. This distinction matters when comparing Transformers, which attend directly to preceding representations, with classic LSTMs, which transmit useful information through a recurrent state.
+
+Both families learn from WikiText-103 training articles, a shared tokenizer, and independent 512-target windows. Three sizes share embedding widths and nearly identical non-embedding parameter budgets. Each main run receives 250 million nonpadding prediction targets. Three seeds per architecture/size distinguish training variability from evaluation-example uncertainty.
+
+The proposal makes three falsifiable predictions. \textbf{H1} predicts larger late-context loss reductions and repeated-text gains for Transformers. \textbf{H2} predicts equivalent overall grammatical minimal-pair accuracy within a fixed $\pm2$ percentage-point margin. \textbf{H3} predicts a growing context advantage across sizes while the grammar gap stays small. We retain these questions rather than redefine success around the most favorable metric. In response to proposal feedback, we also score identical late-window target tokens after truncating or shuffling their preceding context. This addresses the possibility that early and late positions differ in intrinsic prediction difficulty.
+
+Our contribution is a controlled account of which advantages appear under this budget. Transformer context and repetition scores consistently exceed LSTM scores, while grammar gaps change direction across sizes. Stronger position-wise gains at larger sizes do not imply steadily larger benefits from context beyond 128 tokens. These controls qualify the context-use interpretation rather than establish universal attention superiority.
+
+\section{Related Work}
+
+Transformer attention~\cite{vaswani2017attention} and LSTM gated recurrence~\cite{hochreiter1997lstm} offer different routes to preceding information. Kaplan et al.~\cite{kaplan2020scaling} relate performance to size, data, and compute, motivating our context-position and size comparisons. Our small fixed-budget experiment does not establish a general scaling law.
+
+Khandelwal et al.~\cite{khandelwal2018context} distinguish the precise use of nearby words from more approximate use of distant context in recurrent language models. Olsson et al.~\cite{olsson2022induction} connect repeated-pattern completion in attention models with induction mechanisms. These motivate our history interventions and copy tasks, but behavioral copy gains alone do not identify an internal circuit. Patil et al.~\cite{patil2024fict} further motivate evaluating linguistic generalization separately from aggregate language-model loss.
+
+WikiText provides article-level text suitable for studying contextual prediction~\cite{merity2017pointer}. BLiMP tests targeted grammatical contrasts using minimal sentence pairs~\cite{warstadt2020blimp}, although scoring depends on tokenization and candidate length~\cite{ueda2024length}. We therefore retain summed log probability as the primary grammar score and examine length-based sensitivities separately. KenLM~\cite{heafield2011kenlm} supplies a finite-history baseline that can be checked for exact invariance when only context beyond its four-token receptive field changes. The combined measurements distinguish prediction quality, context sensitivity, and minimal-pair judgments.
+
+\section{Data and Task Formulation}
+
+We use WikiText-103 \texttt{wikitext-103-raw-v1}, retaining its official training, validation, and test splits. Article reconstruction preserves source text and article order rather than treating every input row as a new document. The resulting splits contain 28,472, 60, and 60 articles. The source revision and file checksums are pinned in \path{dataset/sources.lock.json}. One exact train/test article duplicate is retained and documented to preserve the official splits, limiting claims about entirely novel test content.
+
+A single byte-level BPE tokenizer~\cite{sennrich2016subword} is trained only on the training articles. Its 16,384 IDs include PAD, BOS, EOS, and UNK. The complete byte alphabet preserves case, whitespace, and Unicode without normalization, and saved-tokenizer checks recover every WikiText article exactly. Both neural families and KenLM use this tokenizer and its IDs, making per-token losses comparable. KenLM treats each content ID as a word symbol and maps article-end events to its sentence boundary.
+
+Each article contributes exactly one EOS. Nonoverlapping windows contain up to 512 prediction targets and never cross article boundaries. For targets $z_1,\ldots,z_T$, the input is $[\mathrm{BOS},z_1,\ldots,z_{T-1}]$. Padding is masked out of the loss, and both Transformer positions and LSTM hidden/cell states restart in every window. Train, validation, and test contain 122,022,510, 255,099, and 291,710 prediction targets in 252,574, 529, and 602 windows, respectively. Test perplexity includes short windows, whereas position curves and history interventions use the 542 full test windows. The latter exclude 60 short windows and 14,206 targets, so their conclusions concern a restricted target population.
+
+Grammar evaluation uses all 67,000 BLiMP pairs across 67 paradigms and 12 phenomenon groups. The label identifies the grammatical candidate, and a pair is correct only when that candidate receives a strictly larger score. Ties count as incorrect. BLiMP is reserved for final evaluation and does not select hyperparameters or checkpoints. WikiText's pinned metadata and card prose disagree about the CC BY-SA version (3.0/GFDL versus 4.0); the attribution record preserves this discrepancy. BLiMP lists CC BY 4.0. We retain attribution and revisions rather than resolve the upstream ambiguity by assertion. Public text can contain social biases and personal information, so public availability does not make the trained models appropriate for unrestricted generation or decisions about people.
+
+\section{Approach}
+
+\subsection{Matched language models}
+
+We implemented the data/tokenizer wrappers, neural model modules, training, and scoring around PyTorch and Hugging Face Tokenizers, and reuse KenLM estimation. The causal Transformer uses pre-normalized residual blocks, multihead self-attention, learned absolute positions, and a GELU feedforward network with width $4d$. The LSTM uses two standard recurrent layers and a linear $h\!\rightarrow\!d$ adapter before the tied output head. The adapter is outside the recurrence: using an internally projected LSTM would change the proposed architecture. Both models tie input and output token embeddings. Table~\ref{tab:parameters} reports executable-model counts, including the LSTM adapter and Transformer position embeddings (exact non-embedding counts appear in Table~\ref{tab:exactcounts}). LSTM hidden widths differ slightly from the proposal to improve the match. Non-embedding counts differ by at most 0.16\%, well within the proposed 5\% tolerance.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Size & $d$ & Transformer layers/heads & LSTM layers/$h$ & T total & R total & Non-emb. gap \\
+\midrule
+S & 256 & 4 / 4 & 2 / 472 & 7,484,928 & 7,479,680 & $-0.16\%$ \\
+M & 384 & 6 / 6 & 2 / 873 & 17,135,616 & 17,127,516 & $-0.07\%$ \\
+L & 640 & 8 / 10 & 2 / 1690 & 50,202,880 & 50,194,640 & $-0.02\%$ \\
+M deep & 384 & 6 / 6 & 4 / 588 & 17,135,616 & 17,120,448 & $-0.14\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Actual parameter matching. T denotes Transformer and R denotes LSTM; total counts include each tied embedding once. The non-embedding gap is $(R-T)/T$. M deep is a depth control, not an additional main size.}
+\label{tab:parameters}
+\end{table}
+
+Both neural families optimize teacher-forced next-token negative log likelihood (NLL). With $m_{it}$ indicating valid targets, the neural objective and evaluation perplexity are
+\begin{equation}
+\mathcal{L}=-\frac{\sum_{i,t}m_{it}\log p_\theta(z_{it}\mid z_{i,<t})}{\sum_{i,t}m_{it}},
+\qquad \mathrm{PPL}=\exp(\mathcal{L}).
+\label{eq:loss}
+\end{equation}
+We sum losses and valid-target counts before dividing, rather than averaging batch perplexities. KenLM is an unpruned order-5 model with interpolated modified Kneser--Ney smoothing. It is trained on the same training content, with one line per article. Evaluation starts from null context at each window to avoid introducing an article-start prior into arbitrary within-article windows. Its log-base-10 outputs are converted to natural logs.
+
+\subsection{Context, copying, and grammar}
+
+The proposal's position-wise endpoint is
+\begin{equation}
+\mathrm{CG}=\frac{1}{32}\sum_{t=1}^{32}\bar\ell(t)
+-\frac{1}{128}\sum_{t=385}^{512}\bar\ell(t),
+\label{eq:cg}
+\end{equation}
+where $\bar\ell(t)$ averages target NLL across full test windows. A positive CG is an early-to-late improvement, but it may include position-dependent token difficulty and startup effects. It is not itself an intervention on context.
+
+The same-target experiment instead fixes all 69,376 targets at positions 385--512 of the full test windows. Each target is scored from its full within-window prefix, its nearest $k\in\{4,32,128\}$ content tokens, or a distant-shuffled prefix that preserves length, absolute positions, and the nearest 128 tokens. We prepend BOS and reset model state for each finite-history input. The intervention gain is
+\begin{equation}
+G_k=\frac1N\sum_{j=1}^N\bigl[\ell_j(k)-\ell_j(\mathrm{full})\bigr],
+\label{eq:intervention}
+\end{equation}
+with an analogous difference for shuffled history. Positive gains indicate that intact full history improves prediction on \emph{the same} targets. Truncation also changes absolute positions and recurrent warm-up length. Distant shuffling preserves those features, although shuffling BPE IDs disrupts word forms as well as distant order. Agreement between the interventions is useful corroboration, rather than a clean semantic decomposition.
+
+For copying, an initial span $A$ is followed by an exact repeat $A$, and $\mathrm{Copy}(L)$ is the first-span mean NLL minus the repeated-span mean NLL. We evaluate $L\in\{25,50,100,200\}$ on natural test text and uniform nonspecial-ID spans, with 1,000 examples per length/source. Natural Copy(100) is primary. An independent second span and an analysis excluding each span's first four targets distinguish repetition benefits from transitions at the boundary. The Transformer and baseline evaluators use the same sampling specification and seed but different realized copy manifests. Cross-architecture copy differences therefore compare sampled task distributions, not identical token-level observations.
+
+BLiMP uses summed subword log probability, including EOS, from a fresh BOS prefix. This preserves the proposal's primary scoring rule. Equal-BPE-length pairs and mean log probability per token are separately labeled sensitivities, not post-hoc replacements for the primary metric.
+
+\section{Experimental Setup}
+
+The main matrix comprises 18 runs: two architectures, S/M/L, and seeds 13/37/73. Each consumes exactly 250 million nonpadding prediction targets, including EOS. Paired seeds determine training-window permutations under the common pipeline, independently of model initialization. Training uses float32, an effective batch of 64 windows, microbatch 16 with four accumulation steps, AdamW with $(\beta_1,\beta_2)=(0.9,0.95)$, weight decay 0.1 except on biases/normalization, global gradient clipping at 1, and a token-based cosine learning-rate schedule with 1\% warm-up. Microbatch losses are normalized by the update's actual valid-target count. The final batch is masked to meet the token budget exactly.
+
+The original eight-configuration S search was expanded symmetrically to six learning rates ($10^{-4},3\!\times\!10^{-4},10^{-3},3\!\times\!10^{-3},10^{-2},3\!\times\!10^{-2}$) and dropout 0/0.1, giving 12 trials per architecture. Each trial used 50 million targets and tuning seed 101. Lowest validation NLL selected Transformer learning rate 0.001/dropout 0 and LSTM learning rate 0.03/dropout 0.1. Each family's selected S setting transfers unchanged to M/L and, for the LSTM, the depth control. Thus larger sizes receive no extra favorable tuning, but the protocol cannot guarantee that S-selected settings are equally suitable at every size.
+
+Checkpoint selection uses validation NLL at approximately every million training targets, plus initialization and the final step. Primary results use each run's lowest-validation-NLL checkpoint; final-budget scores are a sensitivity view. Test and BLiMP scores never select a checkpoint. The historical seed-101 runs and the alternate Transformer microbatch-64 campaign are excluded from main inference. They do not add independent primary seeds.
+
+There is one documented initialization exception: LSTM token embeddings use $U(-0.1,0.1)$ after small normal embeddings produced a prolonged training plateau. Transformer matrices retain normal initialization with standard deviation 0.02. The LSTM change was adopted before the final search, and the superseded trials are retained. The comparison therefore concerns documented training recipes, with this architecture-specific initialization exception.
+
+Training and evaluation use university GPU compute; Transformer jobs run through Slurm on 24-GB RTX 3090 devices. Effective batch size and token exposure are matched, not training FLOPs or wall time. The primary Transformer runs record mean training-step times of 0.51/1.00/2.26 GPU-hours at S/M/L, totaling 11.29 GPU-hours across nine runs, excluding validation/checkpoint overhead. LSTM runs average 0.61/0.55/1.67 hours on an RTX 4090 D, compared with RTX 3090 for Transformers, so these times cannot rank architectural efficiency. Transformer analytic training-matrix estimates are $1.33\times10^{16}$/$3.06\times10^{16}$/$8.75\times10^{16}$ FLOPs per S/M/L run; backward is approximated as twice forward, and normalization, nonlinearities, and optimizer work are excluded. These are estimates, not measured hardware counters or matched cross-family compute budgets. We retain the failed M-deep seed 37 at learning rate 0.03 and report a separate three-seed M-deep sensitivity at 0.01/dropout 0; neither replaces the failed run or becomes a main-model seed.
+
+For architecture comparisons, training seeds are the replication units. We report every seed in the appendix, descriptive sample standard deviations, and 95\% Student-$t$ intervals for paired differences. These wide, two-degree-of-freedom intervals should not be confused with item-level bootstrap intervals conditional on fixed checkpoints. The prespecified H1, H2, and H3 comparison families use Holm correction. Because copy-sample mismatch prevents the intended confirmatory comparison, its slots are conservatively assigned $p=1$ for adjustment only, preserving all six H1 and both H3 family slots without treating this as a measured copy $p$-value. H2 requires paired two-one-sided equivalence testing (TOST) against $\pm2$ percentage points; an ordinary nonsignificant difference does not establish equivalence. Copy-manifest differences limit paired-example interpretations even when training-seed contrasts can be summarized.
+
+\section{Results}
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+Model & Size & Test PPL $\downarrow$ & BLiMP (\%) $\uparrow$ & CG $\uparrow$ & Copy(100) $\uparrow$ & $G_{128}$ $\uparrow$ \\
+\midrule
+Transformer & S & 40.31 & 59.58 & 0.639 & 1.298 & 0.093 \\
+LSTM & S & 56.58 & 62.23 & 0.400 & 0.068 & 0.014 \\
+Transformer & M & 30.75 & 61.49 & 0.692 & 1.553 & 0.098 \\
+LSTM & M & 44.57 & 62.97 & 0.441 & 0.096 & 0.018 \\
+Transformer & L & 24.70 & 63.97 & 0.713 & 1.626 & 0.097 \\
+LSTM & L & 42.55 & 62.12 & 0.436 & 0.090 & 0.018 \\
+\midrule
+KenLM 5-gram & -- & 66.45 & 54.00 & 0.183 & $-0.024$ & 0.000 \\
+\bottomrule
+\end{tabular}
+\caption{Primary best-validation checkpoint results, averaged across seeds 13/37/73 for each neural size. NLL-based gains are nats per target. Copy(100) uses natural text, with different realized samples across evaluator implementations. PPL is the mean of per-seed perplexities. KenLM is one deterministic baseline. Exact seed values and uncertainty are in the appendix.}
+\label{tab:main}
+\end{table}
+
+Transformers outperform LSTMs on held-out prediction at every size (Table~\ref{tab:main}, Figure~\ref{fig:architecture}). The relative perplexity reductions are approximately 29\%, 31\%, and 42\% for S/M/L. Both neural families outperform the finite-history baseline. The LSTM improves strongly from S to M but only modestly on average from M to L, with substantial variation among L seeds. Transformer improvements are more consistent across these sizes. Because exposure rather than computation is matched, these are fixed-token-budget comparisons rather than claims about accuracy per unit of compute.
+
+\textbf{H1: context and repetition.} Transformer CG exceeds LSTM CG by 0.239, 0.251, and 0.277 nats at S/M/L. Paired-seed 95\% intervals exclude zero, and the one-sided tests remain significant after Holm correction over the six prespecified CG/copy comparisons ($p_{\mathrm{adj}}=0.0130,0.00073,0.0130$). Natural Copy(100) also separates the architectures: Transformer means are 1.30--1.63 nats, compared with 0.07--0.10 for LSTMs. These results support the predicted behavioral context/repetition advantage. The same-target results strengthen the interpretation: retaining only 128 tokens loses about 0.09--0.10 nats for Transformers, versus 0.01--0.02 for LSTMs. Thus a Transformer advantage survives when the target tokens are held fixed, addressing the central confound in position-wise CG. However, copy scores arise from separately realized samples. We report their separation descriptively and do not promote their small nominal seed-test $p$-values to confirmation of the exact proposed shared-example comparison. H1 is supported for CG and corroborated behaviorally for copying, with this qualification.
+
+\textbf{H2: grammar equivalence.} The Transformer--LSTM grammar gap changes direction: about $-2.65$, $-1.48$, and $+1.85$ percentage points at S/M/L. The best architecture by perplexity is therefore not automatically best by grammatical minimal-pair accuracy. The S mean gap itself lies outside the proposed equivalence margin. For M and L, a point estimate inside the margin is insufficient: seed variability and multiplicity must also satisfy TOST. None passes TOST: unadjusted $p=0.705,0.319,0.428$, with Holm-adjusted $p=0.956$ at every size. The 90\% intervals are S $[-5.64,0.34]$, M $[-4.25,1.29]$, and L $[-0.34,4.03]$ percentage points. Each crosses an equivalence boundary. H2 is therefore inconclusive, rather than established or disproved by a conventional difference test.
+
+\textbf{H3: scaling.} Transformer CG and Copy(100) increase across its sizes, whereas LSTM copy gains remain small. Yet scaling an architecture's absolute score is different from establishing growth in its \emph{advantage}. The CG architecture gaps are approximately 0.239, 0.251, and 0.277 nats, and the distant-context gains of Transformers stay nearly flat. The prespecified L-minus-S change in the CG gap is only 0.038 nats (95\% CI $[-0.115,0.191]$, Holm-adjusted $p=0.396$). The copy-gap change is 0.306 nats (descriptive seed CI $[-0.345,0.956]$, conditional on the differently sampled tasks). H3 is not statistically supported: a numerical trend does not establish growth, and the distant-history contribution is not monotonic.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.96\linewidth]{figures/architecture_comparison.pdf}
+\caption{Primary architecture comparison across S/M/L. Small dots show individual seeds; error bars show descriptive sample standard deviations across three training seeds, not confidence intervals. The grammar panel shows absolute accuracies; the equivalence analysis instead concerns paired differences.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Analysis}
+
+\subsection{Why the same-target intervention changes the interpretation}
+
+KenLM has a positive CG of 0.183 nats despite being unable to use more than four previous tokens. Its largest position losses occur at the beginning of a window, where history is still incomplete. This control shows why a positive early-to-late reduction alone is insufficient evidence of long-context use. Beyond each span's first four positions, its repeated-span gain is exactly zero. More decisively, its per-target predictions are exactly invariant under every declared same-target truncation and distant shuffle. These are structural checks of the evaluator as well as useful baselines.
+
+The neural interventions answer a narrower and better controlled question. Transformers incur much larger penalties than LSTMs when the same late-window tokens lose most of their history. The advantage persists at $k=128$, and shuffling the more distant prefix also hurts prediction while retaining the input length and local suffix (Figure~\ref{fig:context}). This combination is consistent with Transformers exploiting information beyond what the LSTM usually preserves under this protocol. It also constrains the title's interpretation: the intervention population is only late targets in full windows, and its gain cannot be subtracted from whole-test NLL as though it explained a fixed percentage of the total architecture gap.
+
+The small change in $G_{128}$ from S to L is especially informative. The larger Transformer is better at prediction and copying, but its average benefit from the most distant history is not steadily increasing. Some scaling improvements may therefore reflect stronger use of local/intermediate context, improved representations, or optimization. The current interventions do not partition these explanations. They support context sensitivity without establishing that distant context is the dominant cause of improved perplexity.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.93\linewidth]{figures/context_intervention.pdf}
+\caption{Same-target NLL penalties for reduced or shuffled history, relative to full within-window context. All neural conditions score the same 69,376 targets. The left panel shows seed means; the right panel adds descriptive sample-SD error bars. Positive penalties indicate useful information in the removed or disrupted context. KenLM has exactly zero penalty in every condition.}
+\label{fig:context}
+\end{figure}
+
+\subsection{Copying is stronger than a generic second-span effect}
+
+Natural repetition favors Transformers by more than a nat per token at the primary length. This is much larger than the finite-history baseline's boundary-only effect. LSTM gains decline as spans lengthen, which is consistent with its difficulty retaining detailed token information over an entire long span. Random-ID repetition is a complementary diagnostic: it removes much of the language-model prior and rewards learning a relation between the first and second occurrence. Strong behavior there should be described as sequence reuse, not grammatical knowledge.
+
+The contrast persists at long spans: natural Copy(200) is 1.379 nats for Transformer L versus 0.041 for LSTM L. At $L=100$, random-ID gains are 3.40/6.18/6.62 for Transformers and 0.17/0.25/0.18 for LSTMs. These large within-task differences support the behavioral separation without making random-ID performance a linguistic benchmark.
+
+The independent-span control can have negative gain because unrelated $B$ is harder after $A$ than the first span was after BOS. Subtracting that control changes the estimand and must not replace the proposed Copy(100) endpoint. Similarly, the first-four-position exclusion removes transitions that any 5-gram can handle. These controls distinguish useful repetition-sensitive behavior from startup effects, while the differing cross-architecture manifests prevent a claim that every copy contrast concerns exactly the same examples.
+
+\subsection{Grammar scores do not follow the perplexity ranking}
+
+The overall BLiMP means cluster around 60--64\% for the neural models, while their perplexities differ much more substantially. This is the intended dissociation, but it is weaker than the proposal's equivalence claim. A model may predict ordinary test text much better and still perform worse on particular grammatical contrasts. Aggregate BLiMP accuracy also masks opposing subgroup trends. At M, LSTM subject--verb agreement is 68.63\% versus Transformer 61.66\%, while NPI licensing is 37.17\% versus 44.29\%. At L, Transformer determiner--noun agreement reaches 82.62\% versus LSTM 77.98\%. These are descriptive breakdowns, not additional confirmatory tests. A small overall gap can coexist with quite different strengths.
+
+The shared tokenizer removes a vocabulary-size confound but does not eliminate evaluation-distribution artifacts. A bare question-mark token is unseen in WikiText training and appears in eight BLiMP paradigms. Some pairs place it asymmetrically in the grammatical candidate. KenLM maps such symbols to its unknown-word behavior, while neural models retain output rows for all vocabulary IDs without having received that token as a training target. Removing affected paradigms or restricting pairs to equal BPE length changes the evaluation question and must remain a labeled sensitivity. Neither should be chosen after inspecting which version favors an architecture. Equal-length accuracy means are Transformer 58.69/60.49/63.46\% and LSTM 62.91/63.79/62.94\%; length-normalized means are 57.58/58.85/61.19\% and 60.88/61.51/60.86\%. The Transformer L advantage shrinks under both sensitivities, so its summed-score improvement is not invariant to the evaluation choice.
+
+A saved Transformer L seed-13 failure illustrates the caution: it assigns log probabilities $-100.90$ to ``Should the school ever collaborate?'' and $-64.36$ to ``The school should ever collaborate.'' The grammatical candidate loses despite licensing \emph{ever} through the question. This example is the most negative-margin diagnostic error selected from the saved summary, not a representative sample. Both punctuation coverage and grammatical licensing are involved, so the score cannot identify their separate effects. Baseline per-pair arrays are unavailable here; we do not invent a same-ID cross-model disagreement.
+
+A further distinction is statistical. Thousands of BLiMP pairs can make conditional accuracy estimates precise, but they do not create thousands of independent training replications. With three training seeds, equivalence depends heavily on run-to-run variation. With three seeds, even an unadjusted 90\% paired-$t$ interval has half-width $2.92s_d/\sqrt{3}$, where $s_d$ is the sample SD of paired seed gaps. The observed SDs of 1.29--1.77 percentage points imply half-widths of 2.18--2.99 points, already larger than the equivalence margin before considering the nonzero gap. This precision calculation explains the inconclusive TOST without inventing a retrospective power guarantee. H2 concerns mean accuracy under a specified recipe, not identical grammar or errors.
+
+\subsection{Depth and optimization constrain the architectural conclusion}
+
+The four-layer M LSTM does not close the Transformer gap. Its primary surviving runs yield mean test PPL 54.89, worse than the two-layer M mean of 44.57, while seed 37 diverges early with nonfinite gradients. A separately declared lower-learning-rate sensitivity completes all three seeds but gives PPL 55.04. Thus the result is not explained by simply omitting a favorable completed depth-control run. Nonetheless, the control trades width for depth at fixed parameters and inherits S-selected hyperparameters. It cannot show that all deeper recurrent models are inferior or that a separately optimized deep model would fail.
+
+Matched-validation-quality analysis is likewise constrained by retained weights. Available best/final checkpoints do not supply arbitrary points along the training curves. A validation log entry is not an evaluable checkpoint, and interpolation between logged losses cannot create its grammar or context scores. No retained primary same-size best/final cross-architecture pair falls within the prespecified 1\% validation-perplexity tolerance, so that matched-quality control is unavailable. This matters because some task differences could arise from overall language-model quality. The fixed-budget results remain valid, but they do not isolate context behavior at exactly equal predictive quality.
+
+\section{Limitations and Responsible Use}
+
+Three seeds limit equivalence and scaling inference. Evaluation-item intervals cannot replace independent training replications, and the failed depth-control run must remain visible. Alternate-batch reruns and lower-rate sensitivities answer different questions and cannot increase the primary seed count.
+
+Matched parameters and tokens do not imply identical optimization or compute. Each family uses S-selected hyperparameters, one tuning seed, and a documented initialization difference. The LSTM winner remains at the search boundary. The evidence therefore concerns these recipes rather than fully optimized architecture classes. Cross-host metadata manifests differ: common code, tokenizer, and coverage agree, but archived LSTM records lack the array digests needed to independently verify historical byte identity. Different metadata hashes alone do not establish different arrays.
+
+CG mixes startup effects, token difficulty, and useful history. Same-target interventions narrow that ambiguity but alter positions or distant lexical structure. The 512-target ceiling excludes document-scale memory. Differing copy samples and unavailable matched-quality weights further limit causal attribution. These results concern small Transformers and classic reset-window LSTMs on English Wikipedia/BLiMP, not modern recurrent variants or general human grammatical competence.
+
+The retained train/test duplicate and Wikipedia's editorial biases limit generalization. BLiMP covers selected generated contrasts and includes length/rare-token artifacts. The models are research artifacts, not authoritative grammar judges or factual information sources. No new human-subject data were collected. Releases should preserve attribution, source terms, and documented model limitations.
+
+\section{Conclusion}
+
+Under matched parameter and training-token budgets, Transformers predict WikiText more accurately and show stronger context use and repetition gains. Same-target interventions support this conclusion beyond a position curve: intact distant context benefits Transformers more, while a 5-gram is invariant. The evidence nevertheless establishes neither that long context explains most of the perplexity gap nor that distant-context gains grow monotonically with size.
+
+The grammar comparison requires a different conclusion. Its gap changes direction with size, and similar overall accuracies do not establish the proposed $\pm2$-point equivalence. The report therefore supports the context-use component of the original question while qualifying both the grammar-equivalence and scaling predictions. The most useful next steps are aligned copy manifests, more independent training seeds for equivalence, and retained intermediate checkpoints for a genuine matched-quality comparison. Those would sharpen the same research question without replacing it with a broader benchmark.
+
+\section*{Team Contributions and Use of AI Tools}
+
+Cao Pham Minh Dang contributed approximately 50\% of the project, leading the shared tokenizer, Transformer implementation/training, and Transformer scoring pipeline. Hugo Centeno Sanz contributed approximately 50\%, leading the LSTM and n-gram implementations and their experiments/evaluations. Both contributed to the architectural comparison and report. OpenAI Codex assisted report organization, drafting, and source/evidence inspection. Numerical claims were checked against saved configurations and result summaries rather than generated as measurements. No paid model APIs or purchased datasets were used; university computing resources supported the experiments. The project materials do not document additional funding or competing-interest declarations.
+
+\section*{Reproducibility Statement}
+
+Code, configurations, source locks, tokenizer artifacts, and summary results are included. From the repository root, \texttt{python3} \path{report/support/build_report_evidence.py} regenerates report data/figures from saved summaries on CPU; \texttt{cd report} then \texttt{tectonic report.tex} builds the PDF. Full model reproduction requires GPUs and separately retrieved checkpoints/baseline arrays; runtime is the recorded training cost plus validation/evaluation overhead. The appendix documents missing inputs and the moved-proposal path prerequisite. No training source or frozen artifact was changed for this report.
+
+\label{lastmainpage}
+\clearpage
+\bibliographystyle{plain}
+\bibliography{references}
+
+\clearpage
+\appendix
+\section{Additional Results}
+
+The primary population is three independently trained models per architecture and size, using best-validation checkpoints. Supplemental material below preserves seed variation and failed-control status rather than pooling historical, alternate-batch, or sensitivity runs into the primary sample. The independently derived report summaries trace their values to the versioned Transformer, LSTM, and KenLM result files. 
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llrrrrrr}
+\toprule
+Model & Size/seed & Test PPL & BLiMP (\%) & CG & Copy(100) & $G_{128}$ & Shuffle \\
+\midrule
+T & S/13 & 41.52 & 59.40 & 0.612 & 1.058 & 0.084 & 0.090 \\
+T & S/37 & 40.00 & 60.08 & 0.645 & 1.446 & 0.098 & 0.107 \\
+T & S/73 & 39.40 & 59.27 & 0.661 & 1.389 & 0.099 & 0.115 \\
+R & S/13 & 56.68 & 61.74 & 0.407 & 0.071 & 0.014 & 0.012 \\
+R & S/37 & 56.31 & 64.64 & 0.394 & 0.067 & 0.013 & 0.017 \\
+R & S/73 & 56.75 & 60.32 & 0.400 & 0.065 & 0.013 & 0.013 \\
+\midrule
+T & M/13 & 30.86 & 60.89 & 0.702 & 1.539 & 0.096 & 0.124 \\
+T & M/37 & 30.79 & 62.18 & 0.690 & 1.582 & 0.099 & 0.124 \\
+T & M/73 & 30.61 & 61.41 & 0.683 & 1.539 & 0.100 & 0.126 \\
+R & M/13 & 44.16 & 62.36 & 0.453 & 0.095 & 0.019 & 0.022 \\
+R & M/37 & 44.42 & 62.02 & 0.432 & 0.097 & 0.018 & 0.016 \\
+R & M/73 & 45.12 & 64.54 & 0.438 & 0.096 & 0.018 & 0.025 \\
+\midrule
+T & L/13 & 24.74 & 64.65 & 0.720 & 1.660 & 0.096 & 0.108 \\
+T & L/37 & 24.86 & 64.19 & 0.715 & 1.628 & 0.098 & 0.109 \\
+T & L/73 & 24.50 & 63.07 & 0.705 & 1.590 & 0.098 & 0.116 \\
+R & L/13 & 45.32 & 61.59 & 0.421 & 0.065 & 0.015 & 0.014 \\
+R & L/37 & 44.89 & 62.20 & 0.416 & 0.078 & 0.016 & 0.013 \\
+R & L/73 & 37.42 & 62.58 & 0.472 & 0.128 & 0.023 & 0.034 \\
+\midrule
+\bottomrule
+\end{tabular}
+\caption{Every primary best-validation seed. T: Transformer; R: two-layer LSTM. Gain metrics are nats per target. Copy samples differ across architecture implementations.}
+\label{tab:seeds}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Model/size & Non-embedding & Token embedding & Total & Primary seeds complete \\
+\midrule
+Transformer S & 3,290,624 & 4,194,304 & 7,484,928 & 3/3 \\
+Transformer M & 10,844,160 & 6,291,456 & 17,135,616 & 3/3 \\
+Transformer L & 39,717,120 & 10,485,760 & 50,202,880 & 3/3 \\
+LSTM S & 3,285,376 & 4,194,304 & 7,479,680 & 3/3 \\
+LSTM M & 10,836,060 & 6,291,456 & 17,127,516 & 3/3 \\
+LSTM L & 39,708,880 & 10,485,760 & 50,194,640 & 3/3 \\
+LSTM M deep & 10,828,992 & 6,291,456 & 17,120,448 & 2/3 \\
+\bottomrule
+\end{tabular}
+\caption{Exact executable-model parameter counts. Learned Transformer positions and the LSTM output adapter are included in the non-embedding budget. The lower-rate deep sensitivity completes 3/3 seeds and remains separate.}
+\label{tab:exactcounts}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llrrr}
+\toprule
+Endpoint & Size/contrast & Mean T$-$R & Seed 95\% CI & Holm $p$ \\
+\midrule
+CG & S & 0.239 & $[0.164,0.313]$ & 0.01299 \\
+CG & M & 0.251 & $[0.234,0.268]$ & 0.00073 \\
+CG & L & 0.277 & $[0.183,0.371]$ & 0.01299 \\
+BLiMP (pp) & S & -2.65 & $[-7.06,1.75]$ & 0.956 \\
+BLiMP (pp) & M & -1.48 & $[-5.56,2.60]$ & 0.956 \\
+BLiMP (pp) & L & 1.85 & $[-1.37,5.06]$ & 0.956 \\
+CG scaling & L$-$S gap & 0.038 & $[-0.115,0.191]$ & 0.396 \\
+\bottomrule
+\end{tabular}
+\caption{Paired training-seed contrasts. CG uses one-sided positive-effect tests with Holm correction over the original six H1 endpoints; untested copy slots are conservatively assigned 1 for correction only. BLiMP $p$-values are TOST results at $\pm2$ pp, corrected across three sizes; their equivalence decisions use the 90\% intervals given in the main text, not the descriptive 95\% intervals displayed here. CG scaling is corrected within the two-endpoint H3 family. Intervals are not multiplicity-adjusted.}
+\label{tab:inference}
+\end{table}
+
+\paragraph{Evidence and remaining reproduction inputs.}
+Primary Transformer summaries are under \path{transformer/evaluation/runs/proposal_21/tasks/mb16/}, LSTM summaries under \path{lstm/results/lstm_production_*/best_validation/}, and finite-history controls under \path{ngram/results/}. The report's derived seed contrasts and figure inputs are in \path{report/support/comparison_results.json}; source-file hashes support traceability. Archived checkpoint/array hashes identify expected artifacts, but the absent baseline detail arrays must be retrieved before reproducing per-example disagreements or a fresh shared-example bootstrap. Neither this report nor a saved summary can reconstruct missing model weights. Full training/evaluation entry points are documented in the Transformer, LSTM, and n-gram module guides. The shared weights repository is \url{https://huggingface.co/centenohugo/context-not-grammar}. The Transformer evaluator expects \path{proposal.pdf} at the project root, while the user-supplied proposal is now under \path{report/proposal/}; this input path must be reconciled before rerunning evaluator preparation. Restoring only a document path does not remove the frozen-code/runtime identity checks on existing evaluation outputs. Full reruns require the declared GPU environment and actual model artifacts, while summary-based report regeneration does not.
+
+
+\end{document}

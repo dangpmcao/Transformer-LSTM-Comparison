@@ -1,0 +1,22 @@
+{
+  "references": {
+    "cited": 11,
+    "available": 11,
+    "missing": [],
+    "unused": []
+  },
+  "undefined_labels": [],
+  "source_hashes_verified": 63,
+  "per_seed_table_rows_verified": 18,
+  "abstract_whitespace_words": 200,
+  "template_sections_match": true,
+  "status": "PASS_DRAFT_BUILD_AND_CONSISTENCY_CHECKS_ONLY",
+  "formal_integrity_review": "not_started_pending_user_checkpoint",
+  "compile": {
+    "engine": "Tectonic0.14.1",
+    "result": "PASS",
+    "main_pages": 8,
+    "total_pdf_pages": 11,
+    "latex_warnings": 0
+  }
+}

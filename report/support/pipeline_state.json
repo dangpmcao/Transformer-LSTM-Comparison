@@ -1,0 +1,303 @@
+{
+  "schema_version": "local_pipeline_record_v1",
+  "pipeline_version": "3.13.0",
+  "topic": "Context, Not Grammar? Where Transformers Beat LSTMs in Small-Scale Language Modeling",
+  "language": "en",
+  "entry_point": 2,
+  "entry_reason": "Existing proposal, methods, trained models and saved results; manuscript requested in supplied LaTeX template.",
+  "current_stage": "2",
+  "pipeline_state": "awaiting_confirmation",
+  "next_stage": "2.5",
+  "next_stage_requires_explicit_user_confirmation": true,
+  "checkpoint_type": "FULL",
+  "consecutive_continue_count": 0,
+  "updated_at": "2026-11-20T06:47:35.346223+00:00",
+  "stages": {
+    "1": {
+      "name": "RESEARCH",
+      "status": "not_entered",
+      "reason": "Mid-entry from existing research; no new research campaign or training was requested."
+    },
+    "2": {
+      "name": "WRITE",
+      "skill": "academic-paper",
+      "mode": "full",
+      "status": "completed",
+      "version_label": "paper_draft_v2",
+      "checkpoint_confirmed": false,
+      "outputs": [
+        "report/report.tex",
+        "report/references.bib",
+        "report/figures/",
+        "report/support/comparison_results.json",
+        "report/support/build_report_evidence.py",
+        "report/support/transformer_evidence.md",
+        "report/support/baseline_evidence.md",
+        "report/support/internal_evaluation.md",
+        "report/build/report.pdf",
+        "report/support/draft_checks.json"
+      ],
+      "dialogue_log_ref": "Current report-writing request beginning with read report/proposal carefully, through author-metadata confirmation and delivery of Stage 2 manuscript. Exact numbered raw-turn range is not exposed to this tracker."
+    },
+    "2.5": {
+      "name": "INTEGRITY",
+      "status": "pending",
+      "mode": "pre-review",
+      "verdict": null,
+      "outputs": [],
+      "approval_gate": true
+    },
+    "3": {
+      "name": "REVIEW",
+      "status": "pending",
+      "mode": "full",
+      "decision": null,
+      "outputs": []
+    },
+    "4": {
+      "name": "REVISE",
+      "status": "pending",
+      "outputs": []
+    },
+    "3p": {
+      "name": "RE-REVIEW",
+      "status": "pending",
+      "outputs": []
+    },
+    "4p": {
+      "name": "RE-REVISE",
+      "status": "pending",
+      "outputs": []
+    },
+    "4.5": {
+      "name": "FINAL INTEGRITY",
+      "status": "pending",
+      "verdict": null,
+      "outputs": []
+    },
+    "5": {
+      "name": "FINALIZE",
+      "status": "pending",
+      "outputs": []
+    },
+    "6": {
+      "name": "PROCESS SUMMARY",
+      "status": "pending",
+      "outputs": []
+    }
+  },
+  "author_metadata": {
+    "authors": [
+      {
+        "name": "Cao Pham Minh Dang",
+        "student_id": "21453430",
+        "contribution_percent": 50,
+        "roles": [
+          "Initial tokenizer",
+          "Transformer implementation/training",
+          "Transformer scoring"
+        ]
+      },
+      {
+        "name": "Hugo Centeno Sanz",
+        "student_id": null,
+        "contribution_percent": 50,
+        "roles": [
+          "LSTM implementation/training/evaluation",
+          "n-gram baseline"
+        ]
+      }
+    ],
+    "confirmation_provenance": "Current-session user confirmation as relayed by pipeline orchestrator; Hugo student ID intentionally blank."
+  },
+  "budget": {
+    "estimated_tokens_min": 20000,
+    "estimated_tokens_max": 35000,
+    "estimate_only": true,
+    "actual_billed_tokens": null,
+    "note": "Approximate planning estimate; not measured or billed usage."
+  },
+  "interaction_counts": {
+    "stage2_internal_writer_editing_loops": 1,
+    "formal_pipeline_revision_loops": 0,
+    "formal_integrity_fix_loops": 0,
+    "formal_re_review_loops": 0,
+    "note": "One initial internal writing evaluation and one writer editing loop resolved R1\u2013R4; the evaluator accepted with a dissent note. Subsequent objective/caption wording fixes were localized within that same Stage 2 writing pass. No formal Stage 3/4 review-revision loop occurred; tool calls are not manuscript round trips.",
+    "author_directed_editorial_revisions": 1
+  },
+  "internal_writing_quality": {
+    "initial_decision": "request_revision",
+    "required_fix_count": 4,
+    "fix_status": "R1_R2_R3_R4_resolved",
+    "fixes": [
+      "Conservative multiplicity correction retaining copy family slots at p=1",
+      "Executable saved-results regeneration command and historical snapshot prerequisites",
+      "Close qualitative-example TeX quotations",
+      "Correct figure captions and uncertainty descriptions"
+    ],
+    "missing_writer_phase4a_precommitment": true,
+    "full_generator_contract_certification": false,
+    "formal_peer_review_completed": false,
+    "final_decision": "accept_with_dissent_note",
+    "advisory_followup": "Orchestrator additionally narrowed the objective wording to both neural families and identified small seed points in the caption.",
+    "remaining_note": "Absent separate pre-drafting writer Phase 4a precommitment prevents full generator-contract certification; internal acceptance is not formal integrity/review."
+  },
+  "materials": {
+    "paper_draft": true,
+    "bibliography": true,
+    "integrity_report_pre": false,
+    "verified_paper_draft": false,
+    "review_reports": false,
+    "editorial_decision": false,
+    "revision_roadmap": false,
+    "revised_draft": false,
+    "response_to_reviewers": false,
+    "re_review_report": false,
+    "integrity_report_final": false,
+    "final_paper": false
+  },
+  "flags_for_later_integrity": [
+    "Raw historical LSTM/KenLM score files and checkpoint tensors unavailable locally; archived summary identities cannot independently reverify all implementation/results failure modes.",
+    "Cross-architecture copy manifests differ; copy evidence descriptive, conservative untested family slots p=1.",
+    "Cross-host token/window metadata-manifest hashes differ; no archived LSTM per-array verification record located.",
+    "Historical frozen evaluator references original proposal path; current proposal moved to report/proposal/.",
+    "Formal citation/claim integrity and AI Research Failure Mode Checklist not run at Stage 2.5/4.5; no PASS certification."
+  ],
+  "validation": {
+    "main_text_pages": 8,
+    "bibliography_pages": 1,
+    "appendix_pages": 2,
+    "total_pdf_pages": 11,
+    "latex_compile_status": "PASS_TECTONIC",
+    "abstract_whitespace_words": 214,
+    "template_sections_match": true,
+    "references": {
+      "cited": 11,
+      "available": 11,
+      "missing": [],
+      "unused": []
+    },
+    "per_seed_table_rows_verified": 18,
+    "source_hashes_verified": 63,
+    "undefined_labels": [],
+    "status": "PASS_DRAFT_BUILD_AND_CONSISTENCY_CHECKS_ONLY",
+    "formal_integrity_review": "not_started_pending_user_checkpoint",
+    "final_artifact_sha256": {
+      "report/report.tex": {
+        "sha256": "831c66da92abbaf57b4507998547714fb77ec9c8d9cacd22713b493755a80556",
+        "bytes": 41903
+      },
+      "report/references.bib": {
+        "sha256": "d8d7ebacef3caf9feb5b90115037dce8ad066063e633e4c7fac60a6e94d3669c",
+        "bytes": 4769
+      },
+      "report/build/report.pdf": {
+        "sha256": "5a13ed5065a3ae005ef7981a3be2ed676a0cca42e4d4fd2028f9c456093c4ba6",
+        "bytes": 143631
+      },
+      "report/support/comparison_results.json": {
+        "sha256": "b9d4c7428cd304d44d96735de3512a30b38a650f62577143608acfa026ee336c",
+        "bytes": 134463
+      }
+    },
+    "note": "Final Tectonic process exited 0, 11 PDF pages verified and final main-text page 8, no LaTeX warnings, as confirmed by orchestrator. Draft checks and final hashes are recorded; they do not recreate historical model scoring or certify formal bibliographic integrity.",
+    "draft_checks_record": {
+      "references": {
+        "cited": 11,
+        "available": 11,
+        "missing": [],
+        "unused": []
+      },
+      "undefined_labels": [],
+      "source_hashes_verified": 63,
+      "per_seed_table_rows_verified": 18,
+      "abstract_whitespace_words": 200,
+      "template_sections_match": true,
+      "status": "PASS_DRAFT_BUILD_AND_CONSISTENCY_CHECKS_ONLY",
+      "formal_integrity_review": "not_started_pending_user_checkpoint",
+      "compile": {
+        "engine": "Tectonic0.14.1",
+        "result": "PASS",
+        "main_pages": 8,
+        "total_pdf_pages": 11,
+        "latex_warnings": 0
+      }
+    },
+    "latex_warnings": [],
+    "reader_revision_checks": {
+      "status": "PASS_READER_REVISION_CHECKS",
+      "abstract_words": 214,
+      "hypothesis_sentence_present": true,
+      "local_paths_in_rendered_report": false,
+      "internal_experiment_labels_in_rendered_report": false,
+      "result_data_byte_unchanged": true,
+      "per_run_rows_verified": 18,
+      "aggregate_rows_verified": 6,
+      "references": 11,
+      "main_pages": 8,
+      "total_pdf_pages": 11,
+      "latex_warnings": 0,
+      "formal_integrity_review": "not_performed"
+    }
+  },
+  "revision_history": [
+    {
+      "version_label": "paper_draft_v2",
+      "type": "author_requested_reader_facing_rewrite",
+      "timestamp": "2026-11-20T06:47:35.345210+00:00",
+      "previous_artifact_sha256": {
+        "report/report.tex": {
+          "sha256": "b96e946b432c10d415d94457b54bfb04d3be0d8364b9370f23c552d06140ddbf",
+          "bytes": 40851
+        },
+        "report/references.bib": {
+          "sha256": "d8d7ebacef3caf9feb5b90115037dce8ad066063e633e4c7fac60a6e94d3669c",
+          "bytes": 4769
+        },
+        "report/build/report.pdf": {
+          "sha256": "472d89f0a12d46a864f854b8679441514abfd22ad59688022334871e003ba7f9",
+          "bytes": 148108
+        },
+        "report/support/comparison_results.json": {
+          "sha256": "b9d4c7428cd304d44d96735de3512a30b38a650f62577143608acfa026ee336c",
+          "bytes": 134463
+        }
+      },
+      "previous_draft": "report/support/versions/report_before_reader_revision.tex",
+      "results_changed": false,
+      "formal_pipeline_stage_advanced": false
+    }
+  ],
+  "integrity_history": [],
+  "collaboration_depth_history": [
+    {
+      "stage_id": "2",
+      "checkpoint_type": "FULL",
+      "status": "insufficient_evidence",
+      "scores": {
+        "delegation_intensity": null,
+        "cognitive_vigilance": null,
+        "cognitive_reallocation": null
+      },
+      "zone": null,
+      "reason": "Fewer than five user turns in current stage; observer lacks a complete exposed raw-turn range. No psychological or learning inference is made.",
+      "rubric_version": "1.0.1",
+      "rubric_path": "/home/dang.cpm/.codex/skills/academic-research-suite/ars/shared/collaboration_depth_rubric.md",
+      "advisory_only": true,
+      "blocking": false,
+      "cross_model_used": false
+    }
+  ],
+  "state_change_log": [
+    {
+      "requester": "pipeline_orchestrator",
+      "action": "Record Stage 2 draft delivery and required confirmation before Stage 2.5",
+      "timestamp": "2026-11-20T06:15:25.590710+00:00"
+    },
+    {
+      "requester": "pipeline_orchestrator",
+      "action": "Finalize Stage 2 build/consistency results and final artifact hashes; remain awaiting explicit checkpoint confirmation before Stage 2.5",
+      "timestamp": "2026-11-20T06:18:03.314198+00:00"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+% The final report should read like a 6-8 page NLP/ML conference paper and use the included report_template.tex.
+\documentclass[10pt]{article}
+\usepackage[margin=0.72in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\definecolor{hkustblue}{HTML}{003B71}
+\hypersetup{colorlinks=true,urlcolor=hkustblue,citecolor=hkustblue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\title{\vspace{-1.5em}\textbf{Your Project Title}}
+\author{Student Name (Student ID) \and Student Name (Student ID)}
+\date{COMP 4221 Natural Language Processing --- Fall 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In no more than 250 words, state the problem, approach, data, principal result, and main conclusion. Replace all instructional text before submission.
+\end{abstract}
+
+\section{Introduction}
+Define the task and motivation. State the research question or claim, summarize the approach, and list the main findings or contributions.
+
+\section{Related Work}
+Position the project against the most relevant literature. Cite sources, including reused models, datasets, code, and evaluation tools.
+
+\section{Data and Task Formulation}
+Describe data provenance, licensing, preprocessing, splits, task definition, and important limitations. Explain any privacy or ethical considerations.
+
+\section{Approach}
+Describe the proposed method or analysis precisely. Include equations, an algorithm, or a system figure when useful. Explain design choices and identify what is reused versus implemented by the team.
+
+\section{Experimental Setup}
+Specify baselines, metrics, hyperparameters, model versions, random seeds, and compute. Explain how the evaluation answers the research question.
+
+\section{Results}
+Report the main quantitative comparisons in tables or figures. State uncertainty or variation when appropriate. Do not report numbers without interpreting them.
+
+\section{Analysis}
+Provide qualitative examples, error categories, ablations, or subgroup analysis. Explain when and why the approach succeeds or fails.
+
+\section{Limitations and Responsible Use}
+Discuss limitations, possible harms, dataset or model biases, and situations in which the conclusions may not generalize.
+
+\section{Conclusion}
+Answer the research question using the evidence presented. Suggest a small number of concrete next steps.
+
+\section*{Team Contributions and Use of AI Tools}
+List each member's contributions and approximate percentage. Disclose material use of generative AI or other automated tools for coding, analysis, or writing, and describe how outputs were checked.
+
+\section*{Reproducibility Statement}
+State where the code is included, the main command to reproduce results, expected runtime, hardware or API requirements, and any unavailable resources.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\appendix
+\section{Additional Results}
+Optional material may appear here. The appendix and references do not count toward the 6--8 page main-text limit.
+
+\end{document}

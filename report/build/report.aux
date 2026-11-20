@@ -1,0 +1,78 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand*\HyPL@Entry[1]{}
+\citation{vaswani2017attention}
+\citation{hochreiter1997lstm}
+\citation{kaplan2020scaling}
+\HyPL@Entry{0<</S/D>>}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{khandelwal2018context}
+\citation{olsson2022induction}
+\citation{patil2024fict}
+\citation{merity2017pointer}
+\citation{warstadt2020blimp}
+\citation{ueda2024length}
+\citation{heafield2011kenlm}
+\citation{sennrich2016subword}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Data and Task Formulation}{2}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Approach}{2}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Matched language models}{2}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Architectural dimensions and total parameter counts. The final column compares LSTM and Transformer parameters excluding token embeddings, relative to the Transformer count. Shared input/output embeddings are counted once. The four-layer medium LSTM is a separate depth control.}}{3}{table.1}\protected@file@percent }
+\newlabel{tab:parameters}{{1}{3}{Architectural dimensions and total parameter counts. The final column compares LSTM and Transformer parameters excluding token embeddings, relative to the Transformer count. Shared input/output embeddings are counted once. The four-layer medium LSTM is a separate depth control}{table.1}{}}
+\newlabel{eq:loss}{{1}{3}{Matched language models}{equation.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Context, copying, and grammar}{3}{subsection.4.2}\protected@file@percent }
+\newlabel{eq:cg}{{2}{3}{Context, copying, and grammar}{equation.4.2}{}}
+\newlabel{eq:intervention}{{3}{3}{Context, copying, and grammar}{equation.4.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Setup}{4}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Results}{4}{section.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Results for models selected by validation loss, averaged across three training repetitions. Grammar accuracy uses BLiMP. Repetition gain uses 100-token natural-text sequences. The 128-token penalty measures the loss increase after removing more distant history. Gains and penalties are in nats per token. Repetition examples differ between architectures. Perplexity is averaged over runs; the 5-gram model is one deterministic baseline.}}{5}{table.2}\protected@file@percent }
+\newlabel{tab:main}{{2}{5}{Results for models selected by validation loss, averaged across three training repetitions. Grammar accuracy uses BLiMP. Repetition gain uses 100-token natural-text sequences. The 128-token penalty measures the loss increase after removing more distant history. Gains and penalties are in nats per token. Repetition examples differ between architectures. Perplexity is averaged over runs; the 5-gram model is one deterministic baseline}{table.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Prediction, context gain, and grammar accuracy across small, medium, and large models. Small dots represent independent training repetitions; error bars show sample standard deviations rather than confidence intervals. Grammar equivalence is tested on paired differences, not on the absolute accuracies plotted here.}}{5}{figure.1}\protected@file@percent }
+\newlabel{fig:architecture}{{1}{5}{Prediction, context gain, and grammar accuracy across small, medium, and large models. Small dots represent independent training repetitions; error bars show sample standard deviations rather than confidence intervals. Grammar equivalence is tested on paired differences, not on the absolute accuracies plotted here}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Increase in prediction loss after shortening or shuffling context, relative to intact history. Each condition predicts the same 69,376 target tokens. The left panel averages three training repetitions; the right adds sample-standard-deviation error bars. Positive penalties indicate useful information in the removed or disrupted history. The 5-gram baseline has zero penalty throughout.}}{6}{figure.2}\protected@file@percent }
+\newlabel{fig:context}{{2}{6}{Increase in prediction loss after shortening or shuffling context, relative to intact history. Each condition predicts the same 69,376 target tokens. The left panel averages three training repetitions; the right adds sample-standard-deviation error bars. Positive penalties indicate useful information in the removed or disrupted history. The 5-gram baseline has zero penalty throughout}{figure.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Analysis}{6}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Why controlling the predicted tokens changes the interpretation}{6}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Copying is stronger than a generic second-span effect}{6}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Grammar scores do not follow the perplexity ranking}{7}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Depth and optimization constrain the architectural conclusion}{7}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Limitations and Responsible Use}{7}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{8}{section.9}\protected@file@percent }
+\newlabel{lastmainpage}{{9}{8}{Reproducibility Statement}{section*.2}{}}
+\bibstyle{plain}
+\bibdata{references}
+\bibcite{heafield2011kenlm}{1}
+\bibcite{hochreiter1997lstm}{2}
+\bibcite{kaplan2020scaling}{3}
+\bibcite{khandelwal2018context}{4}
+\bibcite{merity2017pointer}{5}
+\bibcite{olsson2022induction}{6}
+\bibcite{patil2024fict}{7}
+\bibcite{sennrich2016subword}{8}
+\bibcite{ueda2024length}{9}
+\bibcite{vaswani2017attention}{10}
+\bibcite{warstadt2020blimp}{11}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Additional Results}{10}{appendix.A}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Results for every main training repetition, with weights selected by validation loss. Grammar accuracy uses BLiMP; repetition gain uses 100-token natural-text sequences. The final columns show loss increases when context is limited to 128 tokens or when more distant tokens are shuffled. All gains and penalties use nats per token.}}{10}{table.3}\protected@file@percent }
+\newlabel{tab:seeds}{{3}{10}{Results for every main training repetition, with weights selected by validation loss. Grammar accuracy uses BLiMP; repetition gain uses 100-token natural-text sequences. The final columns show loss increases when context is limited to 128 tokens or when more distant tokens are shuffled. All gains and penalties use nats per token}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Exact parameter counts. Parameters other than token embeddings include learned Transformer positions and the LSTM output adapter. Only two of the three four-layer LSTM runs complete at the main learning rate; the separate lower-rate experiment completes all three.}}{10}{table.4}\protected@file@percent }
+\newlabel{tab:exactcounts}{{4}{10}{Exact parameter counts. Parameters other than token embeddings include learned Transformer positions and the LSTM output adapter. Only two of the three four-layer LSTM runs complete at the main learning rate; the separate lower-rate experiment completes all three}{table.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Available evidence and reproduction limits.}{10}{section*.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Differences paired by training seed. Context-gain tests ask whether the Transformer advantage is positive and retain all six planned context/repetition comparisons in Holm correction. Grammar $p$-values test equivalence within two percentage points, with correction across sizes; their decisions use the 90\% intervals in the main text, not the descriptive 95\% intervals shown here. Scaling retains both planned comparisons. Withheld repetition tests receive conservative values of 1 only for adjustment. Intervals are not adjusted for multiple comparisons.}}{11}{table.5}\protected@file@percent }
+\newlabel{tab:inference}{{5}{11}{Differences paired by training seed. Context-gain tests ask whether the Transformer advantage is positive and retain all six planned context/repetition comparisons in Holm correction. Grammar $p$-values test equivalence within two percentage points, with correction across sizes; their decisions use the 90\% intervals in the main text, not the descriptive 95\% intervals shown here. Scaling retains both planned comparisons. Withheld repetition tests receive conservative values of 1 only for adjustment. Intervals are not adjusted for multiple comparisons}{table.5}{}}
+\gdef \@abspage@last{11}

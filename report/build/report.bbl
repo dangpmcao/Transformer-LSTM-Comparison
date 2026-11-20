@@ -1,0 +1,82 @@
+\begin{thebibliography}{10}
+
+\bibitem{heafield2011kenlm}
+Kenneth Heafield.
+\newblock {KenLM}: Faster and smaller language model queries.
+\newblock In {\em Proceedings of the Sixth Workshop on Statistical Machine
+  Translation}, pages 187--197, 2011.
+
+\bibitem{hochreiter1997lstm}
+Sepp Hochreiter and J{\"u}rgen Schmidhuber.
+\newblock Long short-term memory.
+\newblock {\em Neural Computation}, 9(8):1735--1780, 1997.
+\newblock \url{https://doi.org/10.1162/neco.1997.9.8.1735}.
+
+\bibitem{kaplan2020scaling}
+Jared Kaplan, Sam McCandlish, Tom Henighan, Tom~B. Brown, Benjamin Chess, Rewon
+  Child, Scott Gray, Alec Radford, Jeffrey Wu, and Dario Amodei.
+\newblock Scaling laws for neural language models.
+\newblock \url{https://arxiv.org/abs/2001.08361}, 2020.
+\newblock \url{https://doi.org/10.48550/arXiv.2001.08361}.
+
+\bibitem{khandelwal2018context}
+Urvashi Khandelwal, He~He, Peng Qi, and Dan Jurafsky.
+\newblock Sharp nearby, fuzzy far away: How neural language models use context.
+\newblock In {\em Proceedings of ACL}, pages 284--294, 2018.
+\newblock \url{https://doi.org/10.18653/v1/P18-1027}.
+
+\bibitem{merity2017pointer}
+Stephen Merity, Caiming Xiong, James Bradbury, and Richard Socher.
+\newblock Pointer sentinel mixture models.
+\newblock In {\em International Conference on Learning Representations}, 2017.
+\newblock \url{https://doi.org/10.48550/arXiv.1609.07843}.
+
+\bibitem{olsson2022induction}
+Catherine Olsson, Nelson Elhage, Neel Nanda, Nicholas Joseph, Nova DasSarma,
+  Tom Henighan, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly,
+  Dawn Drain, Deep Ganguli, Zac Hatfield-Dodds, Danny Hernandez, Scott
+  Johnston, Andy Jones, Jackson Kernion, Liane Lovitt, Kamal Ndousse, Dario
+  Amodei, Tom Brown, Jack Clark, Jared Kaplan, Sam McCandlish, and Chris Olah.
+\newblock In-context learning and induction heads.
+\newblock
+  \url{https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html},
+  2022.
+\newblock \url{https://doi.org/10.48550/arXiv.2209.11895}.
+
+\bibitem{patil2024fict}
+Abhinav Patil, Jaap Jumelet, Yu~Ying Chiu, Andy Lapastora, Peter Shen, Lexie
+  Wang, Clevis Willrich, and Shane Steinert-Threlkeld.
+\newblock Filtered corpus training ({FiCT}) shows that language models can
+  generalize from indirect evidence.
+\newblock {\em Transactions of the Association for Computational Linguistics},
+  12:1597--1615, 2024.
+\newblock \url{https://doi.org/10.1162/tacl_a_00720}.
+
+\bibitem{sennrich2016subword}
+Rico Sennrich, Barry Haddow, and Alexandra Birch.
+\newblock Neural machine translation of rare words with subword units.
+\newblock In {\em Proceedings of ACL}, pages 1715--1725, 2016.
+\newblock \url{https://doi.org/10.18653/v1/P16-1162}.
+
+\bibitem{ueda2024length}
+Naoya Ueda, Masato Mita, Teruaki Oka, and Mamoru Komachi.
+\newblock Token-length bias in minimal-pair paradigm datasets.
+\newblock In {\em Proceedings of LREC-COLING}, pages 16224--16236, 2024.
+
+\bibitem{vaswani2017attention}
+Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones,
+  Aidan~N. Gomez, {\L}ukasz Kaiser, and Illia Polosukhin.
+\newblock Attention is all you need.
+\newblock In {\em Advances in Neural Information Processing Systems},
+  volume~30, 2017.
+\newblock \url{https://doi.org/10.48550/arXiv.1706.03762}.
+
+\bibitem{warstadt2020blimp}
+Alex Warstadt, Alicia Parrish, Haokun Liu, Anhad Mohananey, Wei Peng, Sheng-Fu
+  Wang, and Samuel~R. Bowman.
+\newblock {BLiMP}: The benchmark of linguistic minimal pairs for english.
+\newblock {\em Transactions of the Association for Computational Linguistics},
+  8:377--392, 2020.
+\newblock \url{https://doi.org/10.1162/tacl_a_00321}.
+
+\end{thebibliography}
