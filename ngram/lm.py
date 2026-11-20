@@ -60,6 +60,11 @@ class KenLMScorer:
         if self.model.order != ORDER:
             raise ValueError(f"Expected a {ORDER}-gram model, got order {self.model.order}")
 
+    def knows(self, token: int) -> bool:
+        """True if the ID has its own n-gram entry (EOS is always known as </s>)."""
+        word = id_to_word(token)
+        return word == EOS_WORD or word in self.model
+
     def target_log_probs(self, targets: Sequence[int]) -> tuple[np.ndarray, int]:
         """Natural-log P(target | up to 4 previous targets in this window), from a null context."""
         state, next_state = self._kenlm.State(), self._kenlm.State()
@@ -86,6 +91,23 @@ class KenLMScorer:
             self.model.BaseScore(state, id_to_word(token), next_state)
             state, next_state = next_state, state
         return self.model.BaseScore(state, id_to_word(target), next_state) * LN10
+
+
+def coverage(sequences: Iterable[Sequence[int]], knows: Callable[[int], bool]) -> dict:
+    """Count targets the model would score as <unk>; protocol evaluation.kenlm.oov needs zero."""
+    counts: dict[int, int] = {}
+    sequences_with_oov = total = 0
+    for targets in sequences:
+        total += len(targets)
+        missing = [int(token) for token in targets if not knows(int(token))]
+        sequences_with_oov += bool(missing)
+        for token in missing:
+            counts[token] = counts.get(token, 0) + 1
+    return {
+        "targets": total, "oov_targets": sum(counts.values()), "sequences_with_oov": sequences_with_oov,
+        "missing_ids": {str(token): count for token, count in sorted(counts.items())},
+        "status": "PASS" if not counts else "FAIL",
+    }
 
 
 def window_scorer(target_log_probs: TargetLogProbs) -> Callable[[list[list[int]]], list[float]]:

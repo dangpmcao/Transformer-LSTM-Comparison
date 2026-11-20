@@ -1,0 +1,31 @@
+{
+  "affected_paradigms": [
+    "adjunct_island",
+    "complex_NP_island",
+    "coordinate_structure_constraint_complex_left_branch",
+    "coordinate_structure_constraint_object_extraction",
+    "left_branch_island_echo_question",
+    "left_branch_island_simple_question",
+    "matrix_question_npi_licensor_present",
+    "wh_island"
+  ],
+  "created_at": "2026-11-18T02:13:41.326969+00:00",
+  "declared_treatment": {
+    "ids": {
+      "34": "bare '?' attached to a word; WikiText spaces it as ' ?' (ID 2885)"
+    },
+    "scored_as": "kenlm_unk_never_dropped"
+  },
+  "eos_included": true,
+  "missing_ids": {
+    "34": 15000
+  },
+  "model_label": "kenlm_5gram_train",
+  "oov_targets": 15000,
+  "schema_version": 1,
+  "sentences": 134000,
+  "sequences_with_oov": 15000,
+  "status": "PASS_DECLARED_UNK",
+  "targets": 1820751,
+  "undeclared_missing_ids": []
+}

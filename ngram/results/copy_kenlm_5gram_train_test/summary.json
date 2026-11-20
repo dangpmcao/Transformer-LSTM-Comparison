@@ -1,0 +1,183 @@
+{
+  "created_at": "2026-11-18T02:17:21.259031+00:00",
+  "model_label": "kenlm_5gram_train",
+  "natural_copy_100": -0.02422299850527132,
+  "oov_treatment": "kenlm_unk_never_dropped",
+  "provenance": {
+    "code_sha256": "ea8428370afada7d6bec8596bb0df51aa0f17ae872fc2bb814d67fcc94caac12",
+    "manifest_sha256": "6b733c7275a7f31db554757d0aba95d4883fba8f07bda7211a4713c24f96e0c0",
+    "model_manifest_sha256": "e5b461fcc73ca32ebe43534844c73443a2c9f730f8b4b33d764dcdab1d39be2a",
+    "numpy_version": "1.26.4",
+    "protocol_sha256": "9acb9a1fd9540ee80c80ef80c36b5836cdfeec2810fc22deba5dd23a316c7e56",
+    "scorer_code_sha256": "d228bbbf0f245d0ec2d1c222bfcc9e59aec826c8046a18e9ec3ad3ccfe81bd9f",
+    "token_manifest_sha256": "76509c2cc5e9dd596c7691e5dc5e433f211bbd27cc832c5ed2a7ede97d01f754",
+    "tokenizer_sha256": "53af7083db6636696cbd023afc4e7e07f7c2c4daaff3fe007e1bcf33fd5f6f70"
+  },
+  "results": {
+    "test_natural_text": {
+      "100": {
+        "all_positions": {
+          "control_gain": -0.029391556700328003,
+          "copy_gain": -0.02422299850527132,
+          "copy_minus_control": 0.005168558195056683
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": -0.0019131836884875852,
+          "copy_gain": 0.0,
+          "copy_minus_control": 0.0019131836884875852
+        },
+        "mean_nll": {
+          "control_second_span": 4.297840045945313,
+          "first_span": 4.268448489244985,
+          "repeated_span": 4.2926714877502565
+        },
+        "oov_span_tokens": 0
+      },
+      "200": {
+        "all_positions": {
+          "control_gain": -0.011077767442769115,
+          "copy_gain": -0.011830275128747125,
+          "copy_minus_control": -0.00075250768597801
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": 0.0037961515643312183,
+          "copy_gain": 0.0,
+          "copy_minus_control": -0.0037961515643312183
+        },
+        "mean_nll": {
+          "control_second_span": 4.219225230208331,
+          "first_span": 4.208147462765562,
+          "repeated_span": 4.219977737894309
+        },
+        "oov_span_tokens": 0
+      },
+      "25": {
+        "all_positions": {
+          "control_gain": -0.07931516900995295,
+          "copy_gain": -0.08920421779421783,
+          "copy_minus_control": -0.009889048784264887
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": 0.03454063402511842,
+          "copy_gain": 0.0,
+          "copy_minus_control": -0.03454063402511842
+        },
+        "mean_nll": {
+          "control_second_span": 4.495730931207758,
+          "first_span": 4.416415762197805,
+          "repeated_span": 4.505619979992023
+        },
+        "oov_span_tokens": 0
+      },
+      "50": {
+        "all_positions": {
+          "control_gain": -0.04327699048938438,
+          "copy_gain": -0.044398363339141156,
+          "copy_minus_control": -0.0011213728497567743
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": 0.0004941365324846458,
+          "copy_gain": 0.0,
+          "copy_minus_control": -0.0004941365324846458
+        },
+        "mean_nll": {
+          "control_second_span": 4.380179928669486,
+          "first_span": 4.336902938180102,
+          "repeated_span": 4.381301301519243
+        },
+        "oov_span_tokens": 0
+      }
+    },
+    "uniform_nonspecial_token_ids": {
+      "100": {
+        "all_positions": {
+          "control_gain": -0.004493199352014088,
+          "copy_gain": -0.013698091228905085,
+          "copy_minus_control": -0.009204891876890997
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": 0.009969275942976807,
+          "copy_gain": 0.0,
+          "copy_minus_control": -0.009969275942976807
+        },
+        "mean_nll": {
+          "control_second_span": 11.805157171356138,
+          "first_span": 11.800663972004124,
+          "repeated_span": 11.814362063233029
+        },
+        "oov_span_tokens": 1229
+      },
+      "200": {
+        "all_positions": {
+          "control_gain": -0.004153439306458395,
+          "copy_gain": -0.006663325813844878,
+          "copy_minus_control": -0.002509886507386483
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": 0.002787588658705431,
+          "copy_gain": 0.0,
+          "copy_minus_control": -0.002787588658705431
+        },
+        "mean_nll": {
+          "control_second_span": 11.807952277599716,
+          "first_span": 11.803798838293257,
+          "repeated_span": 11.810462164107102
+        },
+        "oov_span_tokens": 2402
+      },
+      "25": {
+        "all_positions": {
+          "control_gain": -0.05702222130585177,
+          "copy_gain": -0.05490640281086634,
+          "copy_minus_control": 0.002115818494985433
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": -0.0007350701600401521,
+          "copy_gain": 0.0,
+          "copy_minus_control": 0.0007350701600401521
+        },
+        "mean_nll": {
+          "control_second_span": 11.818315122153242,
+          "first_span": 11.76129290084739,
+          "repeated_span": 11.816199303658257
+        },
+        "oov_span_tokens": 309
+      },
+      "50": {
+        "all_positions": {
+          "control_gain": -0.01963345741420497,
+          "copy_gain": -0.028105388590898173,
+          "copy_minus_control": -0.008471931176693204
+        },
+        "examples": 1000,
+        "exclude_first_four": {
+          "control_gain": 0.0055933506034318015,
+          "copy_gain": 0.0,
+          "copy_minus_control": -0.0055933506034318015
+        },
+        "mean_nll": {
+          "control_second_span": 11.807572257238675,
+          "first_span": 11.78793879982447,
+          "repeated_span": 11.816044188415368
+        },
+        "oov_span_tokens": 616
+      }
+    }
+  },
+  "schema_version": 1,
+  "scores_file": {
+    "bytes": 16965682,
+    "path": "per_target_nll.npz",
+    "sha256": "dbd555dcec8b27d3fd7a77e65bc568f3ea9124c343f2356f3f067f44fcc126e0"
+  },
+  "split": "test",
+  "start_symbol": "kenlm_null_context_in_place_of_bos",
+  "status": "PASS"
+}
