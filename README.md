@@ -26,7 +26,8 @@ tokens, so it is the "no long context" reference. Final evaluation is complete.
 | 5-gram | 214,894,003 | 4.198703 | 66.60 | 66.45 | 54.0% |
 
 The [5-gram guide](ngram/README.md#results) has the same-target ablation,
-Copy(L), BLiMP groups and the findings log.
+Copy(L), BLiMP groups and the findings log. Weights:
+[centenohugo/context-not-grammar](https://huggingface.co/centenohugo/context-not-grammar) (`ngram/`).
 
 ## Current LSTM results
 
@@ -48,7 +49,9 @@ Perplexities are means of the per-seed perplexities. Parameter counts are
 matched to the Transformer within 0.2% (non-embedding). The
 [LSTM guide](lstm/README.md#final-evaluation-test-2026-11-18) has per-seed
 values, the same-target ablation, Copy(L), BLiMP with and without the 8
-paradigms that contain the unseen bare `?`, and the final-budget view.
+paradigms that contain the unseen bare `?`, and the final-budget view. Weights
+(`best.pt`, `final.pt` for every run):
+[centenohugo/context-not-grammar](https://huggingface.co/centenohugo/context-not-grammar) (`lstm/`).
 
 ## Current Transformer results
 
