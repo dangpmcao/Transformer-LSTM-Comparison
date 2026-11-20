@@ -15,6 +15,43 @@ is ready for S/M/L × seeds 13/37/73, two runs concurrently. Run immediately wit
 `bash transformer/run_production.sh --standalone` at 250M tokens/run. The shared
 LSTM/Transformer readiness gate remains separate from this explicit Transformer-only campaign.
 
+Model weights: [huggingface.co/centenohugo/context-not-grammar](https://huggingface.co/centenohugo/context-not-grammar)
+
+## Current 5-gram results
+
+KenLM 5-gram (interpolated modified Kneser–Ney, no pruning) trained on the same
+WikiText-103 train token IDs as the neural models. It sees at most four previous
+tokens, so it is the "no long context" reference. Final evaluation is complete.
+
+| Model | n-gram entries | Validation NLL | Validation perplexity | Test perplexity | BLiMP accuracy |
+|---|---:|---:|---:|---:|---:|
+| 5-gram | 214,894,003 | 4.198703 | 66.60 | 66.45 | 54.0% |
+
+The [5-gram guide](ngram/README.md#results) has the same-target ablation,
+Copy(L), BLiMP groups and the findings log.
+
+## Current LSTM results
+
+Production runs: 250,000,000 prediction tokens per run, seeds 13/37/73, lr 3e-2,
+dropout 0.1. Values are **seed means of the best-validation checkpoint**
+(protocol selection rule); final evaluation is complete. M deep seed 37 diverged
+and is reported as diverged; the declared sensitivity rerun of M deep at lr 1e-2
+is shown in the last row.
+
+| Model | Parameters | Seeds | Validation NLL | Validation perplexity | Test perplexity | BLiMP accuracy |
+|---|---:|---:|---:|---:|---:|---:|
+| LSTM S | 7,479,680 | 3 | 4.006771 | 54.97 | 56.58 | 62.2% |
+| LSTM M | 17,127,516 | 3 | 3.766043 | 43.21 | 44.57 | 63.0% |
+| LSTM M deep (4 layers) | 17,120,448 | 2 | 3.967775 | 53.03 | 54.89 | 60.7% |
+| LSTM L | 50,194,640 | 3 | 3.710715 | 41.04 | 42.55 | 62.1% |
+| LSTM M deep, lr 1e-2 (sensitivity) | 17,120,448 | 3 | 3.974150 | 53.21 | 55.04 | 60.4% |
+
+Perplexities are means of the per-seed perplexities. Parameter counts are
+matched to the Transformer within 0.2% (non-embedding). The
+[LSTM guide](lstm/README.md#final-evaluation-test-2026-11-18) has per-seed
+values, the same-target ablation, Copy(L), BLiMP with and without the 8
+paradigms that contain the unseen bare `?`, and the final-budget view.
+
 ## Current Transformer results
 
 Each model completed 250,000,000 prediction tokens with seed 101. These are
@@ -40,6 +77,8 @@ under `transformer/runs/`, which is ignored by Git and is not included in a clon
 | Train, load, or inspect the text tokenizer | [Tokenizer guide](tokenizer/README.md) |
 | Understand experiment settings and the timing-trial requirement | [Experiment guide](comparison/README.md) |
 | Build and train the Transformer on a GPU | [Transformer guide](transformer/README.md) |
+| Train and evaluate the LSTM | [LSTM guide](lstm/README.md) |
+| Train and evaluate the 5-gram baseline | [5-gram guide](ngram/README.md) |
 | Read the research question and planned experiments | [Project proposal](proposal.pdf) |
 
 All commands below run from the repository root, the folder containing this file.
