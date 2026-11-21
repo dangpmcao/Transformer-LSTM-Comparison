@@ -484,19 +484,19 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 26.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-) [1
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <9> on input line 28.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 28.
+ [1
 
 ]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10> on input line 55.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <7> on input line 55.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 55.
- [2]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 68.
- [3] [4]
+ [2] [3] [4]
 File: figures/architecture_comparison.pdf Graphic file (type pdf)
 <use figures/architecture_comparison.pdf>
  [5]
@@ -518,6 +518,6 @@ Package microtype Info: Loading generic protrusion settings for font family
 
 ] [11] (report.aux)
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: E1FD586E1ABB458A8C9836919E82F763;3048.
+(rerunfilecheck)             Checksum: AA2B843152EE89F6BB0D60E2272B9343;3329.
  )
-Output written on report.xdv (11 pages, 72848 bytes).
+Output written on report.xdv (11 pages, 80068 bytes).

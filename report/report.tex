@@ -25,24 +25,24 @@ Where Transformers Beat LSTMs in Small-Scale Language Modeling}
 \maketitle
 
 \begin{abstract}
-Better text prediction does not necessarily imply better grammatical knowledge. We hypothesize that Transformer attention improves the use of preceding context, rather than grammatical discrimination, compared with classic long short-term memory (LSTM) networks, and we will test this using matched training, context interventions, repeated-text prediction, and grammatical minimal pairs. We trained both model families on WikiText-103 with one shared tokenizer, approximately 7.5, 17.1, or 50.2 million parameters, 250 million predicted tokens per run, and three independent training repetitions at each size. Transformer test perplexities are 40.31, 30.75, and 24.70 for the small, medium, and large models, compared with 56.58, 44.57, and 42.55 for LSTMs; lower values indicate better prediction. Transformers benefit more from repeated text and lose more predictive accuracy when distant context is removed while the predicted tokens remain fixed. Grammar results differ: the accuracy gap changes direction across sizes, and no comparison establishes equivalence within the prespecified two-percentage-point margin. A 5-gram baseline is unaffected by changes beyond its four-token history, confirming that the context intervention distinguishes finite from longer-range memory. A deeper LSTM does not close the observed gap, although one training repetition fails. The evidence supports stronger contextual prediction by Transformers under these conditions, but does not establish grammar equivalence or show that distant context explains most of the perplexity advantage.
+Does the Transformer advantage in text prediction reflect stronger use of context or better grammatical discrimination? We test this question against classic long short-term memory (LSTM) networks using context interventions, repeated-text prediction, and grammatical minimal pairs. Both families were trained on WikiText-103 with a shared tokenizer, approximately 7.5, 17.1, or 50.2 million parameters, a budget of 250 million predicted tokens per run, and three training seeds per size. At validation-selected checkpoints, Transformer test perplexities are 40.31, 30.75, and 24.70, compared with 56.58, 44.57, and 42.55 for LSTMs. Removing history beyond 128 tokens increases loss on identical targets by 0.09--0.10 nats for Transformers versus 0.01--0.02 for LSTMs; a 5-gram control is exactly invariant. Repetition gains are also larger for Transformers, although different sampled passages limit this comparison to descriptive evidence. On the Benchmark of Linguistic Minimal Pairs (BLiMP), Transformer minus LSTM accuracy gaps are $-2.65$, $-1.48$, and $+1.85$ percentage points. No size establishes equivalence within the prespecified two-point margin, and increasing context advantage with model size remains inconclusive. A deeper LSTM does not close the prediction gap, with one run failing. These results support stronger contextual prediction under the tested training procedures, but do not establish grammar equivalence or show that distant context explains most of the perplexity advantage.
 \end{abstract}
 
 \section{Introduction}
 
-Lower prediction loss can reflect local grammar, retrieval of earlier words, or sequence repetition. Perplexity summarizes how uncertain a language model is about the next token; it combines these abilities and cannot establish which improved. This distinction matters when comparing Transformers, which attend directly to preceding token representations, with classic long short-term memory (LSTM) networks, which compress preceding information into a recurrent state.
+Lower prediction loss can reflect local grammar, retrieval of earlier words, or sequence repetition. Perplexity summarizes a language model's next-token uncertainty, combining these abilities without establishing which improved. We ask whether the advantage of Transformers over classic long short-term memory (LSTM) networks is accompanied by stronger context use, better grammatical discrimination, or both. Transformers attend directly to preceding token representations, whereas LSTMs compress preceding information into a recurrent state. Context and grammar can overlap; our evaluations probe different behaviors rather than separate, independent faculties.
 
 Both families learn from the same WikiText-103 articles and tokenizer. Training examples are independent text segments containing at most 512 tokens to predict. We compare small, medium, and large models, with approximately 7.5, 17.1, and 50.2 million parameters. At each size, the two families share embedding widths and closely matched counts of other parameters. Each model predicts 250 million training tokens, and each configuration is trained three times with different random seeds, the numerical settings that control initialization and data order. These repetitions reveal variation caused by training rather than by the choice of test examples.
 
 We test three predictions. The \textbf{context and copying hypothesis} predicts larger reductions in prediction loss at later text positions and on repeated passages for Transformers. The \textbf{grammar-equivalence hypothesis} predicts that overall grammatical judgment accuracy differs by less than two percentage points. The \textbf{scaling hypothesis} predicts that the context advantage grows with model size while the grammar gap remains small. To test context use directly, we also predict identical tokens after shortening or shuffling their preceding text. This separates the effect of available history from differences in the difficulty of tokens at early and late positions.
 
-Our contribution is a controlled account of which advantages appear under this budget. Transformer context and repetition scores consistently exceed LSTM scores, while grammar gaps change direction across sizes. Stronger position-wise gains at larger sizes do not imply steadily larger benefits from context beyond 128 tokens. These controls qualify the context-use interpretation rather than establish universal attention superiority.
+Our contribution is an empirical comparison that connects prediction quality to context interventions and grammatical judgments under a common run budget. Transformer context gains exceed LSTM gains at every size, supported by interventions on identical targets. Repetition scores show a large descriptive separation, while grammar gaps change direction across sizes and remain too uncertain to establish equivalence. Neither the size trend nor the interventions show that distant context accounts for most of the prediction advantage.
 
 \section{Related Work}
 
 Transformer attention~\cite{vaswani2017attention} and LSTM gated recurrence~\cite{hochreiter1997lstm} offer different routes to preceding information. Kaplan et al.~\cite{kaplan2020scaling} relate performance to size, data, and compute, motivating our context-position and size comparisons. Our small fixed-budget experiment does not establish a general scaling law.
 
-Khandelwal et al.~\cite{khandelwal2018context} distinguish the precise use of nearby words from more approximate use of distant context in recurrent language models. Olsson et al.~\cite{olsson2022induction} connect repeated-pattern completion in attention models with induction mechanisms. These motivate our history interventions and copy tasks, but behavioral copy gains alone do not identify an internal circuit. Patil et al.~\cite{patil2024fict} further motivate evaluating linguistic generalization separately from aggregate language-model loss.
+Khandelwal et al.~\cite{khandelwal2018context} distinguish precise use of nearby words from more approximate use of distant context in recurrent language models, motivating our truncation and shuffling tests. Olsson et al.~\cite{olsson2022induction} connect repeated-pattern completion in attention models with induction mechanisms; our behavioral repetition tests do not identify those internal circuits. Patil et al.~\cite{patil2024fict} examine linguistic generalization by filtering constructions from training corpora. We instead retain the corpus and vary evaluation context, so our findings concern learned behavior rather than generalization from a controlled absence of training evidence.
 
 WikiText provides article-level text suitable for studying contextual prediction~\cite{merity2017pointer}. The Benchmark of Linguistic Minimal Pairs (BLiMP) tests grammatical contrasts using pairs of minimally different sentences~\cite{warstadt2020blimp}, although scoring depends on tokenization and candidate length~\cite{ueda2024length}. We retain summed log probability as the primary grammar score and examine length-based alternatives separately. KenLM~\cite{heafield2011kenlm} supplies a 5-gram baseline whose predictions depend on at most four preceding tokens. It should therefore remain exactly unchanged when only more distant context is altered.
 
@@ -97,61 +97,62 @@ Our first context measure is \emph{context gain}: the difference between average
 \end{equation}
 where $\bar\ell(t)$ is average loss at position $t$. A positive value indicates better prediction at later positions, when more context is available. However, later tokens may also be intrinsically easier to predict, so this measure alone does not establish a benefit from longer context.
 
-To address that ambiguity, the context intervention holds fixed all 69,376 targets at positions 385--512 of complete test windows. Each target is predicted from its full preceding context, only its nearest $k\in\{4,32,128\}$ tokens, or a full-length context in which tokens beyond the nearest 128 are shuffled. Each input begins with a sequence-start symbol and fresh model state. The truncation penalty is
+To address that ambiguity, the context intervention holds fixed all 69,376 targets at positions 385--512 of complete test windows. Each target is predicted from its full preceding context, only its nearest $k\in\{4,32,128\}$ tokens, or a full-length context in which tokens beyond the nearest 128 are shuffled. Each neural input begins with BOS and fresh model state; shuffling is deterministic for each target. The truncation penalty is
 \begin{equation}
 G_k=\frac1N\sum_{j=1}^N\bigl[\ell_j(k)-\ell_j(\mathrm{full})\bigr],
 \label{eq:intervention}
 \end{equation}
 where $N$ is the number of targets and $\ell_j(k)$ is target $j$'s loss with only $k$ preceding tokens. A positive penalty means that the removed history helped prediction. We calculate an analogous penalty for shuffling. Truncation also changes positions and the number of recurrent updates before prediction. Shuffling preserves these features, although rearranging subword tokens disrupts word forms as well as distant order. The two tests therefore provide complementary evidence rather than a pure separation of semantic effects.
 
-The repetition task presents a token sequence $A$ followed by an exact copy of $A$. Repetition gain is the first occurrence's average loss minus the second's, for a sequence of length $L$. We use lengths 25, 50, 100, and 200, sampling 1,000 examples per length from natural test text and from uniformly sampled ordinary tokens. The main endpoint is natural-text repetition of length 100. Controls replace the repeated sequence with an independently sampled sequence and exclude each sequence's first four positions. Although sampling rules agree, the Transformer and baseline evaluations used different sampled sequences; their differences are therefore descriptive comparisons, not comparisons of identical test examples.
+The repetition task presents a token sequence $A$ followed by an exact copy. For $L$ tokens, repetition gain is $C_L=\ell(A\mid\mathrm{BOS})-\ell(A\mid\mathrm{BOS},A)$, where each $\ell$ is mean teacher-forced loss on that occurrence. We sample 1,000 examples at each length $L\in\{25,50,100,200\}$ from natural test text or uniformly sampled nonspecial token IDs. Natural spans stay within articles and exclude EOS; natural-text repetition at $L=100$ is the primary endpoint. Separate controls use an independent second span or exclude the first four positions from both occurrence averages. Sampling rules agree across architectures, but realized samples differ because the implementations initialize and advance their random-number generators differently. Cross-architecture repetition differences are therefore descriptive, with sampling uncertainty outside the reported seed variation.
 
-For each BLiMP sentence, we sum subword log probabilities from the sequence-start symbol through the end symbol. The model succeeds when the grammatical sentence has the larger sum. We separately examine pairs with equal token counts and scores averaged per token to assess sensitivity to sentence length.
+For a BLiMP sentence with subword tokens $w_1,\ldots,w_m$, we score $S(w)=\sum_{t=1}^{m+1}\log p_\theta(w_t\mid\mathrm{BOS},w_{<t})$, where $w_{m+1}=\mathrm{EOS}$. BOS conditions prediction but is not scored; KenLM uses null initial context instead. A pair is correct when $S(w^{\mathrm{good}})>S(w^{\mathrm{bad}})$. We also examine the 50,019 equal-token-length pairs and scores divided by $m+1$ to assess length sensitivity. These alternatives do not replace the primary summed score.
 
 \section{Experimental Setup}
 
-The main experiment comprises 18 training runs: two architectures, three model sizes, and three random seeds (13, 37, and 73). Each run predicts exactly 250 million nonpadding tokens, including article endings. Corresponding runs use the same rule for shuffling training windows. Training uses 32-bit floating-point arithmetic and batches of 64 windows, processed in four groups of 16 before each parameter update. Both families use AdamW with $(\beta_1,\beta_2)=(0.9,0.95)$, weight decay 0.1 except on biases and normalization parameters, gradient clipping at norm 1, and a cosine learning-rate schedule with 1\% warm-up. Loss normalization and the final partial batch count only the actual prediction targets.
+The main experiment comprises 18 training runs: two architectures, three sizes, and seeds 13, 37, and 73. Each run predicts exactly 250 million nonpadding tokens, including EOS. Corresponding runs use the same seeded window-shuffling rule. Training uses 32-bit floating-point arithmetic and batches of 64 windows, accumulated from four groups of 16. Both families use AdamW with $(\beta_1,\beta_2)=(0.9,0.95)$, $\epsilon=10^{-8}$, weight decay 0.1 except on biases and normalization parameters, and gradient clipping at norm 1. The learning rate warms up over the first 1\% of tokens, then decays by cosine to 10\% of its peak. Loss normalization and the final partial batch count actual prediction targets only.
 
 Hyperparameters are selected using the small model of each family. The initial eight-setting search was expanded equally for both families to six learning rates ($10^{-4},3\!\times\!10^{-4},10^{-3},3\!\times\!10^{-3},10^{-2},3\!\times\!10^{-2}$) and dropout probabilities 0 or 0.1. Each of the resulting 12 trials predicts 50 million tokens with a separate tuning seed, 101. Validation loss selects learning rate 0.001 and no dropout for Transformers, and learning rate 0.03 with dropout 0.1 for LSTMs. These settings transfer unchanged to medium and large models and to the deeper LSTM control. Equal searches avoid extra tuning for favorable larger models, but do not guarantee equally suitable settings at every size.
 
-Model weights are saved and evaluated on validation text approximately every million training tokens, as well as before and after training. The main results use the saved version with the lowest validation loss from each run. Weights at the end of training provide a separate comparison. Neither test text nor grammar scores influence model selection. Preliminary runs and separate batch-size experiments are excluded from the main statistical analysis.
+Validation runs at initialization, at the first update reaching each million-token threshold, and at training end; the best weights are retained, breaking ties in favor of the earlier checkpoint. Main results use the lowest-validation-loss checkpoint, which can precede 250 million tokens. Thus the run budget and selection rule are matched, while selected-checkpoint exposure can differ. Final checkpoints provide a separate comparison at exactly matched exposure (Table~\ref{tab:finalbudget}). Neither test loss nor grammar scores select weights or settings. Preliminary runs and separate batch-size experiments are excluded from the main inference.
 
-One initialization choice differs between families. LSTM token embeddings are sampled uniformly from $[-0.1,0.1]$, after smaller normally distributed embeddings produced prolonged training stagnation. Transformer matrices retain normal initialization with standard deviation 0.02. This change preceded the final hyperparameter search. The comparison consequently evaluates two documented training procedures rather than changing architecture while holding every numerical choice identical.
+Initialization differs between families. LSTM token embeddings use a uniform distribution on $[-0.1,0.1]$, after smaller normally distributed embeddings produced prolonged training stagnation. Transformer matrices and LSTM recurrent/adapter matrices use normal initialization with standard deviation 0.02; LSTM input-side forget-gate biases start at one. The embedding change preceded the final hyperparameter search. The comparison evaluates two documented training procedures rather than an architecture change with every numerical choice fixed.
 
 Training uses university GPUs. Transformer runs use 24-GB RTX 3090 devices and average 0.51, 1.00, and 2.26 hours of parameter-update time for small, medium, and large models, totaling 11.29 GPU-hours across nine runs. Validation and saving weights add overhead. LSTM runs average 0.61, 0.55, and 1.67 hours on an RTX 4090 D; different hardware prevents an architectural speed comparison. Estimated Transformer matrix computation is $1.33\times10^{16}$, $3.06\times10^{16}$, and $8.75\times10^{16}$ floating-point operations per run. These estimates approximate backward computation as twice forward computation and exclude normalization, nonlinearities, and optimizer work. Token exposure is matched; computation is not. The four-layer medium LSTM fails for seed 37 at learning rate 0.03. A separate three-seed test uses learning rate 0.01 and no dropout, without replacing the failed run.
 
-Statistical comparisons use independently trained models as the replication units, pairing runs by random seed. We report sample standard deviations and 95\% Student-$t$ intervals for differences between architectures, assuming approximately normal seed-level differences. These three-run estimates differ from uncertainty obtained by resampling test examples for a fixed model. Holm correction accounts for the planned multiple comparisons: six context/repetition tests across three sizes, three grammar-equivalence tests, and two scaling tests. Because repetition evaluations used different examples, their confirmatory tests are withheld; conservative values of 1 are used only in the multiplicity adjustment to preserve the original comparison counts. Grammar equivalence requires two one-sided tests (TOST) against a fixed margin of two percentage points. A nonsignificant conventional difference test does not establish equivalence.
+Statistical comparisons use training runs as replication units, paired by seed to share the data-order setting. Equal seed labels do not imply matched initial tensors across architectures. We report sample standard deviations and unadjusted 95\% Student-$t$ intervals for architecture differences, assuming approximately normal seed-level differences. With three pairs, each interval has only two degrees of freedom; resampling evaluation items would estimate a different source of uncertainty. Holm correction is applied within three planned families: six one-sided context/repetition tests, three grammar-equivalence tests, and two one-sided scaling tests. Repetition tests are withheld because examples differ, assigning their slots $p=1$ solely for conservative multiplicity adjustment. Grammar equivalence uses two one-sided tests (TOST) at $\alpha=0.05$ against a fixed $\pm2$-percentage-point margin. The unadjusted test requires its 90\% interval to lie wholly inside that margin; final decisions also apply Holm correction. Nonsignificance in a conventional difference test does not establish equivalence.
 
 \section{Results}
 
 \begin{table}[t]
 \centering
 \small
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{llrrrrr}
 \toprule
 Model & Size & \shortstack{Test\\perplexity $\downarrow$} & \shortstack{Grammar\\accuracy (\%) $\uparrow$} & \shortstack{Context\\gain $\uparrow$} & \shortstack{Repetition\\gain $\uparrow$} & \shortstack{128-token\\penalty $\uparrow$} \\
 \midrule
-Transformer & Small & 40.31 & 59.58 & 0.639 & 1.298 & 0.093 \\
-LSTM & Small & 56.58 & 62.23 & 0.400 & 0.068 & 0.014 \\
-Transformer & Medium & 30.75 & 61.49 & 0.692 & 1.553 & 0.098 \\
-LSTM & Medium & 44.57 & 62.97 & 0.441 & 0.096 & 0.018 \\
-Transformer & Large & 24.70 & 63.97 & 0.713 & 1.626 & 0.097 \\
-LSTM & Large & 42.55 & 62.12 & 0.436 & 0.090 & 0.018 \\
+Transformer & Small & $40.31\pm1.09$ & $59.58\pm0.44$ & 0.639 & 1.298 & 0.093 \\
+LSTM & Small & $56.58\pm0.24$ & $62.23\pm2.20$ & 0.400 & 0.068 & 0.014 \\
+Transformer & Medium & $30.75\pm0.13$ & $61.49\pm0.65$ & 0.692 & 1.553 & 0.098 \\
+LSTM & Medium & $44.57\pm0.50$ & $62.97\pm1.37$ & 0.441 & 0.096 & 0.018 \\
+Transformer & Large & $24.70\pm0.18$ & $63.97\pm0.81$ & 0.713 & 1.626 & 0.097 \\
+LSTM & Large & $42.55\pm4.45$ & $62.12\pm0.50$ & 0.436 & 0.090 & 0.018 \\
 \midrule
 KenLM 5-gram & -- & 66.45 & 54.00 & 0.183 & $-0.024$ & 0.000 \\
 \bottomrule
 \end{tabular}
-\caption{Results for models selected by validation loss, averaged across three training repetitions. Grammar accuracy uses BLiMP. Repetition gain uses 100-token natural-text sequences. The 128-token penalty measures the loss increase after removing more distant history. Gains and penalties are in nats per token. Repetition examples differ between architectures. Perplexity is averaged over runs; the 5-gram model is one deterministic baseline.}
+\caption{Validation-selected results. Perplexity and BLiMP accuracy show mean $\pm$ sample standard deviation across three training seeds; other columns show means, with individual runs in Table~\ref{tab:seeds}. Perplexities are averaged after exponentiating each run's loss. Repetition uses 100-token natural-text sequences, sampled differently across architectures. The 128-token penalty measures loss after removing more distant history. Gains and penalties are nats per target. The 5-gram is a single baseline.}
 \label{tab:main}
 \end{table}
 
-Transformers predict held-out text better at every size (Table~\ref{tab:main}, Figure~\ref{fig:architecture}). Their perplexity reductions relative to LSTMs are approximately 29\%, 31\%, and 42\% for small, medium, and large models. Both families outperform the 5-gram baseline. LSTM perplexity improves strongly from small to medium but only modestly, on average, from medium to large, with substantial variation between large-model runs. Transformer improvements are more consistent across sizes. These are comparisons at equal training-token exposure, not equal computation.
+Transformers predict held-out text better at every size (Table~\ref{tab:main}, Figure~\ref{fig:architecture}), reducing mean perplexity relative to LSTMs by approximately 29\%, 31\%, and 42\%. Every Transformer run also outperforms every same-size LSTM run on this measure. Both families beat the 5-gram. LSTM perplexity improves strongly from small to medium, but the large models vary substantially across seeds. The ranking persists at final checkpoints: Transformer perplexities are 40.38, 30.78, and 24.71 versus 56.83, 44.82, and 42.75 for LSTMs (Table~\ref{tab:finalbudget}). This comparison matches token exposure, not computation.
 
-\textbf{Context and copying hypothesis.} Transformer context gain exceeds LSTM context gain by 0.239, 0.251, and 0.277 nats for small, medium, and large models. The 95\% intervals exclude zero, and corrected one-sided tests remain significant ($p=0.0130,0.00073,0.0130$). Natural-text repetition gains are also much larger: 1.30--1.63 nats for Transformers versus 0.07--0.10 for LSTMs. Holding the predicted tokens fixed strengthens the context interpretation: limiting history to 128 tokens increases Transformer loss by about 0.09--0.10 nats, compared with 0.01--0.02 for LSTMs. The evidence supports the context-gain prediction and corroborates stronger repetition behavior. Because the repetition tests used different sampled sequences, their observed separation remains descriptive rather than a confirmation based on identical examples.
+\textbf{Context and copying hypothesis.} Transformer context gain exceeds LSTM context gain by 0.239, 0.251, and 0.277 nats for small, medium, and large models. The 95\% intervals exclude zero, and Holm-adjusted one-sided tests remain significant ($p=0.0130,0.00073,0.0130$). Holding targets fixed provides supporting evidence: retaining only 128 preceding tokens increases Transformer loss by 0.09--0.10 nats versus 0.01--0.02 for LSTMs (Table~\ref{tab:interventions}). Natural-text repetition gains are also larger, at 1.30--1.63 versus 0.07--0.10 nats. Thus the context-gain component is supported; the copying component shows a large descriptive effect but remains unconfirmed because its sampled sequences differ across architectures.
 
 \textbf{Grammar-equivalence hypothesis.} The Transformer minus LSTM accuracy gap changes direction: $-2.65$, $-1.48$, and $+1.85$ percentage points for small, medium, and large models. Better text prediction therefore does not guarantee better grammatical judgments. The small-model mean lies outside the two-point equivalence margin. For medium and large models, means inside the margin are insufficient because training variation must also be considered. No size passes the equivalence test: unadjusted $p=0.705,0.319,0.428$, with corrected $p=0.956$ for all three. The corresponding 90\% intervals are $[-5.64,0.34]$, $[-4.25,1.29]$, and $[-0.34,4.03]$ percentage points. Each extends beyond an equivalence boundary. Grammar equivalence is therefore inconclusive.
 
-\textbf{Scaling hypothesis.} Better absolute scores at larger sizes do not establish that the \emph{difference between architectures} grows reliably. The context-gain gap increases from 0.239 to 0.277 nats between the smallest and largest models, a change of only 0.038 nats (95\% interval $[-0.115,0.191]$, corrected $p=0.396$). The repetition-gap change is 0.306 nats, with a descriptive interval of $[-0.345,0.956]$ conditional on the different test samples. Neither provides clear evidence of increasing advantage. Transformer benefits from history beyond 128 tokens are also nearly flat across sizes. The scaling hypothesis is not statistically supported.
+\textbf{Scaling hypothesis.} Better absolute scores do not establish that the \emph{architecture gap} grows reliably. We test its large-minus-small change, $(\mathrm{CG}_{T,L}-\mathrm{CG}_{R,L})-(\mathrm{CG}_{T,S}-\mathrm{CG}_{R,S})$, where $T$ and $R$ denote Transformer and recurrent models. The gap increases from 0.239 to 0.277 nats, giving a change of 0.038 (95\% interval $[-0.115,0.191]$, Holm-adjusted $p=0.396$). The repetition-gap change is descriptively 0.306 nats; its seed-only interval $[-0.345,0.956]$ omits uncertainty from the differing evaluation samples. Neither establishes increasing advantage. Benefits from history beyond 128 tokens are nearly flat, and grammar equivalence is unresolved, so the joint scaling prediction remains unsupported rather than disproved.
 
 \begin{figure}[t]
 \centering
@@ -183,7 +184,7 @@ Repeating natural text favors Transformers by more than one nat per token at the
 
 The contrast persists for 200-token natural-text sequences: repetition gain is 1.379 nats for the large Transformer versus 0.041 for the large LSTM. For 100-token random sequences, gains are 3.40, 6.18, and 6.62 for small, medium, and large Transformers, compared with 0.17, 0.25, and 0.18 for the corresponding LSTMs. These task-specific differences support a separation between repetition ability and grammatical judgments.
 
-The independent-sequence control can show negative gain because unrelated text is harder to predict after another passage than the initial passage was after a sequence-start symbol. Subtracting that control answers a different question and does not replace the main repetition measure. Excluding the first four positions separately removes transitions that a 5-gram can exploit. These controls distinguish repetition-sensitive behavior from boundary effects, while the different sampled examples remain a limitation of cross-architecture repetition comparisons.
+The independent-sequence control sometimes yields negative gain: on those samples, the second, unrelated passage has higher loss than the first. That observation does not isolate whether preceding text interferes with prediction, since the target passages also differ. Subtracting this control defines a separate measure and does not replace the primary gain. Excluding the first four positions removes transitions a 5-gram can exploit; its remaining gain is exactly zero. These checks support repetition-sensitive behavior while leaving the cross-architecture sample mismatch unresolved.
 
 \subsection{Grammar scores do not follow the perplexity ranking}
 
@@ -193,7 +194,7 @@ A shared tokenizer does not eliminate differences between training and evaluatio
 
 An error from the large Transformer trained with random seed 13 illustrates the problem. It assigns log probabilities $-100.90$ to ``Should the school ever collaborate?'' and $-64.36$ to ``The school should ever collaborate.'' It therefore favors the ungrammatical sentence, although the question licenses \emph{ever}. This example was selected as that model's most strongly preferred incorrect answer, not as a representative sample. Punctuation coverage and grammatical licensing both matter, so the scores do not isolate either cause. Corresponding sentence-level LSTM scores were unavailable, preventing a direct comparison of the two models on this example.
 
-The uncertainty about equivalence is driven by training variation, not simply by the number of test sentences. Thousands of BLiMP pairs can estimate one model's accuracy precisely, but do not create additional independently trained models. With three repetitions, an unadjusted 90\% paired-$t$ interval has half-width $2.92s_d/\sqrt{3}$, where $s_d$ is the standard deviation of the paired accuracy differences. Observed standard deviations of 1.29--1.77 percentage points imply half-widths of 2.18--2.99 points, already exceeding the equivalence margin. Thus the experiment lacks sufficient precision to establish the proposed equivalence, even before accounting for nonzero mean differences.
+Equivalence uncertainty is driven by training variation as well as benchmark choice. Thousands of BLiMP pairs do not create additional independently trained models, and generated pairs within a paradigm need not be statistically independent. With three seeds, an unadjusted 90\% paired-$t$ interval has half-width $2.92s_d/\sqrt{3}$, where $s_d$ is the paired-difference standard deviation. Observed values of 1.29--1.77 percentage points imply half-widths of 2.18--2.99 points, exceeding the equivalence margin even before nonzero means or multiplicity adjustment. This is a retrospective precision check, not a prospective power calculation.
 
 \subsection{Depth and optimization constrain the architectural conclusion}
 
@@ -213,7 +214,7 @@ The retained train/test duplicate and Wikipedia's editorial biases limit general
 
 \section{Conclusion}
 
-Under matched parameter and training-token budgets, Transformers predict WikiText more accurately and show stronger context use and repetition gains. Holding the predicted tokens fixed supports this conclusion beyond a position curve: intact distant context benefits Transformers more, while a 5-gram is invariant. The evidence nevertheless establishes neither that long context explains most of the perplexity gap nor that distant-context gains grow monotonically with size.
+Under closely matched parameters and a common training-token budget, Transformers predict WikiText more accurately and show stronger contextual prediction than classic LSTMs. Interventions on identical targets support this interpretation beyond position curves, and the perplexity ranking survives evaluation at final, exposure-matched checkpoints. Repetition gains provide additional descriptive evidence. The study does not establish that distant context explains most of the perplexity gap or that its benefit grows reliably with size.
 
 The grammar comparison requires a different conclusion. Its gap changes direction with size, and similar overall accuracies do not establish equivalence within two percentage points. The evidence therefore supports stronger context use while leaving grammar equivalence and increasing advantage with scale unresolved. The most useful next steps are to evaluate both architectures on identical repeated sequences, train more independent models to improve equivalence-test precision, and retain intermediate model weights for comparisons at matched validation perplexity.
 
@@ -311,8 +312,52 @@ Change in context-gain gap & Large minus small & 0.038 & $[-0.115,0.191]$ & 0.39
 \label{tab:inference}
 \end{table}
 
+
+\subsection{Additional context and checkpoint controls}
+
+Table~\ref{tab:interventions} gives the values underlying Figure~\ref{fig:context}. Its penalties are nested comparisons against full context, not additive contributions to total test loss. Table~\ref{tab:finalbudget} checks the same 18 runs at exactly 250 million targets: Transformers retain lower perplexity and larger context gain, while the BLiMP gap still changes direction. These alternative checkpoints are not extra repetitions, and this descriptive check does not replace the main hypothesis tests.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llrrrr}
+\toprule
+Model & Size & $G_4$ & $G_{32}$ & $G_{128}$ & Distant shuffle \\
+\midrule
+Transformer & Small & $1.017\pm0.024$ & $0.333\pm0.018$ & $0.093\pm0.008$ & $0.104\pm0.013$ \\
+Transformer & Medium & $1.129\pm0.006$ & $0.352\pm0.003$ & $0.098\pm0.002$ & $0.125\pm0.001$ \\
+Transformer & Large & $1.200\pm0.007$ & $0.352\pm0.003$ & $0.097\pm0.001$ & $0.111\pm0.004$ \\
+LSTM & Small & $0.708\pm0.0004$ & $0.099\pm0.001$ & $0.014\pm0.001$ & $0.014\pm0.002$ \\
+LSTM & Medium & $0.806\pm0.009$ & $0.123\pm0.001$ & $0.018\pm0.001$ & $0.021\pm0.005$ \\
+LSTM & Large & $0.810\pm0.063$ & $0.120\pm0.021$ & $0.018\pm0.005$ & $0.021\pm0.012$ \\
+KenLM 5-gram & -- & 0.000 & 0.000 & 0.000 & 0.000 \\
+\bottomrule
+\end{tabular}
+\caption{Loss increases in nats per target, relative to intact history, on 69,376 identical targets. Neural values are mean $\pm$ sample standard deviation over three seeds. $G_k$ retains the nearest $k$ tokens; shuffling preserves the nearest 128 and permutes only earlier tokens. KenLM invariance holds per target, not merely in the aggregate.}
+\label{tab:interventions}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{llrrr}
+\toprule
+Model & Size & Test perplexity & BLiMP accuracy (\%) & Context gain \\
+\midrule
+Transformer & Small & $40.38\pm1.10$ & $59.60\pm0.62$ & $0.638\pm0.030$ \\
+Transformer & Medium & $30.78\pm0.12$ & $61.49\pm0.60$ & $0.694\pm0.008$ \\
+Transformer & Large & $24.71\pm0.16$ & $63.81\pm0.77$ & $0.714\pm0.005$ \\
+LSTM & Small & $56.83\pm0.45$ & $62.21\pm2.16$ & $0.394\pm0.010$ \\
+LSTM & Medium & $44.82\pm0.66$ & $62.57\pm1.56$ & $0.439\pm0.010$ \\
+LSTM & Large & $42.75\pm4.21$ & $62.44\pm0.97$ & $0.439\pm0.038$ \\
+\bottomrule
+\end{tabular}
+\caption{Final-checkpoint sensitivity: mean $\pm$ sample standard deviation across the original three seeds. Context gain is in nats per target. These checkpoints match training exposure exactly, whereas validation selection can retain earlier weights. Main results and inference continue to use validation-selected models.}
+\label{tab:finalbudget}
+\end{table}
+
 \paragraph{Available evidence and reproduction limits.}
-Recorded summaries provide per-model metrics, training settings, parameter counts, and identities of the weights used for evaluation. These support reconstruction of the aggregate comparisons above. Individual LSTM and 5-gram sentence predictions and some detailed evaluation outputs were unavailable for independent inspection. Recovering those outputs is necessary to reproduce individual cross-model disagreements or uncertainty analyses based on jointly resampling the same test examples. Aggregate summaries alone cannot reconstruct missing predictions or model weights.
+Saved summaries support aggregate comparisons, training settings, parameter counts, and checkpoint identities. Individual LSTM and 5-gram predictions were unavailable. Reproducing cross-model sentence disagreements or paired item-resampling analyses requires recovering those predictions; summaries cannot reconstruct missing scores or weights.
 
 
 \end{document}
